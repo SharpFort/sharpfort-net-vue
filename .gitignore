@@ -30,8 +30,10 @@ Thumbs.db
 Desktop.ini
 
 # Environment variables
-.env
-.env.local
+# Note: .env contains default/example values and should be committed
+# Only .env.local and environment-specific files contain sensitive data
+# .env                          # ← Commented out - commit this file
+.env.local                      # ← Keep ignored - contains sensitive data
 .env.*.local
 .env.development.local
 .env.test.local
