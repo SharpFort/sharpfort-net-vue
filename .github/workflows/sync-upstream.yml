@@ -1,0 +1,169 @@
+name: Sync Upstream & Lite
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  schedule:
+    # 每天北京时间早上 8:00 运行一次 (UTC 0:00)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 允许你在 GitHub 网页上手动点击运行
+
+jobs:
+  sync_and_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取所有历史记录，否则无法合并
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Setup Node & PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest  # 使用最新版本的 PNPM
+
+      - name: Get Current Date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Add Upstream
+        run: |
+          git remote add upstream https://github.com/Daymychen/art-design-pro.git || true
+          git fetch upstream
+
+      # ============================================================
+      # 方案选择：同步最新代码 vs 同步最新 Release
+      # ============================================================
+      # 方案 A（当前启用）：同步 master 分支的最新代码
+      # 方案 B（已注释）：只同步最新的 Release 标签
+      # 
+      # 如需切换到方案 B，请：
+      # 1. 注释掉下面的 "Stage 1 - Sync Upstream Main (Latest Code)"
+      # 2. 取消注释 "Stage 1 - Sync Upstream Main (Latest Release)" 部分
+      # ============================================================
+
+      - name: Stage 1 - Sync Upstream Main (Latest Code)
+        run: |
+          echo "📥 Syncing latest code from upstream/master..."
+          git checkout upstream-main
+          git merge upstream/master --no-edit
+          git push origin upstream-main
+          echo "✅ upstream-main synced with latest code"
+
+      # - name: Stage 1 - Sync Upstream Main (Latest Release)
+      #   run: |
+      #     echo "📥 Fetching latest release tag..."
+      #     LATEST_TAG=$(git ls-remote --tags upstream | grep -v '\^{}' | sort -t '/' -k 3 -V | tail -n1 | awk '{print $2}' | sed 's|refs/tags/||')
+      #     echo "Latest release tag: $LATEST_TAG"
+      #     
+      #     git checkout upstream-main
+      #     CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "none")
+      #     
+      #     if [ "$CURRENT_TAG" != "$LATEST_TAG" ]; then
+      #       echo "🔄 New release detected: $LATEST_TAG (current: $CURRENT_TAG)"
+      #       git merge $LATEST_TAG --no-edit
+      #       git push origin upstream-main
+      #       echo "✅ upstream-main synced to release $LATEST_TAG"
+      #     else
+      #       echo "ℹ️ Already at latest release: $LATEST_TAG"
+      #     fi
+
+      - name: Stage 2 - Sync Adapter Lite (The Hard Part)
+        id: sync_lite
+        continue-on-error: true # 即使有冲突也不要立刻退出，尝试脚本修复
+        run: |
+          echo "🔄 Merging upstream-main into adapter-lite..."
+          git checkout adapter-lite
+          
+          # 尝试合并
+          if ! git merge upstream-main --no-edit; then
+            echo "⚠️ Detected conflicts, attempting auto-resolution..."
+            
+            # 🔥 核心魔法：自动解决各种冲突
+            # UD: 上游删除，我们修改 → 保留删除（因为我们的修改可能是精简脚本造成的）
+            git status --porcelain | grep '^UD' | awk '{print $2}' | xargs -r git rm
+            
+            # DU: 我们删除，上游修改 → 保留删除（这是精简的目的）
+            git status --porcelain | grep '^DU' | awk '{print $2}' | xargs -r git rm
+            
+            # AA: 双方都添加 → 保留上游版本
+            git status --porcelain | grep '^AA' | awk '{print $2}' | xargs -r git checkout --theirs
+            
+            # UU: 双方都修改 → 保留上游版本（保守策略）
+            git status --porcelain | grep '^UU' | awk '{print $2}' | xargs -r git checkout --theirs
+            
+            # 添加所有已解决的文件
+            git add .
+            
+            # 检查是否还有未解决的冲突
+            if git status --porcelain | grep -E '^(DD|AU|UA)'; then
+              echo "❌ Still have unresolved conflicts, manual intervention needed"
+              git merge --abort
+              exit 1
+            fi
+            
+            # 提交解决后的变更
+            git commit -m "chore: merge upstream and auto-resolve conflicts"
+            echo "✅ Conflicts auto-resolved"
+          else
+            echo "✅ Merged without conflicts"
+          fi
+
+          # 🧹 再次运行官方精简脚本 (清理新出现的垃圾文件)
+          echo "🧹 Running cleanup script..."
+          pnpm install --no-frozen-lockfile
+          echo "yes" | pnpm clean:dev || true
+          
+          # 检查是否有文件变化，有则提交
+          if [[ -n $(git status -s) ]]; then
+            echo "📝 Changes detected after cleanup, committing..."
+            git add .
+            git commit -m "chore: run lite script after sync"
+          else
+            echo "ℹ️ No changes needed after cleanup"
+          fi
+          
+          git push origin adapter-lite
+          echo "✅ adapter-lite synced and cleaned"
+
+      - name: Stage 3 - Create Pull Request to Main
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: adapter-lite
+          base: main
+          title: '🔄 Upstream Sync: ${{ steps.date.outputs.date }}'
+          body: |
+            ## 🤖 自动化同步报告
+            
+            **同步日期**: ${{ steps.date.outputs.date }}
+            
+            ### ✅ 完成的操作
+            1. ✅ 已更新 `upstream-main` 分支
+            2. ✅ 已合并至 `adapter-lite` 并自动处理冲突
+            3. ✅ 已重新运行 `pnpm clean:dev` 精简脚本
+            
+            ### 🔍 请检查
+            - 查看 **Files Changed** 标签页，确认改动符合预期
+            - 确保没有破坏现有业务逻辑
+            - 检查是否有需要手动调整的配置文件
+            
+            ### 📋 冲突处理策略
+            本次自动同步使用以下策略处理冲突：
+            - `UD`/`DU` (删除冲突): 保留删除（精简目的）
+            - `AA`/`UU` (内容冲突): 保留上游版本（保守策略）
+            
+            如果一切正常，请点击 **Merge pull request** 完成同步。
+            
+            ---
+            *此 PR 由 GitHub Actions 自动创建*
+          labels: automated-sync,upstream-update
+          draft: false
