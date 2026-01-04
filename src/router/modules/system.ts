@@ -55,6 +55,55 @@ export const systemRoutes: AppRouteRecord = {
           { title: '删除', authMark: 'delete' }
         ]
       }
+    },
+    {
+      path: 'tenant',
+      name: 'Tenant',
+      component: '/system/tenant',
+      meta: {
+        title: '租户管理',
+        keepAlive: true,
+        roles: ['R_SUPER']
+      }
+    },
+    {
+      path: 'codegen',
+      name: 'CodeGen',
+      meta: {
+        title: '代码生成',
+        icon: 'ri:code-s-slash-line',
+        roles: ['R_SUPER']
+      },
+      children: [
+        {
+          path: 'table',
+          name: 'CodeGenTable',
+          component: '/system/codegen/table',
+          meta: {
+            title: '表管理',
+            keepAlive: true
+          }
+        },
+        {
+          path: 'field',
+          name: 'CodeGenField',
+          component: '/system/codegen/field',
+          meta: {
+            title: '字段管理',
+            keepAlive: true,
+            isHide: true
+          }
+        },
+        {
+          path: 'template',
+          name: 'CodeGenTemplate',
+          component: '/system/codegen/template',
+          meta: {
+            title: '模板管理',
+            keepAlive: true
+          }
+        }
+      ]
     }
   ]
 }
