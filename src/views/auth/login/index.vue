@@ -18,18 +18,6 @@
             @keyup.enter="handleSubmit"
             style="margin-top: 25px"
           >
-            <ElFormItem prop="account">
-              <ElSelect v-model="formData.account" @change="setupAccount">
-                <ElOption
-                  v-for="account in accounts"
-                  :key="account.key"
-                  :label="account.label"
-                  :value="account.key"
-                >
-                  <span>{{ account.label }}</span>
-                </ElOption>
-              </ElSelect>
-            </ElFormItem>
             <ElFormItem prop="username">
               <ElInput
                 class="custom-height"
@@ -46,6 +34,30 @@
                 autocomplete="off"
                 show-password
               />
+            </ElFormItem>
+
+            <!-- 图片验证码 -->
+            <ElFormItem prop="code" v-if="captchaData.isEnableCaptcha">
+              <div class="flex gap-2">
+                <ElInput
+                  class="custom-height flex-1"
+                  :placeholder="$t('login.placeholder.captcha')"
+                  v-model.trim="formData.code"
+                  maxlength="4"
+                />
+                <div
+                  class="captcha-image"
+                  @click="refreshCaptcha"
+                  v-loading="captchaLoading"
+                  :title="$t('login.refreshCaptcha')"
+                >
+                  <img
+                    v-if="captchaData.img"
+                    :src="`data:image/png;base64,${captchaData.img}`"
+                    alt="captcha"
+                  />
+                </div>
+              </div>
             </ElFormItem>
 
             <!-- 推拽验证 -->
@@ -113,9 +125,10 @@
   import { getCssVar } from '@/utils/ui'
   import { useI18n } from 'vue-i18n'
   import { HttpError } from '@/utils/http/error'
-  import { fetchLogin, fetchGetUserInfo } from '@/api/auth'
+  import { fetchLogin, fetchGetUserInfo, fetchGetCaptcha } from '@/api/auth'
   import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
   import { useSettingStore } from '@/store/modules/setting'
+  import type { CaptchaImageDto } from '@/types/auth'
 
   defineOptions({ name: 'Login' })
 
@@ -129,42 +142,7 @@
     formKey.value++
   })
 
-  type AccountKey = 'super' | 'admin' | 'user'
-
-  export interface Account {
-    key: AccountKey
-    label: string
-    userName: string
-    password: string
-    roles: string[]
-  }
-
-  const accounts = computed<Account[]>(() => [
-    {
-      key: 'super',
-      label: t('login.roles.super'),
-      userName: 'Super',
-      password: '123456',
-      roles: ['R_SUPER']
-    },
-    {
-      key: 'admin',
-      label: t('login.roles.admin'),
-      userName: 'Admin',
-      password: '123456',
-      roles: ['R_ADMIN']
-    },
-    {
-      key: 'user',
-      label: t('login.roles.user'),
-      userName: 'User',
-      password: '123456',
-      roles: ['R_USER']
-    }
-  ])
-
   const dragVerify = ref()
-
   const userStore = useUserStore()
   const router = useRouter()
   const isPassing = ref(false)
@@ -174,29 +152,51 @@
   const formRef = ref<FormInstance>()
 
   const formData = reactive({
-    account: '',
     username: '',
     password: '',
+    code: '',
     rememberPassword: true
   })
 
+  // 验证码数据
+  const captchaData = ref<CaptchaImageDto>({
+    uuid: '',
+    img: '',
+    isEnableCaptcha: false
+  })
+  const captchaLoading = ref(false)
+
   const rules = computed<FormRules>(() => ({
     username: [{ required: true, message: t('login.placeholder.username'), trigger: 'blur' }],
-    password: [{ required: true, message: t('login.placeholder.password'), trigger: 'blur' }]
+    password: [{ required: true, message: t('login.placeholder.password'), trigger: 'blur' }],
+    code: captchaData.value.isEnableCaptcha
+      ? [{ required: true, message: t('login.placeholder.captcha'), trigger: 'blur' }]
+      : []
   }))
 
   const loading = ref(false)
 
   onMounted(() => {
-    setupAccount('super')
+    loadCaptcha()
   })
 
-  // 设置账号
-  const setupAccount = (key: AccountKey) => {
-    const selectedAccount = accounts.value.find((account: Account) => account.key === key)
-    formData.account = key
-    formData.username = selectedAccount?.userName ?? ''
-    formData.password = selectedAccount?.password ?? ''
+  // 加载验证码
+  const loadCaptcha = async () => {
+    try {
+      captchaLoading.value = true
+      const data = await fetchGetCaptcha()
+      captchaData.value = data
+    } catch (error) {
+      console.error('[Login] Failed to load captcha:', error)
+    } finally {
+      captchaLoading.value = false
+    }
+  }
+
+  // 刷新验证码
+  const refreshCaptcha = () => {
+    formData.code = ''
+    loadCaptcha()
   }
 
   // 登录
@@ -217,12 +217,16 @@
       loading.value = true
 
       // 登录请求
-      const { username, password } = formData
+      const { username, password, code } = formData
 
-      const { token, refreshToken } = await fetchLogin({
+      const loginParams = {
         userName: username,
-        password
-      })
+        password,
+        uuid: captchaData.value.uuid,
+        code: captchaData.value.isEnableCaptcha ? code : undefined
+      }
+
+      const { token, refreshToken } = await fetchLogin(loginParams)
 
       // 验证token
       if (!token) {
@@ -241,10 +245,11 @@
     } catch (error) {
       // 处理 HttpError
       if (error instanceof HttpError) {
-        // console.log(error.code)
+        // 验证码错误时刷新验证码
+        if (captchaData.value.isEnableCaptcha) {
+          refreshCaptcha()
+        }
       } else {
-        // 处理非 HttpError
-        // ElMessage.error('登录失败，请稍后重试')
         console.error('[Login] Unexpected error:', error)
       }
     } finally {
@@ -274,6 +279,29 @@
 
 <style scoped>
   @import './style.css';
+
+  .captcha-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 40px;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: var(--el-fill-color-light);
+    border: 1px solid var(--el-border-color);
+    border-radius: 4px;
+  }
+
+  .captcha-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .captcha-image:hover {
+    border-color: var(--el-color-primary);
+  }
 </style>
 
 <style lang="scss" scoped>

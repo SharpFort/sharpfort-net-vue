@@ -4,6 +4,24 @@ import request from '@/utils/http'
  * Casbin-RBAC API Service
  */
 export const CasbinApi = {
+  // --- Account ---
+  account: {
+    login: (data: any) => request.post<any>({ url: '/api/app/account/login', data }),
+    register: (data: any) => request.post<any>({ url: '/api/app/account/register', data }),
+    getCaptcha: () => request.get<any>({ url: '/api/app/account/captcha-image' }),
+    getPhoneCaptcha: (data: any) =>
+      request.post<any>({ url: '/api/app/account/captcha-phone', data }),
+    getPhoneCaptchaForReset: (data: any) =>
+      request.post<any>({ url: '/api/app/account/captcha-phone/repassword', data }),
+    retrievePassword: (data: any) =>
+      request.post<any>({ url: '/api/app/account/retrieve-password', data }),
+    refreshToken: (refreshToken: string) =>
+      request.post<any>({
+        url: '/api/app/account/refresh',
+        params: { refresh_token: refreshToken }
+      })
+  },
+
   // --- User ---
   user: {
     getList: (params: any) => request.get<any>({ url: '/api/app/user', params }),

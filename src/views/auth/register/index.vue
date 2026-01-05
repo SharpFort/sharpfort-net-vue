@@ -26,6 +26,47 @@
               />
             </ElFormItem>
 
+            <ElFormItem prop="nick">
+              <ElInput
+                class="custom-height"
+                v-model.trim="formData.nick"
+                :placeholder="$t('register.placeholder.nick')"
+              />
+            </ElFormItem>
+
+            <ElFormItem prop="phone">
+              <ElInput
+                class="custom-height"
+                v-model.trim="formData.phone"
+                :placeholder="$t('register.placeholder.phone')"
+                maxlength="11"
+              />
+            </ElFormItem>
+
+            <ElFormItem prop="code">
+              <div class="flex gap-2">
+                <ElInput
+                  class="custom-height flex-1"
+                  v-model.trim="formData.code"
+                  :placeholder="$t('register.placeholder.code')"
+                  maxlength="6"
+                />
+                <ElButton
+                  class="custom-height"
+                  type="primary"
+                  plain
+                  :disabled="countdown > 0"
+                  @click="sendCode"
+                  style="width: 120px"
+                >
+                  {{ countdown > 0 ? `${countdown}s` : $t('register.sendCode') }}
+                </ElButton>
+              </div>
+              <div class="mt-1 text-xs text-gray-500">
+                {{ $t('register.testCodeHint') }}: 123456
+              </div>
+            </ElFormItem>
+
             <ElFormItem prop="password">
               <ElInput
                 class="custom-height"
@@ -87,12 +128,17 @@
 
 <script setup lang="ts">
   import { useI18n } from 'vue-i18n'
-  import type { FormInstance, FormRules } from 'element-plus'
+  import { ElMessage, type FormInstance, FormRules } from 'element-plus'
+  import { fetchRegister } from '@/api/auth'
+  import { HttpError } from '@/utils/http/error'
 
   defineOptions({ name: 'Register' })
 
   interface RegisterForm {
     username: string
+    nick: string
+    phone: string
+    code: string
     password: string
     confirmPassword: string
     agreement: boolean
@@ -101,7 +147,8 @@
   const USERNAME_MIN_LENGTH = 3
   const USERNAME_MAX_LENGTH = 20
   const PASSWORD_MIN_LENGTH = 6
-  const REDIRECT_DELAY = 1000
+  const REDIRECT_DELAY = 1500
+  const COUNTDOWN_TIME = 60
 
   const { t, locale } = useI18n()
   const router = useRouter()
@@ -109,6 +156,8 @@
 
   const loading = ref(false)
   const formKey = ref(0)
+  const countdown = ref(0)
+  const captchaUuid = ref('')
 
   // 监听语言切换，重置表单
   watch(locale, () => {
@@ -117,10 +166,29 @@
 
   const formData = reactive<RegisterForm>({
     username: '',
+    nick: '',
+    phone: '',
+    code: '',
     password: '',
     confirmPassword: '',
     agreement: false
   })
+
+  /**
+   * 验证手机号
+   */
+  const validatePhone = (_rule: any, value: string, callback: (error?: Error) => void) => {
+    if (!value) {
+      callback(new Error(t('register.placeholder.phone')))
+      return
+    }
+    const phoneRegex = /^1[3-9]\d{9}$/
+    if (!phoneRegex.test(value)) {
+      callback(new Error(t('register.rule.phoneInvalid')))
+      return
+    }
+    callback()
+  }
 
   /**
    * 验证密码
@@ -183,6 +251,11 @@
         trigger: 'blur'
       }
     ],
+    phone: [{ required: true, validator: validatePhone, trigger: 'blur' }],
+    code: [
+      { required: true, message: t('register.placeholder.code'), trigger: 'blur' },
+      { len: 6, message: t('register.rule.codeLength'), trigger: 'blur' }
+    ],
     password: [
       { required: true, validator: validatePassword, trigger: 'blur' },
       { min: PASSWORD_MIN_LENGTH, message: t('register.rule.passwordLength'), trigger: 'blur' }
@@ -190,6 +263,38 @@
     confirmPassword: [{ required: true, validator: validateConfirmPassword, trigger: 'blur' }],
     agreement: [{ validator: validateAgreement, trigger: 'change' }]
   }))
+
+  /**
+   * 发送验证码
+   */
+  const sendCode = async () => {
+    try {
+      // 验证手机号
+      await formRef.value?.validateField('phone')
+
+      // 生成UUID（测试用）
+      captchaUuid.value = `test-uuid-${Date.now()}`
+
+      // TODO: 实际发送验证码
+      // await fetchGetPhoneCaptcha({
+      //   phone: formData.phone,
+      //   uuid: captchaUuid.value
+      // })
+
+      ElMessage.success(t('register.codeSent'))
+
+      // 开始倒计时
+      countdown.value = COUNTDOWN_TIME
+      const timer = setInterval(() => {
+        countdown.value--
+        if (countdown.value <= 0) {
+          clearInterval(timer)
+        }
+      }, 1000)
+    } catch (error) {
+      console.error('[Register] Failed to send code:', error)
+    }
+  }
 
   /**
    * 注册用户
@@ -202,25 +307,26 @@
       await formRef.value.validate()
       loading.value = true
 
-      // TODO: 替换为真实 API 调用
-      // const params = {
-      //   username: formData.username,
-      //   password: formData.password
-      // }
-      // const res = await AuthService.register(params)
-      // if (res.code === ApiStatus.success) {
-      //   ElMessage.success('注册成功')
-      //   toLogin()
-      // }
+      // 调用注册API
+      const params = {
+        userName: formData.username,
+        password: formData.password,
+        nick: formData.nick || formData.username,
+        phone: parseInt(formData.phone),
+        code: formData.code,
+        uuid: captchaUuid.value || `test-uuid-${Date.now()}`
+      }
 
-      // 模拟注册请求
-      setTimeout(() => {
-        loading.value = false
-        ElMessage.success('注册成功')
-        toLogin()
-      }, REDIRECT_DELAY)
+      await fetchRegister(params)
+
+      ElMessage.success(t('register.success'))
+      toLogin()
     } catch (error) {
-      console.error('表单验证失败:', error)
+      if (error instanceof HttpError) {
+        // 后端错误已由拦截器处理
+      } else {
+        console.error('[Register] Unexpected error:', error)
+      }
       loading.value = false
     }
   }
