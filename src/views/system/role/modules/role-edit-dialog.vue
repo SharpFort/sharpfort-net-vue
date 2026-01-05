@@ -2,45 +2,52 @@
   <ElDialog
     v-model="visible"
     :title="dialogType === 'add' ? '新增角色' : '编辑角色'"
-    width="30%"
+    width="600px"
     align-center
     @close="handleClose"
   >
-    <ElForm ref="formRef" :model="form" :rules="rules" label-width="120px">
+    <ElForm ref="formRef" :model="form" :rules="rules" label-width="100px">
       <ElFormItem label="角色名称" prop="roleName">
         <ElInput v-model="form.roleName" placeholder="请输入角色名称" />
       </ElFormItem>
       <ElFormItem label="角色编码" prop="roleCode">
         <ElInput v-model="form.roleCode" placeholder="请输入角色编码" />
       </ElFormItem>
-      <ElFormItem label="描述" prop="description">
-        <ElInput
-          v-model="form.description"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入角色描述"
-        />
+      <ElFormItem label="数据范围" prop="dataScope">
+        <ElSelect v-model="form.dataScope" placeholder="请选择数据范围" style="width: 100%">
+          <ElOption label="全部数据" value="ALL" />
+          <ElOption label="自定义" value="CUSTOM" />
+          <ElOption label="本部门" value="DEPT" />
+          <ElOption label="本部门及以下" value="DEPT_FOLLOW" />
+          <ElOption label="仅本人" value="SELF" />
+        </ElSelect>
       </ElFormItem>
-      <ElFormItem label="启用">
-        <ElSwitch v-model="form.enabled" />
+      <ElFormItem label="显示顺序" prop="orderNum">
+        <ElInputNumber v-model="form.orderNum" :min="0" style="width: 100%" />
+      </ElFormItem>
+      <ElFormItem label="状态">
+        <ElSwitch v-model="form.state" active-text="启用" inactive-text="停用" />
+      </ElFormItem>
+      <ElFormItem label="备注" prop="remark">
+        <ElInput v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
       </ElFormItem>
     </ElForm>
     <template #footer>
       <ElButton @click="handleClose">取消</ElButton>
-      <ElButton type="primary" @click="handleSubmit">提交</ElButton>
+      <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">保存</ElButton>
     </template>
   </ElDialog>
 </template>
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
-
-  type RoleListItem = Api.SystemManage.RoleListItem
+  import { ElMessage } from 'element-plus'
+  import { CasbinApi } from '@/api/casbin-rbac'
 
   interface Props {
     modelValue: boolean
     dialogType: 'add' | 'edit'
-    roleData?: RoleListItem
+    roleData?: any
   }
 
   interface Emits {
@@ -57,6 +64,7 @@
   const emit = defineEmits<Emits>()
 
   const formRef = ref<FormInstance>()
+  const submitLoading = ref(false)
 
   /**
    * 弹窗显示状态双向绑定
@@ -78,19 +86,22 @@
       { required: true, message: '请输入角色编码', trigger: 'blur' },
       { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
     ],
-    description: [{ required: true, message: '请输入角色描述', trigger: 'blur' }]
+    dataScope: [{ required: true, message: '请选择数据范围', trigger: 'change' }]
   })
 
   /**
    * 表单数据
    */
-  const form = reactive<RoleListItem>({
-    roleId: 0,
+  const form = reactive<any>({
+    id: undefined,
     roleName: '',
     roleCode: '',
-    description: '',
-    createTime: '',
-    enabled: true
+    dataScope: 'ALL',
+    remark: '',
+    orderNum: 0,
+    state: true,
+    menuIds: [],
+    departmentIds: []
   })
 
   /**
@@ -104,31 +115,37 @@
   )
 
   /**
-   * 监听角色数据变化，更新表单
-   */
-  watch(
-    () => props.roleData,
-    (newData) => {
-      if (newData && props.modelValue) initForm()
-    },
-    { deep: true }
-  )
-
-  /**
    * 初始化表单数据
-   * 根据弹窗类型填充表单或重置表单
    */
-  const initForm = () => {
+  const initForm = async () => {
     if (props.dialogType === 'edit' && props.roleData) {
-      Object.assign(form, props.roleData)
+      try {
+        const detail = await CasbinApi.role.get(props.roleData.id)
+        Object.assign(form, {
+          id: detail.id,
+          roleName: detail.roleName,
+          roleCode: detail.roleCode,
+          dataScope: detail.dataScope || 'ALL',
+          remark: detail.remark,
+          orderNum: detail.orderNum,
+          state: detail.state,
+          menuIds: detail.menuIds || [],
+          departmentIds: detail.departmentIds || []
+        })
+      } catch (error) {
+        console.error('获取详情失败:', error)
+      }
     } else {
       Object.assign(form, {
-        roleId: 0,
+        id: undefined,
         roleName: '',
         roleCode: '',
-        description: '',
-        createTime: '',
-        enabled: true
+        dataScope: 'ALL',
+        remark: '',
+        orderNum: 0,
+        state: true,
+        menuIds: [],
+        departmentIds: []
       })
     }
   }
@@ -143,20 +160,28 @@
 
   /**
    * 提交表单
-   * 验证通过后调用接口保存数据
    */
   const handleSubmit = async () => {
     if (!formRef.value) return
 
     try {
       await formRef.value.validate()
-      // TODO: 调用新增/编辑接口
-      const message = props.dialogType === 'add' ? '新增成功' : '修改成功'
-      ElMessage.success(message)
+      submitLoading.value = true
+
+      if (props.dialogType === 'add') {
+        await CasbinApi.role.create(form)
+        ElMessage.success('新增成功')
+      } else {
+        await CasbinApi.role.update(form.id, form)
+        ElMessage.success('修改成功')
+      }
+
       emit('success')
       handleClose()
     } catch (error) {
-      console.log('表单验证失败:', error)
+      console.log('提交失败:', error)
+    } finally {
+      submitLoading.value = false
     }
   }
 </script>
