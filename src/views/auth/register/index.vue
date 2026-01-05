@@ -253,7 +253,7 @@
     ],
     phone: [{ required: true, validator: validatePhone, trigger: 'blur' }],
     code: [
-      { required: true, message: t('register.placeholder.code'), trigger: 'blur' },
+      { required: false, message: t('register.placeholder.code'), trigger: 'blur' },
       { len: 6, message: t('register.rule.codeLength'), trigger: 'blur' }
     ],
     password: [

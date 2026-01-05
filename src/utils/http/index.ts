@@ -65,7 +65,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
     const { accessToken } = useUserStore()
-    if (accessToken) request.headers.set('Authorization', accessToken)
+    if (accessToken) request.headers.set('Authorization', `Bearer ${accessToken}`)
 
     if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
       request.headers.set('Content-Type', 'application/json')
@@ -83,6 +83,18 @@ axiosInstance.interceptors.request.use(
 /** 响应拦截器 */
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse<BaseResponse>) => {
+    // 兼容ABP直接返回数据的情况（没有code/msg包装）
+    if (!Object.prototype.hasOwnProperty.call(response.data, 'code')) {
+      // ABP直接返回数据，包装成标准格式
+      response.data = {
+        code: ApiStatus.success,
+        msg: 'success',
+        data: response.data
+      } as any
+      return response
+    }
+
+    // 标准包装格式
     const { code, msg } = response.data
     if (code === ApiStatus.success) return response
     if (code === ApiStatus.unauthorized) handleUnauthorizedError(msg)
