@@ -35,19 +35,17 @@
   }
 
   // 动态 options
-  const statusOptions = ref<{ label: string; value: string; disabled?: boolean }[]>([])
+  const statusOptions = ref<{ label: string; value: boolean }[]>([])
 
   // 模拟接口返回状态数据
   function fetchStatusOptions(): Promise<typeof statusOptions.value> {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([
-          { label: '在线', value: '1' },
-          { label: '离线', value: '2' },
-          { label: '异常', value: '3' },
-          { label: '注销', value: '4' }
+          { label: '正常', value: true },
+          { label: '停用', value: false }
         ])
-      }, 1000)
+      }, 100)
     })
   }
 
@@ -59,26 +57,26 @@
   const formItems = computed(() => [
     {
       label: '用户名',
-      key: 'userName',
+      key: 'UserName',
       type: 'input',
       placeholder: '请输入用户名',
       clearable: true
     },
     {
       label: '手机号',
-      key: 'userPhone',
+      key: 'Phone',
       type: 'input',
       props: { placeholder: '请输入手机号', maxlength: '11' }
     },
     {
       label: '邮箱',
-      key: 'userEmail',
+      key: 'Email',
       type: 'input',
       props: { placeholder: '请输入邮箱' }
     },
     {
       label: '状态',
-      key: 'status',
+      key: 'State',
       type: 'select',
       props: {
         placeholder: '请选择状态',
@@ -87,12 +85,14 @@
     },
     {
       label: '性别',
-      key: 'userGender',
-      type: 'radiogroup',
+      key: 'Gender',
+      type: 'select',
       props: {
+        placeholder: '请选择性别',
         options: [
-          { label: '男', value: '1' },
-          { label: '女', value: '2' }
+          { label: '未知', value: 'Unknown' },
+          { label: '男', value: 'Male' },
+          { label: '女', value: 'Female' }
         ]
       }
     }
