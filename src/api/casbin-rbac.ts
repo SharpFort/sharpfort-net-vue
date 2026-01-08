@@ -85,24 +85,35 @@ export const CasbinApi = {
   },
 
   // --- Dict ---
-  dict: {
+  dictionary: {
     type: {
-      getList: (params: any) => request.get<any>({ url: '/api/app/dict-type', params }),
-      get: (id: string | number) => request.get<any>({ url: `/api/app/dict-type/${id}` }),
-      create: (data: any) => request.post<any>({ url: '/api/app/dict-type', data }),
+      getList: (params: any) => request.get<any>({ url: '/api/app/dictionary-type', params }),
+      get: (id: string | number) => request.get<any>({ url: `/api/app/dictionary-type/${id}` }),
+      create: (data: any) => request.post<any>({ url: '/api/app/dictionary-type', data }),
       update: (id: string | number, data: any) =>
-        request.put<any>({ url: `/api/app/dict-type/${id}`, data }),
-      del: (id: string | number) => request.del<any>({ url: `/api/app/dict-type/${id}` })
+        request.put<any>({ url: `/api/app/dictionary-type/${id}`, data }),
+      del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-type/${id}` })
     },
     data: {
-      getList: (params: any) => request.get<any>({ url: '/api/app/dict-data', params }),
-      get: (id: string | number) => request.get<any>({ url: `/api/app/dict-data/${id}` }),
-      create: (data: any) => request.post<any>({ url: '/api/app/dict-data', data }),
+      getList: (params: any) => request.get<any>({ url: '/api/app/dictionary-data', params }),
+      get: (id: string | number) => request.get<any>({ url: `/api/app/dictionary-data/${id}` }),
+      create: (data: any) => request.post<any>({ url: '/api/app/dictionary-data', data }),
       update: (id: string | number, data: any) =>
-        request.put<any>({ url: `/api/app/dict-data/${id}`, data }),
-      del: (id: string | number) => request.del<any>({ url: `/api/app/dict-data/${id}` }),
-      getByType: (type: string) => request.get<any[]>({ url: `/api/app/dict-data/type/${type}` })
+        request.put<any>({ url: `/api/app/dictionary-data/${id}`, data }),
+      del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-data/${id}` }),
+      getByType: (type: string) =>
+        request.get<any[]>({ url: `/api/app/dictionary-data/type/${type}` })
     }
+  },
+
+  // --- Config ---
+  config: {
+    getList: (params: any) => request.get<any>({ url: '/api/app/config', params }),
+    get: (id: string | number) => request.get<any>({ url: `/api/app/config/${id}` }),
+    create: (data: any) => request.post<any>({ url: '/api/app/config', data }),
+    update: (id: string | number, data: any) =>
+      request.put<any>({ url: `/api/app/config/${id}`, data }),
+    del: (id: string | number) => request.del<any>({ url: `/api/app/config/${id}` })
   },
 
   // --- Notice ---

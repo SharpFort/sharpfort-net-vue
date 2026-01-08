@@ -113,7 +113,7 @@
   const getDictDataList = async (): Promise<void> => {
     loading.value = true
     try {
-      const res = await CasbinApi.dict.data.getList({
+      const res = await CasbinApi.dictionary.data.getList({
         DictType: formFilters.dictType,
         DictLabel: formFilters.dictLabel,
         State: formFilters.state,

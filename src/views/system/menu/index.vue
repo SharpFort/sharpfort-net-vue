@@ -159,7 +159,7 @@
     {
       prop: 'indexText',
       label: '序号',
-      width: 100,
+      width: 140,
       fixed: 'left'
     },
     {

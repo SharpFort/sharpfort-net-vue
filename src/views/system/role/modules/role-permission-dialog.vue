@@ -97,30 +97,41 @@
       font-size: 16px;
     }
 
-    // 让按钮类型的节点（叶子节点）横向排列
-    :deep(.el-tree-node) {
-      // 检查是否是叶子节点（没有子节点的节点，通常是按钮）
-      &.is-leaf {
-        display: inline-block;
-        margin-right: 4px;
-        margin-bottom: 4px;
-        vertical-align: top;
+    // 按钮类型的节点横向排列
+    :deep(.el-tree-node[data-menu-type='Button']) {
+      display: inline-block;
+      margin-right: 8px;
+      margin-bottom: 4px;
+      vertical-align: top;
+
+      .el-tree-node__content {
+        width: auto;
+        padding-right: 12px;
       }
     }
 
-    // 父节点的子节点容器使用 flex 布局
+    // 目录和菜单类型保持纵向排列
+    :deep(.el-tree-node[data-menu-type='Catalogue']),
+    :deep(.el-tree-node[data-menu-type='Menu']) {
+      display: block;
+      width: 100%;
+    }
+
+    // 父节点的子节点容器
     :deep(.el-tree-node__children) {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0;
       padding-left: 24px;
 
-      // 但是如果子节点还有子节点（即不是按钮层级），则恢复为块级
-      .el-tree-node:not(.is-leaf) {
+      // 如果子节点包含按钮,使用 flex 布局
+      &:has([data-menu-type='Button']) {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
+        align-items: flex-start;
+      }
+
+      // 如果子节点不包含按钮,保持块级布局
+      &:not(:has([data-menu-type='Button'])) {
         display: block;
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 0;
       }
     }
   }
@@ -217,12 +228,47 @@
       nextTick(() => {
         treeRef.value?.setCheckedKeys(roleMenuIds)
         handleCheck()
+        // 为树节点添加 data-menu-type 属性
+        addMenuTypeAttributes()
       })
     } catch (error) {
       console.error('加载权限数据失败:', error)
     } finally {
       loading.value = false
     }
+  }
+
+  /**
+   * 为树节点添加 data-menu-type 属性
+   */
+  const addMenuTypeAttributes = () => {
+    nextTick(() => {
+      if (!treeRef.value) return
+      const nodes = treeRef.value.$el.querySelectorAll('.el-tree-node')
+      nodes.forEach((node: HTMLElement) => {
+        const nodeKey = node.getAttribute('data-key')
+        if (nodeKey) {
+          const nodeData = findNodeData(menuList.value, nodeKey)
+          if (nodeData?.menuType) {
+            node.setAttribute('data-menu-type', nodeData.menuType)
+          }
+        }
+      })
+    })
+  }
+
+  /**
+   * 根据 ID 查找节点数据
+   */
+  const findNodeData = (nodes: any[], id: string): any => {
+    for (const node of nodes) {
+      if (node.id === id) return node
+      if (node.children?.length) {
+        const found = findNodeData(node.children, id)
+        if (found) return found
+      }
+    }
+    return null
   }
 
   /**
@@ -285,6 +331,10 @@
     for (let i in nodes) {
       nodes[i].expanded = isExpandAll.value
     }
+    // 展开/收起后重新添加属性
+    nextTick(() => {
+      addMenuTypeAttributes()
+    })
   }
 
   const toggleSelectAll = () => {

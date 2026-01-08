@@ -116,7 +116,7 @@
   const getDictTypeList = async (): Promise<void> => {
     loading.value = true
     try {
-      const res = await CasbinApi.dict.type.getList({
+      const res = await CasbinApi.dictionary.type.getList({
         ...formFilters,
         SkipCount: (pagination.current - 1) * pagination.size,
         MaxResultCount: pagination.size
@@ -229,7 +229,7 @@
         cancelButtonText: '取消',
         type: 'warning'
       })
-      await CasbinApi.dict.type.del(row.id)
+      await CasbinApi.dictionary.type.del(row.id)
       ElMessage.success('删除成功')
       getDictTypeList()
     } catch (error) {

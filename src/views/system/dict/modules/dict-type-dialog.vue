@@ -93,10 +93,10 @@
       submitLoading.value = true
 
       if (form.id) {
-        await CasbinApi.dict.type.update(form.id, form)
+        await CasbinApi.dictionary.type.update(form.id, form)
         ElMessage.success('更新成功')
       } else {
-        await CasbinApi.dict.type.create(form)
+        await CasbinApi.dictionary.type.create(form)
         ElMessage.success('添加成功')
       }
 
