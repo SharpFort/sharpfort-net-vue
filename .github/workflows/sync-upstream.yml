@@ -50,31 +50,31 @@ jobs:
       # 2. 取消注释 "Stage 1 - Sync Upstream Main (Latest Release)" 部分
       # ============================================================
 
-      - name: Stage 1 - Sync Upstream Main (Latest Code)
-        run: |
-          echo "📥 Syncing latest code from upstream/master..."
-          git checkout upstream-main
-          git merge upstream/master --no-edit
-          git push origin upstream-main
-          echo "✅ upstream-main synced with latest code"
-
-      # - name: Stage 1 - Sync Upstream Main (Latest Release)
+      # - name: Stage 1 - Sync Upstream Main (Latest Code)
       #   run: |
-      #     echo "📥 Fetching latest release tag..."
-      #     LATEST_TAG=$(git ls-remote --tags upstream | grep -v '\^{}' | sort -t '/' -k 3 -V | tail -n1 | awk '{print $2}' | sed 's|refs/tags/||')
-      #     echo "Latest release tag: $LATEST_TAG"
-      #     
+      #     echo "📥 Syncing latest code from upstream/master..."
       #     git checkout upstream-main
-      #     CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "none")
-      #     
-      #     if [ "$CURRENT_TAG" != "$LATEST_TAG" ]; then
-      #       echo "🔄 New release detected: $LATEST_TAG (current: $CURRENT_TAG)"
-      #       git merge $LATEST_TAG --no-edit
-      #       git push origin upstream-main
-      #       echo "✅ upstream-main synced to release $LATEST_TAG"
-      #     else
-      #       echo "ℹ️ Already at latest release: $LATEST_TAG"
-      #     fi
+      #     git merge upstream/master --no-edit
+      #     git push origin upstream-main
+      #     echo "✅ upstream-main synced with latest code"
+
+      - name: Stage 1 - Sync Upstream Main (Latest Release)
+        run: |
+          echo "📥 Fetching latest release tag..."
+          LATEST_TAG=$(git ls-remote --tags upstream | grep -v '\^{}' | sort -t '/' -k 3 -V | tail -n1 | awk '{print $2}' | sed 's|refs/tags/||')
+          echo "Latest release tag: $LATEST_TAG"
+          
+          git checkout upstream-main
+          CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "none")
+          
+          if [ "$CURRENT_TAG" != "$LATEST_TAG" ]; then
+            echo "🔄 New release detected: $LATEST_TAG (current: $CURRENT_TAG)"
+            git merge $LATEST_TAG --no-edit
+            git push origin upstream-main
+            echo "✅ upstream-main synced to release $LATEST_TAG"
+          else
+            echo "ℹ️ Already at latest release: $LATEST_TAG"
+          fi
 
       - name: Stage 2 - Sync Adapter Lite (The Hard Part)
         id: sync_lite
