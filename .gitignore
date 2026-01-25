@@ -3,6 +3,7 @@ node_modules
 dist
 dist-ssr
 *.local
+api_tools
 
 # Logs
 logs

@@ -203,14 +203,14 @@
       width: 200
     },
     {
-      prop: 'router',
-      label: '路由地址',
+      prop: 'apiUrl',
+      label: 'ApiUrl',
       width: 200
     },
     {
-      prop: 'component',
-      label: '组件路径',
-      width: 220
+      prop: 'apiMethod',
+      label: 'ApiMethod',
+      width: 120
     },
     {
       prop: 'isShow',

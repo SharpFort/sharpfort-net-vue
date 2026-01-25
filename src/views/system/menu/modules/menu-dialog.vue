@@ -99,8 +99,8 @@
         </ElCol>
 
         <ElCol :span="12" v-if="form.menuType !== 'Button'">
-          <ElFormItem label="路由名称" prop="routeName">
-            <ElInput v-model="form.routeName" placeholder="请输入路由名称" clearable />
+          <ElFormItem label="路由名称" prop="routerName">
+            <ElInput v-model="form.routerName" placeholder="请输入路由名称" clearable />
           </ElFormItem>
         </ElCol>
 
@@ -113,6 +113,29 @@
         <ElCol :span="12">
           <ElFormItem label="权限标识" prop="permissionCode">
             <ElInput v-model="form.permissionCode" placeholder="请输入权限标识" clearable />
+          </ElFormItem>
+        </ElCol>
+
+        <ElCol :span="12">
+          <ElFormItem label="ApiUrl" prop="apiUrl">
+            <ElInput v-model="form.apiUrl" placeholder="请输入 ApiUrl (例如 /api/user)" clearable />
+          </ElFormItem>
+        </ElCol>
+
+        <ElCol :span="12">
+          <ElFormItem label="ApiMethod" prop="apiMethod">
+            <ElSelect
+              v-model="form.apiMethod"
+              placeholder="请选择 ApiMethod"
+              clearable
+              style="width: 100%"
+            >
+              <ElOption label="GET" value="GET" />
+              <ElOption label="POST" value="POST" />
+              <ElOption label="PUT" value="PUT" />
+              <ElOption label="DELETE" value="DELETE" />
+              <ElOption label="PATCH" value="PATCH" />
+            </ElSelect>
           </ElFormItem>
         </ElCol>
 
@@ -204,22 +227,30 @@
     'ri:star-line'
   ]
 
-  const form = reactive({
+  // 默认表单数据
+  const defaultForm = {
+    id: undefined,
+    concurrencyStamp: undefined,
+    state: true,
     parentId: '',
     menuType: 'Menu',
     menuName: '',
     menuIcon: '',
     orderNum: 0,
     router: '',
-    routeName: '',
+    routerName: '',
     component: '',
     permissionCode: '',
+    apiUrl: '',
+    apiMethod: '',
     isShow: true,
     isCache: true,
     isLink: false,
     isAffix: false,
     menuSource: 'Ruoyi'
-  })
+  }
+
+  const form = reactive({ ...defaultForm })
 
   const rules = {
     menuName: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
@@ -235,30 +266,46 @@
     () => props.visible,
     (val) => {
       if (val) {
+        // 1. 重置表单：清除可能存在的脏数据（如之前 assign 进来的额外字段）
+        //先删除 form 中不在 defaultForm 中的 key (这是为了清除如 creationTime 等脏数据)
+        const defaultKeys = Object.keys(defaultForm)
+        Object.keys(form).forEach((key) => {
+          if (!defaultKeys.includes(key)) {
+            delete (form as any)[key]
+          }
+        })
+        // 恢复默认值
+        Object.assign(form, defaultForm)
+
+        // 2. 根据类型赋值
         if (props.type === 'edit' && props.menuData) {
-          Object.assign(form, props.menuData)
+          const data = props.menuData
+          // 智能赋值：处理 PascalCase 到 camelCase 的映射 (例如 ApiUrl -> apiUrl)
+          Object.keys(form).forEach((key) => {
+            // 1. 尝试直接获取 (key)
+            if (data[key] !== undefined && data[key] !== null) {
+              ;(form as any)[key] = data[key]
+            }
+            // 2. 尝试获取 PascalCase (Key) - 解决后端字段首字母大写问题
+            else {
+              const pascalKey = key.charAt(0).toUpperCase() + key.slice(1)
+              if (data[pascalKey] !== undefined && data[pascalKey] !== null) {
+                ;(form as any)[key] = data[pascalKey]
+              }
+            }
+          })
+
+          // 特殊处理：如果 menuData 还是有额外的需要保留的字段，可以根据需求处理，
+          // 但原则上 form 应该只包含表单需要的字段。
+          // id 是更新必须的，但不在 display form 中，不过 update 需要 ID。
+          // update 调用的是 currentMenuData.value.id (outside) 还是 form.id?
+          // index.vue HandleDialogSubmit: await CasbinApi.menu.update(currentMenuData.value.id, formData)
+          // 所以 form 不需要 id。
         } else if (props.type === 'add' && props.menuData?.parentId) {
           // 新增下级
           form.parentId = props.menuData.parentId
-        } else {
-          // 重置表单
-          Object.assign(form, {
-            parentId: '',
-            menuType: 'Menu',
-            menuName: '',
-            menuIcon: '',
-            orderNum: 0,
-            router: '',
-            routeName: '',
-            component: '',
-            permissionCode: '',
-            isShow: true,
-            isCache: true,
-            isLink: false,
-            isAffix: false,
-            menuSource: 'Ruoyi'
-          })
         }
+
         nextTick(() => {
           formRef.value?.clearValidate()
         })
