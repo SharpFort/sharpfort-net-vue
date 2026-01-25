@@ -28,7 +28,7 @@ jobs:
       - name: Setup Node & PNPM
         uses: pnpm/action-setup@v2
         with:
-          version: latest  # 使用最新版本的 PNPM
+          version: latest # 使用最新版本的 PNPM
 
       - name: Get Current Date
         id: date
@@ -44,37 +44,37 @@ jobs:
       # ============================================================
       # 方案 A（当前启用）：同步 master 分支的最新代码
       # 方案 B（已注释）：只同步最新的 Release 标签
-      # 
+      #
       # 如需切换到方案 B，请：
       # 1. 注释掉下面的 "Stage 1 - Sync Upstream Main (Latest Code)"
       # 2. 取消注释 "Stage 1 - Sync Upstream Main (Latest Release)" 部分
       # ============================================================
 
-      - name: Stage 1 - Sync Upstream Main (Latest Code)
-        run: |
-          echo "📥 Syncing latest code from upstream/master..."
-          git checkout upstream-main
-          git merge upstream/master --no-edit
-          git push origin upstream-main
-          echo "✅ upstream-main synced with latest code"
-
-      # - name: Stage 1 - Sync Upstream Main (Latest Release)
+      # - name: Stage 1 - Sync Upstream Main (Latest Code)
       #   run: |
-      #     echo "📥 Fetching latest release tag..."
-      #     LATEST_TAG=$(git ls-remote --tags upstream | grep -v '\^{}' | sort -t '/' -k 3 -V | tail -n1 | awk '{print $2}' | sed 's|refs/tags/||')
-      #     echo "Latest release tag: $LATEST_TAG"
-      #     
+      #     echo "📥 Syncing latest code from upstream/master..."
       #     git checkout upstream-main
-      #     CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "none")
-      #     
-      #     if [ "$CURRENT_TAG" != "$LATEST_TAG" ]; then
-      #       echo "🔄 New release detected: $LATEST_TAG (current: $CURRENT_TAG)"
-      #       git merge $LATEST_TAG --no-edit
-      #       git push origin upstream-main
-      #       echo "✅ upstream-main synced to release $LATEST_TAG"
-      #     else
-      #       echo "ℹ️ Already at latest release: $LATEST_TAG"
-      #     fi
+      #     git merge upstream/master --no-edit
+      #     git push origin upstream-main
+      #     echo "✅ upstream-main synced with latest code"
+
+      - name: Stage 1 - Sync Upstream Main (Latest Release)
+        run: |
+          echo "📥 Fetching latest release tag..."
+          LATEST_TAG=$(git ls-remote --tags upstream | grep -v '\^{}' | sort -t '/' -k 3 -V | tail -n1 | awk '{print $2}' | sed 's|refs/tags/||')
+          echo "Latest release tag: $LATEST_TAG"
+
+          git checkout upstream-main
+          CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "none")
+
+          if [ "$CURRENT_TAG" != "$LATEST_TAG" ]; then
+            echo "🔄 New release detected: $LATEST_TAG (current: $CURRENT_TAG)"
+            git merge $LATEST_TAG --no-edit
+            git push origin upstream-main
+            echo "✅ upstream-main synced to release $LATEST_TAG"
+          else
+            echo "ℹ️ Already at latest release: $LATEST_TAG"
+          fi
 
       - name: Stage 2 - Sync Adapter Lite (The Hard Part)
         id: sync_lite
@@ -82,7 +82,7 @@ jobs:
         run: |
           echo "🔄 Merging upstream-main into adapter-lite..."
           git checkout adapter-lite
-          
+
           # 尝试合并
           if ! git merge upstream-main --no-edit; then
             echo "⚠️ Detected conflicts, attempting auto-resolution..."
@@ -121,7 +121,7 @@ jobs:
           echo "🧹 Running cleanup script..."
           pnpm install --no-frozen-lockfile
           echo "yes" | pnpm clean:dev || true
-          
+
           # 检查是否有文件变化，有则提交
           if [[ -n $(git status -s) ]]; then
             echo "📝 Changes detected after cleanup, committing..."
@@ -130,7 +130,7 @@ jobs:
           else
             echo "ℹ️ No changes needed after cleanup"
           fi
-          
+
           git push origin adapter-lite
           echo "✅ adapter-lite synced and cleaned"
 
@@ -143,26 +143,26 @@ jobs:
           title: '🔄 Upstream Sync: ${{ steps.date.outputs.date }}'
           body: |
             ## 🤖 自动化同步报告
-            
+
             **同步日期**: ${{ steps.date.outputs.date }}
-            
+
             ### ✅ 完成的操作
             1. ✅ 已更新 `upstream-main` 分支
             2. ✅ 已合并至 `adapter-lite` 并自动处理冲突
             3. ✅ 已重新运行 `pnpm clean:dev` 精简脚本
-            
+
             ### 🔍 请检查
             - 查看 **Files Changed** 标签页，确认改动符合预期
             - 确保没有破坏现有业务逻辑
             - 检查是否有需要手动调整的配置文件
-            
+
             ### 📋 冲突处理策略
             本次自动同步使用以下策略处理冲突：
             - `UD`/`DU` (删除冲突): 保留删除（精简目的）
             - `AA`/`UU` (内容冲突): 保留上游版本（保守策略）
-            
+
             如果一切正常，请点击 **Merge pull request** 完成同步。
-            
+
             ---
             *此 PR 由 GitHub Actions 自动创建*
           labels: automated-sync,upstream-update
