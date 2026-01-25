@@ -1,0 +1,1725 @@
+{
+  "/api/app/user": {
+    "get": {
+      "tags": ["User"],
+      "summary": "查询用户",
+      "parameters": [
+        {
+          "name": "Name",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "UserName",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "Phone",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        {
+          "name": "State",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "DepartmentId",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "Ids",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "StartTime",
+          "in": "query",
+          "description": "查询开始时间",
+          "style": "form",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        {
+          "name": "EndTime",
+          "in": "query",
+          "description": "查询结束时间",
+          "style": "form",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        {
+          "name": "OrderByColumn",
+          "in": "query",
+          "description": "排序列名",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "IsAsc",
+          "in": "query",
+          "description": "排序方向（ascending/descending）",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "IsAscending",
+          "in": "query",
+          "description": "是否为升序排序",
+          "style": "form",
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "Sorting",
+          "in": "query",
+          "description": "排序表达式",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "SkipCount",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "MaxResultCount",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "__tenant",
+          "in": "header",
+          "description": "租户ID或租户名称（留空表示默认租户）",
+          "allowEmptyValue": true,
+          "style": "simple"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Success",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[Yi.Framework.CasbinRbac.Application.Contracts.Dtos.User.UserGetListOutputDto, Yi.Framework.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[Yi.Framework.CasbinRbac.Application.Contracts.Dtos.User.UserGetListOutputDto, Yi.Framework.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[Yi.Framework.CasbinRbac.Application.Contracts.Dtos.User.UserGetListOutputDto, Yi.Framework.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "501": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": ["User"],
+      "summary": "添加用户",
+      "parameters": [
+        {
+          "name": "__tenant",
+          "in": "header",
+          "description": "租户ID或租户名称（留空表示默认租户）",
+          "allowEmptyValue": true,
+          "style": "simple"
+        }
+      ],
+      "requestBody": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.User.UserCreateInputVo"
+            }
+          },
+          "text/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.User.UserCreateInputVo"
+            }
+          },
+          "application/*+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.User.UserCreateInputVo"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Success",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.User.UserGetOutputDto"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.User.UserGetOutputDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.User.UserGetOutputDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "501": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": ["User"],
+      "parameters": [
+        {
+          "name": "ids",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        {
+          "name": "__tenant",
+          "in": "header",
+          "description": "租户ID或租户名称（留空表示默认租户）",
+          "allowEmptyValue": true,
+          "style": "simple"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Success"
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "501": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/app/menu": {
+    "post": {
+      "tags": ["Menu"],
+      "parameters": [
+        {
+          "name": "__tenant",
+          "in": "header",
+          "description": "租户ID或租户名称（留空表示默认租户）",
+          "allowEmptyValue": true,
+          "style": "simple"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Menu.MenuCreateInputVo"
+            }
+          },
+          "text/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Menu.MenuCreateInputVo"
+            }
+          },
+          "application/*+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Menu.MenuCreateInputVo"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Success",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Menu.MenuGetOutputDto"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Menu.MenuGetOutputDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Menu.MenuGetOutputDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "501": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "get": {
+      "tags": ["Menu"],
+      "parameters": [
+        {
+          "name": "State",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "MenuName",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "MenuSource",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Domain.Shared.Enums.MenuSource"
+          }
+        },
+        {
+          "name": "Sorting",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "SkipCount",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "MaxResultCount",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "__tenant",
+          "in": "header",
+          "description": "租户ID或租户名称（留空表示默认租户）",
+          "allowEmptyValue": true,
+          "style": "simple"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Success",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Menu.MenuGetListOutputDto, Yi.Framework.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Menu.MenuGetListOutputDto, Yi.Framework.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Menu.MenuGetListOutputDto, Yi.Framework.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "501": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": ["Menu"],
+      "parameters": [
+        {
+          "name": "ids",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        {
+          "name": "__tenant",
+          "in": "header",
+          "description": "租户ID或租户名称（留空表示默认租户）",
+          "allowEmptyValue": true,
+          "style": "simple"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Success"
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "501": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/app/role": {
+    "get": {
+      "tags": ["Role"],
+      "parameters": [
+        {
+          "name": "RoleName",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "RoleCode",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "State",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "StartTime",
+          "in": "query",
+          "description": "查询开始时间",
+          "style": "form",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        {
+          "name": "EndTime",
+          "in": "query",
+          "description": "查询结束时间",
+          "style": "form",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        {
+          "name": "OrderByColumn",
+          "in": "query",
+          "description": "排序列名",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "IsAsc",
+          "in": "query",
+          "description": "排序方向（ascending/descending）",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "IsAscending",
+          "in": "query",
+          "description": "是否为升序排序",
+          "style": "form",
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "Sorting",
+          "in": "query",
+          "description": "排序表达式",
+          "style": "form",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "SkipCount",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "MaxResultCount",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "__tenant",
+          "in": "header",
+          "description": "租户ID或租户名称（留空表示默认租户）",
+          "allowEmptyValue": true,
+          "style": "simple"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Success",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Role.RoleGetListOutputDto, Yi.Framework.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Role.RoleGetListOutputDto, Yi.Framework.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Role.RoleGetListOutputDto, Yi.Framework.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "501": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": ["Role"],
+      "summary": "添加角色",
+      "parameters": [
+        {
+          "name": "__tenant",
+          "in": "header",
+          "description": "租户ID或租户名称（留空表示默认租户）",
+          "allowEmptyValue": true,
+          "style": "simple"
+        }
+      ],
+      "requestBody": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Role.RoleCreateInputVo"
+            }
+          },
+          "text/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Role.RoleCreateInputVo"
+            }
+          },
+          "application/*+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Role.RoleCreateInputVo"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Success",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Role.RoleGetOutputDto"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Role.RoleGetOutputDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Yi.Framework.CasbinRbac.Application.Contracts.Dtos.Role.RoleGetOutputDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "501": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": ["Role"],
+      "parameters": [
+        {
+          "name": "ids",
+          "in": "query",
+          "style": "form",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        {
+          "name": "__tenant",
+          "in": "header",
+          "description": "租户ID或租户名称（留空表示默认租户）",
+          "allowEmptyValue": true,
+          "style": "simple"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Success"
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        },
+        "501": {
+          "description": "Server Error",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
