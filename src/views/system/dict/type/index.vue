@@ -52,9 +52,9 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTableColumns } from '@/hooks/core/useTableColumns'
-  import DictTypeDialog from './modules/dict-type-dialog.vue'
+  import DictTypeDialog from '../modules/dict-type-dialog.vue'
   import { CasbinApi } from '@/api/casbin-rbac'
-  import { ElTag, ElMessageBox } from 'element-plus'
+  import { ElTag, ElMessageBox, ElMessage } from 'element-plus'
   import { useRouter } from 'vue-router'
 
   defineOptions({ name: 'Dict' })

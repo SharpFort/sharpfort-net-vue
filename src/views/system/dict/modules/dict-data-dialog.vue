@@ -65,8 +65,8 @@
   }
 
   interface Emits {
-    (e: 'update:visible', value: boolean): void
-    (e: 'submit', data: any): void
+    (event: 'update:visible', value: boolean): void
+    (event: 'submit', data: any): void
   }
 
   const props = defineProps<Props>()
@@ -101,7 +101,7 @@
   const initForm = async () => {
     if (props.editData && props.editData.id) {
       try {
-        const detail = await CasbinApi.dict.data.get(props.editData.id)
+        const detail = await CasbinApi.dictionary.data.get(props.editData.id)
         Object.assign(form, detail)
       } catch (error) {
         console.error('获取字典数据详情失败:', error)
@@ -129,10 +129,10 @@
       submitLoading.value = true
 
       if (form.id) {
-        await CasbinApi.dict.data.update(form.id, form)
+        await CasbinApi.dictionary.data.update(form.id, form)
         ElMessage.success('更新成功')
       } else {
-        await CasbinApi.dict.data.create(form)
+        await CasbinApi.dictionary.data.create(form)
         ElMessage.success('添加成功')
       }
 

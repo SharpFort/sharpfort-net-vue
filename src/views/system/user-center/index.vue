@@ -7,10 +7,10 @@
           <img class="absolute top-0 left-0 w-full h-50 object-cover" src="@imgs/user/bg.webp" />
           <img
             class="relative z-10 w-20 h-20 mt-30 mx-auto object-cover border-2 border-white rounded-full"
-            src="@imgs/user/avatar.webp"
+            :src="userInfo.icon || '@imgs/user/avatar.webp'"
           />
-          <h2 class="mt-5 text-xl font-normal">{{ userInfo.userName }}</h2>
-          <p class="mt-5 text-sm">专注于用户体验跟视觉设计</p>
+          <h2 class="mt-5 text-xl font-normal">{{ userInfo.nick || userInfo.userName }}</h2>
+          <p class="mt-5 text-sm">{{ userInfo.introduction || '暂无介绍' }}</p>
 
           <div class="w-75 mx-auto mt-7.5 text-left">
             <div class="mt-2.5">
@@ -58,11 +58,11 @@
             label-position="top"
           >
             <ElRow>
-              <ElFormItem label="姓名" prop="realName">
-                <ElInput v-model="form.realName" :disabled="!isEdit" />
+              <ElFormItem label="姓名" prop="name">
+                <ElInput v-model="form.name" disabled />
               </ElFormItem>
-              <ElFormItem label="性别" prop="sex" class="ml-5">
-                <ElSelect v-model="form.sex" placeholder="Select" :disabled="!isEdit">
+              <ElFormItem label="性别" prop="gender" class="ml-5">
+                <ElSelect v-model="form.gender" placeholder="Select" :disabled="!isEdit">
                   <ElOption
                     v-for="item in options"
                     :key="item.value"
@@ -74,8 +74,8 @@
             </ElRow>
 
             <ElRow>
-              <ElFormItem label="昵称" prop="nikeName">
-                <ElInput v-model="form.nikeName" :disabled="!isEdit" />
+              <ElFormItem label="昵称" prop="nick">
+                <ElInput v-model="form.nick" :disabled="!isEdit" />
               </ElFormItem>
               <ElFormItem label="邮箱" prop="email" class="ml-5">
                 <ElInput v-model="form.email" :disabled="!isEdit" />
@@ -83,16 +83,16 @@
             </ElRow>
 
             <ElRow>
-              <ElFormItem label="手机" prop="mobile">
-                <ElInput v-model="form.mobile" :disabled="!isEdit" />
+              <ElFormItem label="手机" prop="phone">
+                <ElInput v-model="form.phone" :disabled="!isEdit" />
               </ElFormItem>
               <ElFormItem label="地址" prop="address" class="ml-5">
                 <ElInput v-model="form.address" :disabled="!isEdit" />
               </ElFormItem>
             </ElRow>
 
-            <ElFormItem label="个人介绍" prop="des" class="h-32">
-              <ElInput type="textarea" :rows="4" v-model="form.des" :disabled="!isEdit" />
+            <ElFormItem label="个人介绍" prop="introduction" class="h-32">
+              <ElInput type="textarea" :rows="4" v-model="form.introduction" :disabled="!isEdit" />
             </ElFormItem>
 
             <div class="flex-c justify-end [&_.el-button]:!w-27.5">
@@ -149,11 +149,14 @@
 <script setup lang="ts">
   import { useUserStore } from '@/store/modules/user'
   import type { FormInstance, FormRules } from 'element-plus'
+  import { CasbinApi } from '@/api/casbin-rbac'
+  import { ElMessage } from 'element-plus'
 
   defineOptions({ name: 'UserCenter' })
 
   const userStore = useUserStore()
-  const userInfo = computed(() => userStore.getUserInfo)
+  // const userInfo = computed(() => userStore.getUserInfo)
+  const userInfo = ref<any>({})
 
   const isEdit = ref(false)
   const isEditPwd = ref(false)
@@ -164,48 +167,45 @@
    * 用户信息表单
    */
   const form = reactive({
-    realName: 'John Snow',
-    nikeName: '皮卡丘',
-    email: '59301283@mall.com',
-    mobile: '18888888888',
-    address: '广东省深圳市宝安区西乡街道101栋201',
-    sex: '2',
-    des: 'Art Design Pro 是一款兼具设计美学与高效开发的后台系统.'
+    name: '',
+    nick: '',
+    email: '',
+    phone: undefined as number | undefined,
+    address: '',
+    gender: 0,
+    introduction: '',
+    icon: ''
   })
 
   /**
    * 密码修改表单
    */
   const pwdForm = reactive({
-    password: '123456',
-    newPassword: '123456',
-    confirmPassword: '123456'
+    password: '',
+    newPassword: '',
+    confirmPassword: ''
   })
 
   /**
    * 表单验证规则
    */
   const rules = reactive<FormRules>({
-    realName: [
-      { required: true, message: '请输入姓名', trigger: 'blur' },
-      { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
-    ],
-    nikeName: [
+    nick: [
       { required: true, message: '请输入昵称', trigger: 'blur' },
       { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
     ],
     email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
-    mobile: [{ required: true, message: '请输入手机号码', trigger: 'blur' }],
-    address: [{ required: true, message: '请输入地址', trigger: 'blur' }],
-    sex: [{ required: true, message: '请选择性别', trigger: 'blur' }]
+    phone: [{ required: true, message: '请输入手机号码', trigger: 'blur' }],
+    gender: [{ required: true, message: '请选择性别', trigger: 'blur' }]
   })
 
   /**
    * 性别选项
    */
   const options = [
-    { value: '1', label: '男' },
-    { value: '2', label: '女' }
+    { value: 0, label: '未知' },
+    { value: 1, label: '男' },
+    { value: 2, label: '女' }
   ]
 
   /**
@@ -215,7 +215,32 @@
 
   onMounted(() => {
     getDate()
+    getUserInfo()
   })
+
+  const getUserInfo = async () => {
+    // access user.id from nested object
+    const userId = userStore.getUserInfo?.user?.id
+    if (userId) {
+      try {
+        const res = await CasbinApi.user.get(userId)
+        userInfo.value = res
+        // Map response to form
+        form.name = res.name
+        form.nick = res.nick
+        form.email = res.email
+        form.phone = res.phone
+        form.address = res.address
+        form.gender = Number(res.gender)
+        form.introduction = res.introduction
+        form.icon = res.icon
+      } catch (error) {
+        console.error('Failed to get user info', error)
+      }
+    } else {
+      console.warn('User ID not found in store', userStore.getUserInfo)
+    }
+  }
 
   /**
    * 根据当前时间获取问候语
@@ -232,16 +257,63 @@
   }
 
   /**
-   * 切换用户信息编辑状态
+   * 切换用户信息编辑状态 / 保存
    */
-  const edit = () => {
-    isEdit.value = !isEdit.value
+  const edit = async () => {
+    if (isEdit.value) {
+      // Save
+      if (!ruleFormRef.value) return
+      await ruleFormRef.value.validate(async (valid) => {
+        if (valid) {
+          try {
+            await CasbinApi.user.updateProfile(form)
+            ElMessage.success('保存成功')
+            isEdit.value = false
+            getUserInfo() // Refresh
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      })
+    } else {
+      isEdit.value = true
+    }
   }
 
   /**
    * 切换密码编辑状态
    */
-  const editPwd = () => {
-    isEditPwd.value = !isEditPwd.value
+  const editPwd = async () => {
+    if (isEditPwd.value) {
+      // Validate and Save
+      if (pwdForm.newPassword !== pwdForm.confirmPassword) {
+        ElMessage.error('两次输入的密码不一致')
+        return
+      }
+      if (!pwdForm.newPassword || pwdForm.newPassword.length < 6) {
+        ElMessage.error('新密码不能为空且长度至少6位')
+        return
+      }
+
+      const userId = userStore.getUserInfo?.user?.id
+      if (!userId) {
+        ElMessage.error('无法获取用户ID')
+        return
+      }
+
+      try {
+        await CasbinApi.account.restPassword(userId, { password: pwdForm.newPassword })
+        ElMessage.success('密码修改成功')
+        isEditPwd.value = false
+        // Clear form
+        pwdForm.password = ''
+        pwdForm.newPassword = ''
+        pwdForm.confirmPassword = ''
+      } catch (error) {
+        console.error(error)
+      }
+    } else {
+      isEditPwd.value = true
+    }
   }
 </script>

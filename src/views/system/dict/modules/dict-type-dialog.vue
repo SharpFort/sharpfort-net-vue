@@ -39,8 +39,8 @@
   }
 
   interface Emits {
-    (e: 'update:visible', value: boolean): void
-    (e: 'submit', data: any): void
+    (event: 'update:visible', value: boolean): void
+    (event: 'submit', data: any): void
   }
 
   const props = defineProps<Props>()
@@ -70,7 +70,7 @@
   const initForm = async () => {
     if (props.editData && props.editData.id) {
       try {
-        const detail = await CasbinApi.dict.type.get(props.editData.id)
+        const detail = await CasbinApi.dictionary.type.get(props.editData.id)
         Object.assign(form, detail)
       } catch (error) {
         console.error('获取字典类型详情失败:', error)

@@ -19,7 +19,9 @@ export const CasbinApi = {
       request.post<any>({
         url: '/api/app/account/refresh',
         params: { refresh_token: refreshToken }
-      })
+      }),
+    restPassword: (userId: string | number, data: { password: string }) =>
+      request.put<any>({ url: `/api/app/account/rest-password/${userId}`, data })
   },
 
   // --- User ---
@@ -29,6 +31,7 @@ export const CasbinApi = {
     create: (data: any) => request.post<any>({ url: '/api/app/user', data }),
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/user/${id}`, data }),
+    updateProfile: (data: any) => request.put<any>({ url: '/api/app/user/profile', data }),
     del: (id: string | number) => request.del<any>({ url: `/api/app/user/${id}` }),
     getRoles: (id: string | number) => request.get<string[]>({ url: `/api/app/user/${id}/role` }),
     setRoles: (id: string | number, roleNames: string[]) =>
@@ -139,15 +142,14 @@ export const CasbinApi = {
       request.del<any>({ url: `/api/app/online/${connectionId}` }),
     server: () => request.get<any>({ url: '/api/app/monitor/server' }),
     cache: {
-      getNames: () => request.get<any>({ url: '/api/app/monitor/cache-names' }),
-      getKeys: (name: string) => request.get<any>({ url: `/api/app/monitor/cache-keys/${name}` }),
+      getNames: () => request.get<any>({ url: '/api/app/monitor-cache/name' }),
+      getKeys: (name: string) => request.get<any>({ url: `/api/app/monitor-cache/key/${name}` }),
       getValue: (name: string, key: string) =>
-        request.get<any>({ url: `/api/app/monitor/cache-value/${name}/${key}` }),
-      clearName: (name: string) =>
-        request.del<any>({ url: `/api/app/monitor/clear-cache-name/${name}` }),
+        request.get<any>({ url: `/api/app/monitor-cache/value/${name}/${key}` }),
+      clearName: (name: string) => request.del<any>({ url: `/api/app/monitor-cache/key/${name}` }),
       clearKey: (name: string, key: string) =>
-        request.del<any>({ url: `/api/app/monitor/clear-cache-key/${name}/${key}` }),
-      clearAll: () => request.del<any>({ url: '/api/app/monitor/clear-cache-all' })
+        request.del<any>({ url: `/api/app/monitor-cache/value/${name}/${key}` }),
+      clearAll: () => request.del<any>({ url: '/api/app/monitor-cache/clear' })
     }
   },
 
@@ -207,5 +209,17 @@ export const CasbinApi = {
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/template/${id}`, data }),
     del: (ids: string[]) => request.del<any>({ url: '/api/app/template', params: { ids } })
+  },
+
+  // --- File ---
+  file: {
+    // The swagger defines the upload endpoint as POST /api/app/file
+    // It expects multipart/form-data with a 'file' field (array of binaries).
+    upload: (data: FormData) => request.post<any>({ url: '/api/app/file', data }),
+
+    // GET /api/app/file/{code}/{isThumbnail}
+    // Returns a blob (file stream)
+    download: (code: string, isThumbnail: boolean = false) =>
+      request.get<Blob>({ url: `/api/app/file/${code}/${isThumbnail}`, responseType: 'blob' })
   }
 }

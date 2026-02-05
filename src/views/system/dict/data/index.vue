@@ -54,9 +54,9 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTableColumns } from '@/hooks/core/useTableColumns'
-  import DictDataDialog from './modules/dict-data-dialog.vue'
+  import DictDataDialog from '../modules/dict-data-dialog.vue'
   import { CasbinApi } from '@/api/casbin-rbac'
-  import { ElTag, ElMessageBox } from 'element-plus'
+  import { ElTag, ElMessageBox, ElMessage } from 'element-plus'
   import { useRoute, useRouter } from 'vue-router'
 
   defineOptions({ name: 'DictData' })
@@ -226,7 +226,7 @@
         cancelButtonText: '取消',
         type: 'warning'
       })
-      await CasbinApi.dict.data.del(row.id)
+      await CasbinApi.dictionary.data.del(row.id)
       ElMessage.success('删除成功')
       handleRefresh()
     } catch (error) {
@@ -235,7 +235,7 @@
   }
 
   const handleBack = () => {
-    router.push('/system/dict')
+    router.push('/system/dict/type')
   }
 </script>
 
