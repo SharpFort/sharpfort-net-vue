@@ -96,3 +96,79 @@ export function fetchRefreshToken(refreshToken: string) {
     params: { refresh_token: refreshToken }
   })
 }
+
+/**
+ * 第三方认证服务
+ */
+export const thirdParty = {
+  /**
+   * 第三方OAuth登录
+   * @param scheme 认证方案
+   * @param code 授权码
+   */
+  oauthLogin: (scheme: string, code?: string) =>
+    request.get<any>({
+      url: `/api/app/auth/oauth/login/${scheme}`,
+      params: { code }
+    }),
+
+  /**
+   * 第三方OAuth绑定
+   * @param scheme 认证方案
+   * @param code 授权码
+   */
+  oauthBind: (scheme: string, code?: string) =>
+    request.post<void>({
+      url: `/api/app/auth/oauth/bind/${scheme}`,
+      params: { code }
+    }),
+
+  /**
+   * 获取认证列表 (管理)
+   * @param params 搜索参数
+   */
+  getList: (params: Api.Auth.AuthSearchParams) =>
+    request.get<Api.Common.PaginatedResponse<Api.Auth.AuthOutputDto>>({
+      url: '/api/app/auth',
+      params
+    }),
+
+  /**
+   * 删除第三方认证
+   * @param id ID
+   */
+  delete: (id: string) =>
+    request.del<void>({
+      url: '/api/app/auth',
+      params: { id: [id] }
+    }),
+
+  /**
+   * 尝试获取认证信息
+   * @param params 参数
+   */
+  getAuthInfo: (params: { openId?: string; authType?: string; userId?: string }) =>
+    request.post<Api.Auth.AuthOutputDto>({
+      url: '/api/app/auth/try-get-auth-info',
+      params
+    }),
+
+  /**
+   * 导出Excel
+   */
+  export: (params: Api.Auth.AuthSearchParams) =>
+    request.get<Blob>({
+      url: '/api/app/auth/export-excel',
+      params,
+      responseType: 'blob'
+    }),
+
+  /**
+   * 获取下拉数据
+   */
+  selectDataList: (keywords?: string) =>
+    request.get<any>({
+      url: '/api/app/auth/select-data-list',
+      params: { keywords }
+    })
+}

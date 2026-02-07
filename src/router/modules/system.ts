@@ -67,6 +67,16 @@ export const systemRoutes: AppRouteRecord = {
       }
     },
     {
+      path: 'auth',
+      name: 'SystemAuth',
+      component: '/system/auth/index', // Maps to src/views/system/auth/index.vue
+      meta: {
+        title: '三方账号', // Or 'menus.system.auth' if i18n key exists, using literal for now
+        keepAlive: true,
+        roles: ['R_SUPER', 'R_ADMIN']
+      }
+    },
+    {
       path: 'codegen',
       name: 'CodeGen',
       meta: {

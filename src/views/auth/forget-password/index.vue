@@ -99,9 +99,10 @@
 </template>
 
 <script setup lang="ts">
+  import { v4 as uuidv4 } from 'uuid'
   import { useI18n } from 'vue-i18n'
   import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-  import { fetchRetrievePassword } from '@/api/auth'
+  import { fetchRetrievePassword, fetchGetPhoneCaptchaForReset } from '@/api/auth'
   import { HttpError } from '@/utils/http/error'
 
   defineOptions({ name: 'ForgetPassword' })
@@ -216,14 +217,14 @@
       // 验证手机号
       await formRef.value?.validateField('phone')
 
-      // 生成UUID（测试用）
-      captchaUuid.value = `test-reset-uuid-${Date.now()}`
+      // 生成UUID
+      captchaUuid.value = uuidv4()
 
-      // TODO: 实际发送验证码
-      // await fetchGetPhoneCaptchaForReset({
-      //   phone: formData.phone,
-      //   uuid: captchaUuid.value
-      // })
+      loading.value = true
+      await fetchGetPhoneCaptchaForReset({
+        phone: formData.phone,
+        uuid: captchaUuid.value
+      })
 
       ElMessage.success(t('forgetPassword.codeSent'))
 
@@ -237,6 +238,8 @@
       }, 1000)
     } catch (error) {
       console.error('[ForgetPassword] Failed to send code:', error)
+    } finally {
+      loading.value = false
     }
   }
 
@@ -255,7 +258,7 @@
         password: formData.password,
         phone: parseInt(formData.phone),
         code: formData.code,
-        uuid: captchaUuid.value || `test-reset-uuid-${Date.now()}`
+        uuid: captchaUuid.value
       }
 
       await fetchRetrievePassword(params)

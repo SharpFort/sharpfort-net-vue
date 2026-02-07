@@ -112,6 +112,8 @@
                 $t('login.register')
               }}</RouterLink>
             </div>
+
+            <ThirdPartyLogin />
           </ElForm>
         </div>
       </div>
@@ -129,6 +131,7 @@
   import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
   import { useSettingStore } from '@/store/modules/setting'
   import type { CaptchaImageDto } from '@/types/auth'
+  import ThirdPartyLogin from '../modules/ThirdPartyLogin.vue'
 
   defineOptions({ name: 'Login' })
 

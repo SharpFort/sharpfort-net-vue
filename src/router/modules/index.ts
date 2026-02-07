@@ -3,6 +3,7 @@ import { dashboardRoutes } from './dashboard'
 import { systemRoutes } from './system'
 import { resultRoutes } from './result'
 import { exceptionRoutes } from './exception'
+import { logRoutes } from './log'
 
 /**
  * 导出所有模块化路由
@@ -19,5 +20,5 @@ export const routeModules: AppRouteRecord[] = (() => {
   }
 
   // 前端模式：返回硬编码路由
-  return [dashboardRoutes, systemRoutes, resultRoutes, exceptionRoutes]
+  return [dashboardRoutes, systemRoutes, resultRoutes, exceptionRoutes, logRoutes]
 })()

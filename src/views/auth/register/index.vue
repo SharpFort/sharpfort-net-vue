@@ -8,8 +8,8 @@
 
       <div class="auth-right-wrap">
         <div class="form">
-          <h3 class="title">{{ $t('register.title') }}</h3>
-          <p class="sub-title">{{ $t('register.subTitle') }}</p>
+          <h3 class="title">{{ t('register.title') }}</h3>
+          <p class="sub-title">{{ t('register.subTitle') }}</p>
           <ElForm
             class="mt-7.5"
             ref="formRef"
@@ -22,7 +22,7 @@
               <ElInput
                 class="custom-height"
                 v-model.trim="formData.username"
-                :placeholder="$t('register.placeholder.username')"
+                :placeholder="t('register.placeholder.username')"
               />
             </ElFormItem>
 
@@ -30,7 +30,7 @@
               <ElInput
                 class="custom-height"
                 v-model.trim="formData.nick"
-                :placeholder="$t('register.placeholder.nick')"
+                :placeholder="t('register.placeholder.nick')"
               />
             </ElFormItem>
 
@@ -38,7 +38,7 @@
               <ElInput
                 class="custom-height"
                 v-model.trim="formData.phone"
-                :placeholder="$t('register.placeholder.phone')"
+                :placeholder="t('register.placeholder.phone')"
                 maxlength="11"
               />
             </ElFormItem>
@@ -48,7 +48,7 @@
                 <ElInput
                   class="custom-height flex-1"
                   v-model.trim="formData.code"
-                  :placeholder="$t('register.placeholder.code')"
+                  :placeholder="t('register.placeholder.code')"
                   maxlength="6"
                 />
                 <ElButton
@@ -59,11 +59,11 @@
                   @click="sendCode"
                   style="width: 120px"
                 >
-                  {{ countdown > 0 ? `${countdown}s` : $t('register.sendCode') }}
+                  {{ countdown > 0 ? `${countdown}s` : t('register.sendCode') }}
                 </ElButton>
               </div>
               <div class="mt-1 text-xs text-gray-500">
-                {{ $t('register.testCodeHint') }}: 123456
+                {{ t('register.testCodeHint') }}: 123456
               </div>
             </ElFormItem>
 
@@ -71,7 +71,7 @@
               <ElInput
                 class="custom-height"
                 v-model.trim="formData.password"
-                :placeholder="$t('register.placeholder.password')"
+                :placeholder="t('register.placeholder.password')"
                 type="password"
                 autocomplete="off"
                 show-password
@@ -82,7 +82,7 @@
               <ElInput
                 class="custom-height"
                 v-model.trim="formData.confirmPassword"
-                :placeholder="$t('register.placeholder.confirmPassword')"
+                :placeholder="t('register.placeholder.confirmPassword')"
                 type="password"
                 autocomplete="off"
                 @keyup.enter="register"
@@ -92,11 +92,11 @@
 
             <ElFormItem prop="agreement">
               <ElCheckbox v-model="formData.agreement">
-                {{ $t('register.agreeText') }}
+                {{ t('register.agreeText') }}
                 <RouterLink
                   style="color: var(--theme-color); text-decoration: none"
                   to="/privacy-policy"
-                  >{{ $t('register.privacyPolicy') }}</RouterLink
+                  >{{ t('register.privacyPolicy') }}</RouterLink
                 >
               </ElCheckbox>
             </ElFormItem>
@@ -109,14 +109,14 @@
                 :loading="loading"
                 v-ripple
               >
-                {{ $t('register.submitBtnText') }}
+                {{ t('register.submitBtnText') }}
               </ElButton>
             </div>
 
             <div class="mt-5 text-sm text-g-600">
-              <span>{{ $t('register.hasAccount') }}</span>
+              <span>{{ t('register.hasAccount') }}</span>
               <RouterLink class="text-theme" :to="{ name: 'Login' }">{{
-                $t('register.toLogin')
+                t('register.toLogin')
               }}</RouterLink>
             </div>
           </ElForm>
@@ -127,9 +127,10 @@
 </template>
 
 <script setup lang="ts">
+  import { v4 as uuidv4 } from 'uuid'
   import { useI18n } from 'vue-i18n'
   import { ElMessage, type FormInstance, FormRules } from 'element-plus'
-  import { fetchRegister } from '@/api/auth'
+  import { fetchRegister, fetchGetPhoneCaptcha } from '@/api/auth'
   import { HttpError } from '@/utils/http/error'
 
   defineOptions({ name: 'Register' })
@@ -267,19 +268,22 @@
   /**
    * 发送验证码
    */
+  /*
+   * 发送验证码
+   */
   const sendCode = async () => {
     try {
       // 验证手机号
       await formRef.value?.validateField('phone')
 
-      // 生成UUID（测试用）
-      captchaUuid.value = `test-uuid-${Date.now()}`
+      // 生成UUID
+      captchaUuid.value = uuidv4()
 
-      // TODO: 实际发送验证码
-      // await fetchGetPhoneCaptcha({
-      //   phone: formData.phone,
-      //   uuid: captchaUuid.value
-      // })
+      loading.value = true
+      await fetchGetPhoneCaptcha({
+        phone: formData.phone,
+        uuid: captchaUuid.value
+      })
 
       ElMessage.success(t('register.codeSent'))
 
@@ -293,6 +297,8 @@
       }, 1000)
     } catch (error) {
       console.error('[Register] Failed to send code:', error)
+    } finally {
+      loading.value = false
     }
   }
 
@@ -314,7 +320,7 @@
         nick: formData.nick || formData.username,
         phone: parseInt(formData.phone),
         code: formData.code,
-        uuid: captchaUuid.value || `test-uuid-${Date.now()}`
+        uuid: captchaUuid.value
       }
 
       await fetchRegister(params)

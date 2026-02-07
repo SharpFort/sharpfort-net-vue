@@ -22,7 +22,17 @@ export const CasbinApi = {
         params: { refresh_token: refreshToken }
       }),
     restPassword: (userId: string | number, data: { password: string }) =>
-      request.put<any>({ url: `/api/app/account/rest-password/${userId}`, data })
+      request.put<any>({ url: `/api/app/account/rest-password/${userId}`, data }),
+    bindPhone: (data: any) =>
+      request.post<any>({ url: '/api/app/account/captcha-phone/bind', data }),
+    validatePhoneCaptcha: (data: any) =>
+      request.post<any>({ url: '/api/app/account/validation-phone-captcha', data }),
+    getAccountInfo: () => request.get<any>({ url: '/api/app/account' }),
+    getVue3Router: (routerType: string) =>
+      request.get<any>({ url: `/api/app/account/Vue3Router/${routerType}` }),
+    logout: () => request.post<any>({ url: '/api/app/account/logout' }),
+    updatePassword: (data: any) => request.put<any>({ url: '/api/app/account/password', data }),
+    updateIcon: (data: any) => request.put<any>({ url: '/api/app/account/icon', data })
   },
 
   // --- User ---
