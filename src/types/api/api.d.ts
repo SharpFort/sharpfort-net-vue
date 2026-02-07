@@ -131,5 +131,17 @@ declare namespace Api {
       Pick<RoleListItem, 'roleId' | 'roleName' | 'roleCode' | 'description' | 'enabled'> &
         Api.Common.CommonSearchParams
     >
+
+    /** 在线用户模型 */
+    interface OnlineUserModel {
+      connnectionId?: string // Note: Typo in backend/swagger
+      userId?: string
+      userName?: string
+      loginTime?: string
+      ipaddr?: string
+      loginLocation?: string
+      os?: string
+      browser?: string
+    }
   }
 }

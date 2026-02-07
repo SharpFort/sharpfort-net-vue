@@ -5,6 +5,7 @@ import request from '@/utils/http'
  */
 export const CasbinApi = {
   // --- Account ---
+
   account: {
     login: (data: any) => request.post<any>({ url: '/api/app/account/login', data }),
     register: (data: any) => request.post<any>({ url: '/api/app/account/register', data }),
@@ -137,7 +138,8 @@ export const CasbinApi = {
 
   // --- Monitor ---
   monitor: {
-    online: (params: any) => request.get<any>({ url: '/api/app/online', params }),
+    online: (params: any) =>
+      request.get<Api.SystemManage.OnlineUserModel[]>({ url: '/api/app/online', params }),
     forceLogout: (connectionId: string) =>
       request.del<any>({ url: `/api/app/online/${connectionId}` }),
     server: () => request.get<any>({ url: '/api/app/monitor/server' }),
