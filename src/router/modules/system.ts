@@ -59,7 +59,7 @@ export const systemRoutes: AppRouteRecord = {
     {
       path: 'tenant',
       name: 'Tenant',
-      component: '/system/tenant',
+      component: '/tenant/index',
       meta: {
         title: '租户管理',
         keepAlive: true,
@@ -88,29 +88,61 @@ export const systemRoutes: AppRouteRecord = {
         {
           path: 'table',
           name: 'CodeGenTable',
-          component: '/system/codegen/table',
+          component: '/code-gen/table',
           meta: {
             title: '表管理',
-            keepAlive: true
+            keepAlive: true,
+            authList: [
+              { title: '新增', authMark: 'add' },
+              { title: '编辑', authMark: 'edit' },
+              { title: '删除', authMark: 'delete' },
+              { title: '代码生成', authMark: 'codeGen' }
+            ]
           }
         },
         {
           path: 'field',
           name: 'CodeGenField',
-          component: '/system/codegen/field',
+          component: '/code-gen/field',
           meta: {
             title: '字段管理',
             keepAlive: true,
-            isHide: true
+            authList: [
+              { title: '新增', authMark: 'add' },
+              { title: '编辑', authMark: 'edit' },
+              { title: '删除', authMark: 'delete' },
+              { title: '导出', authMark: 'export' }
+            ]
+          }
+        },
+        {
+          path: 'generate',
+          name: 'CodeGenGenerate',
+          component: '/code-gen/generate',
+          meta: {
+            title: '代码生成',
+            keepAlive: true,
+            authList: [
+              { title: 'Web生成代码', authMark: 'webToCode' },
+              { title: 'Web同步数据库', authMark: 'webToDb' },
+              { title: '代码同步Web', authMark: 'codeToWeb' },
+              { title: '代码同步数据库', authMark: 'codeToDb' }
+            ]
           }
         },
         {
           path: 'template',
           name: 'CodeGenTemplate',
-          component: '/system/codegen/template',
+          component: '/code-gen/template',
           meta: {
             title: '模板管理',
-            keepAlive: true
+            keepAlive: true,
+            authList: [
+              { title: '新增', authMark: 'add' },
+              { title: '编辑', authMark: 'edit' },
+              { title: '删除', authMark: 'delete' },
+              { title: '导出', authMark: 'export' }
+            ]
           }
         }
       ]

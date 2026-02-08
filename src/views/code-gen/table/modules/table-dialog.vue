@@ -1,44 +1,23 @@
 <template>
   <ElDialog
     v-model="dialogVisible"
-    :title="dialogType === 'add' ? '添加租户' : '编辑租户'"
+    :title="dialogType === 'add' ? '添加表' : '编辑表'"
     width="550px"
     align-center
   >
     <ElForm ref="formRef" :model="formData" :rules="rules" label-width="120px">
-      <ElFormItem label="租户名称" prop="name" :error="fieldErrors.name">
-        <ElInput v-model="formData.name" placeholder="请输入租户名称" />
+      <ElFormItem label="表名" prop="name" :error="fieldErrors.name">
+        <ElInput v-model="formData.name" placeholder="请输入表名" />
       </ElFormItem>
 
-      <ElFormItem label="数据库类型" prop="dbType" :error="fieldErrors.dbType">
-        <ElSelect v-model="formData.dbType" placeholder="请选择数据库类型" class="w-full">
-          <ElOption
-            v-for="(label, value) in DB_TYPE_OPTIONS"
-            :key="value"
-            :label="label"
-            :value="value"
-          />
-        </ElSelect>
-      </ElFormItem>
-
-      <ElFormItem
-        label="连接字符串"
-        prop="tenantConnectionString"
-        :error="fieldErrors.tenantConnectionString"
-      >
+      <ElFormItem label="备注" prop="description" :error="fieldErrors.description">
         <ElInput
-          v-model="formData.tenantConnectionString"
+          v-model="formData.description"
           type="textarea"
           :rows="3"
-          placeholder="请输入连接字符串（为空则使用默认数据库）"
+          placeholder="请输入备注"
         />
       </ElFormItem>
-
-      <template v-if="dialogType === 'edit'">
-        <ElFormItem label="实体版本" prop="entityVersion">
-          <ElInput v-model="formData.entityVersion" disabled />
-        </ElFormItem>
-      </template>
     </ElForm>
 
     <template #footer>
@@ -51,13 +30,14 @@
 </template>
 
 <script setup lang="ts">
-  import type { FormInstance, FormRules } from 'element-plus'
-  import { CasbinApi } from '@/api/casbin-rbac'
+  import { ref, reactive, computed, watch, nextTick } from 'vue'
+  import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+  import { CodeGenApi } from '@/api/code-gen'
 
   interface Props {
     visible: boolean
     type: string
-    tenantData?: any
+    tableData?: Partial<Api.CodeGen.TableDto>
   }
 
   interface Emits {
@@ -71,15 +51,6 @@
   const submitLoading = ref(false)
   const fieldErrors = ref<Record<string, string>>({})
 
-  const DB_TYPE_OPTIONS = {
-    MySql: 'MySql',
-    SqlServer: 'SqlServer',
-    Sqlite: 'Sqlite',
-    Oracle: 'Oracle',
-    PostgreSQL: 'PostgreSQL',
-    Dm: 'Dm'
-  }
-
   // 对话框显示控制
   const dialogVisible = computed({
     get: () => props.visible,
@@ -92,18 +63,15 @@
   const formRef = ref<FormInstance>()
 
   // 表单数据
-  const formData = reactive({
-    id: undefined as string | undefined,
+  const formData = reactive<Api.CodeGen.TableDto>({
+    id: '',
     name: '',
-    tenantConnectionString: '',
-    dbType: 'Sqlite',
-    entityVersion: undefined as number | undefined
+    description: ''
   })
 
   // 表单验证规则
   const rules: FormRules = {
-    name: [{ required: true, message: '请输入租户名称', trigger: 'blur' }],
-    dbType: [{ required: true, message: '请选择数据库类型', trigger: 'change' }]
+    name: [{ required: true, message: '请输入表名', trigger: 'blur' }]
   }
 
   /**
@@ -111,27 +79,23 @@
    */
   const initFormData = async () => {
     fieldErrors.value = {}
-    if (props.type === 'edit' && props.tenantData) {
-      const id = props.tenantData.id
+    if (props.type === 'edit' && props.tableData?.id) {
+      const id = props.tableData.id
       try {
-        const detail = await CasbinApi.tenant.get(id)
+        const detail = await CodeGenApi.table.get(id)
         Object.assign(formData, {
           id: detail.id,
           name: detail.name,
-          tenantConnectionString: detail.tenantConnectionString || '',
-          dbType: detail.dbType,
-          entityVersion: detail.entityVersion
+          description: detail.description || ''
         })
       } catch (error) {
-        console.error('获取租户详情失败:', error)
+        console.error('获取详情失败:', error)
       }
     } else {
       Object.assign(formData, {
         id: undefined,
         name: '',
-        tenantConnectionString: '',
-        dbType: 'Sqlite',
-        entityVersion: undefined
+        description: ''
       })
     }
   }
@@ -156,13 +120,11 @@
    */
   const parseValidationErrors = (error: any) => {
     const errors: Record<string, string> = {}
-    // ABP 格式: error.data.error.validationErrors: [{ message: string, members: string[] }]
     const validationErrors = error.data?.error?.validationErrors || error.error?.validationErrors
     if (Array.isArray(validationErrors)) {
       validationErrors.forEach((err: any) => {
         if (err.members && err.members.length > 0) {
           err.members.forEach((member: string) => {
-            // 将首字母转为小写以匹配 formData 的 key
             const key = member.charAt(0).toLowerCase() + member.slice(1)
             errors[key] = err.message
           })
@@ -184,17 +146,17 @@
         submitLoading.value = true
         try {
           if (dialogType.value === 'add') {
-            await CasbinApi.tenant.create(formData)
+            await CodeGenApi.table.create(formData)
             ElMessage.success('添加成功')
           } else {
-            await CasbinApi.tenant.update(formData.id!, formData)
+            if (!formData.id) return
+            await CodeGenApi.table.update(formData.id, formData)
             ElMessage.success('更新成功')
           }
           dialogVisible.value = false
           emit('submit')
         } catch (error: any) {
           console.error('提交失败:', error)
-          // 捕获并显示后端验证错误
           const errors = parseValidationErrors(error)
           if (Object.keys(errors).length > 0) {
             fieldErrors.value = errors

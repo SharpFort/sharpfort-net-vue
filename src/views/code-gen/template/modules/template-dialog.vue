@@ -1,0 +1,195 @@
+<template>
+  <ElDialog
+    v-model="dialogVisible"
+    :title="dialogType === 'add' ? '添加模板' : '编辑模板'"
+    width="800px"
+    align-center
+  >
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-width="120px">
+      <ElFormItem label="模板名称" prop="name" :error="fieldErrors.name">
+        <ElInput v-model="formData.name" placeholder="请输入模板名称" />
+      </ElFormItem>
+
+      <ElFormItem label="生成路径" prop="buildPath" :error="fieldErrors.buildPath">
+        <ElInput v-model="formData.buildPath" placeholder="请输入生成路径" />
+      </ElFormItem>
+
+      <ElFormItem label="模板内容" prop="templateStr" :error="fieldErrors.templateStr">
+        <ElInput
+          v-model="formData.templateStr"
+          type="textarea"
+          :rows="15"
+          placeholder="请输入模板内容"
+          class="font-mono"
+        />
+      </ElFormItem>
+
+      <ElFormItem label="备注" prop="remarks" :error="fieldErrors.remarks">
+        <ElInput v-model="formData.remarks" type="textarea" :rows="2" placeholder="请输入备注" />
+      </ElFormItem>
+    </ElForm>
+
+    <template #footer>
+      <div class="dialog-footer">
+        <ElButton @click="dialogVisible = false">取消</ElButton>
+        <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">提交</ElButton>
+      </div>
+    </template>
+  </ElDialog>
+</template>
+
+<script setup lang="ts">
+  import { ref, reactive, computed, watch, nextTick } from 'vue'
+  import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+  import { CodeGenApi } from '@/api/code-gen'
+
+  interface Props {
+    visible: boolean
+    type: string
+    templateData?: Partial<Api.CodeGen.TemplateDto>
+  }
+
+  interface Emits {
+    (e: 'update:visible', value: boolean): void
+    (e: 'submit'): void
+  }
+
+  const props = defineProps<Props>()
+  const emit = defineEmits<Emits>()
+
+  const submitLoading = ref(false)
+  const fieldErrors = ref<Record<string, string>>({})
+
+  // 对话框显示控制
+  const dialogVisible = computed({
+    get: () => props.visible,
+    set: (value) => emit('update:visible', value)
+  })
+
+  const dialogType = computed(() => props.type)
+
+  // 表单实例
+  const formRef = ref<FormInstance>()
+
+  // 表单数据
+  const formData = reactive<Api.CodeGen.TemplateDto>({
+    id: '',
+    name: '',
+    templateStr: '',
+    buildPath: '',
+    remarks: ''
+  })
+
+  // 表单验证规则
+  const rules: FormRules = {
+    name: [{ required: true, message: '请输入模板名称', trigger: 'blur' }],
+    templateStr: [{ required: true, message: '请输入模板内容', trigger: 'blur' }]
+  }
+
+  /**
+   * 初始化表单数据
+   */
+  const initFormData = async () => {
+    fieldErrors.value = {}
+    if (props.type === 'edit' && props.templateData?.id) {
+      const id = props.templateData.id
+      try {
+        const detail = await CodeGenApi.template.get(id)
+        Object.assign(formData, {
+          id: detail.id,
+          name: detail.name,
+          templateStr: detail.templateStr || '',
+          buildPath: detail.buildPath || '',
+          remarks: detail.remarks || ''
+        })
+      } catch (error) {
+        console.error('获取详情失败:', error)
+      }
+    } else {
+      Object.assign(formData, {
+        id: undefined,
+        name: '',
+        templateStr: '',
+        buildPath: '',
+        remarks: ''
+      })
+    }
+  }
+
+  /**
+   * 监听对话框状态变化
+   */
+  watch(
+    () => props.visible,
+    (visible) => {
+      if (visible) {
+        initFormData()
+        nextTick(() => {
+          formRef.value?.clearValidate()
+        })
+      }
+    }
+  )
+
+  /**
+   * 解析 ABP 验证错误
+   */
+  const parseValidationErrors = (error: any) => {
+    const errors: Record<string, string> = {}
+    const validationErrors = error.data?.error?.validationErrors || error.error?.validationErrors
+    if (Array.isArray(validationErrors)) {
+      validationErrors.forEach((err: any) => {
+        if (err.members && err.members.length > 0) {
+          err.members.forEach((member: string) => {
+            const key = member.charAt(0).toLowerCase() + member.slice(1)
+            errors[key] = err.message
+          })
+        }
+      })
+    }
+    return errors
+  }
+
+  /**
+   * 提交表单
+   */
+  const handleSubmit = async () => {
+    if (!formRef.value) return
+    fieldErrors.value = {}
+
+    await formRef.value.validate(async (valid) => {
+      if (valid) {
+        submitLoading.value = true
+        try {
+          if (dialogType.value === 'add') {
+            await CodeGenApi.template.create(formData)
+            ElMessage.success('添加成功')
+          } else {
+            if (!formData.id) return // Should not happen in edit mode
+            await CodeGenApi.template.update(formData.id, formData)
+            ElMessage.success('更新成功')
+          }
+          dialogVisible.value = false
+          emit('submit')
+        } catch (error: any) {
+          console.error('提交失败:', error)
+          const errors = parseValidationErrors(error)
+          if (Object.keys(errors).length > 0) {
+            fieldErrors.value = errors
+            ElMessage.error('表单验证失败，请检查输入')
+          }
+        } finally {
+          submitLoading.value = false
+        }
+      }
+    })
+  }
+</script>
+
+<style scoped>
+  .font-mono {
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+      monospace;
+  }
+</style>
