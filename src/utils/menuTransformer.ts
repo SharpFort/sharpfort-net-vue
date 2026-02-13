@@ -45,6 +45,11 @@ export function transformMenuToRoute(dbMenu: DbMenu): AppRouteRecord | null {
     component = '/index/index'
   }
 
+  // 规范化组件路径：确保以 / 开头，ComponentLoader 需要以 / 开头的路径
+  if (component && !component.startsWith('/')) {
+    component = '/' + component
+  }
+
   const route: AppRouteRecord = {
     path: dbMenu.router || '/',
     name: dbMenu.routerName || dbMenu.id,

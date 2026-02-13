@@ -146,6 +146,16 @@ export const systemRoutes: AppRouteRecord = {
           }
         }
       ]
+    },
+    {
+      path: 'sequence',
+      name: 'SequenceRule',
+      component: '/sequence/index',
+      meta: {
+        title: '序列规则',
+        keepAlive: true,
+        roles: ['R_SUPER', 'R_ADMIN']
+      }
     }
   ]
 }
