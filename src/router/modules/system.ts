@@ -156,6 +156,35 @@ export const systemRoutes: AppRouteRecord = {
         keepAlive: true,
         roles: ['R_SUPER', 'R_ADMIN']
       }
+    },
+    {
+      path: 'file',
+      name: 'FileManagement',
+      meta: {
+        title: '文件管理',
+        icon: 'ri:folder-line',
+        roles: ['R_SUPER', 'R_ADMIN']
+      },
+      children: [
+        {
+          path: 'manager',
+          name: 'FileManager',
+          component: '/file/manager/index',
+          meta: {
+            title: '文件列表',
+            keepAlive: true
+          }
+        },
+        {
+          path: 'storage',
+          name: 'StorageProvider',
+          component: '/file/storage/index',
+          meta: {
+            title: '存储配置',
+            keepAlive: true
+          }
+        }
+      ]
     }
   ]
 }
