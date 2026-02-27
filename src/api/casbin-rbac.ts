@@ -153,7 +153,8 @@ export const CasbinApi = {
     forceLogout: (connectionId: string) =>
       request.del<any>({ url: `/api/app/online/${connectionId}` }),
     server: () => request.get<any>({ url: '/api/app/monitor/server' }),
-    serverInfo: () => request.get<any>({ url: '/api/app/monitor-server/info' }),
+    serverInfo: () =>
+      request.get<Api.Monitor.MonitorServerInfoDto>({ url: '/api/app/monitor-server/info' }),
     cache: {
       getNames: () => request.get<any>({ url: '/api/app/monitor-cache/name' }),
       getKeys: (name: string) => request.get<any>({ url: `/api/app/monitor-cache/key/${name}` }),
