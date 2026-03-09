@@ -50,6 +50,9 @@ export function scriptErrorHandler(
   colno?: number,
   error?: Error
 ): boolean {
+  if (typeof message === 'string' && message.includes('ResizeObserver loop')) {
+    return true // 忽略该警告
+  }
   console.error('[ScriptError]', { message, source, lineno, colno, error })
   // reportError({ type: 'script', message, source, lineno, colno, error })
   return true // 阻止默认控制台报错，可根据需求改

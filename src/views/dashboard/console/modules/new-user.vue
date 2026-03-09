@@ -6,9 +6,9 @@
         <p>这个月增长<span class="text-success">+20%</span></p>
       </div>
       <ElRadioGroup v-model="radio2">
-        <ElRadioButton value="本月" label="本月"></ElRadioButton>
-        <ElRadioButton value="上月" label="上月"></ElRadioButton>
-        <ElRadioButton value="今年" label="今年"></ElRadioButton>
+        <ElRadioButton value="本月">本月</ElRadioButton>
+        <ElRadioButton value="上月">上月</ElRadioButton>
+        <ElRadioButton value="今年">今年</ElRadioButton>
       </ElRadioGroup>
     </div>
     <ArtTable

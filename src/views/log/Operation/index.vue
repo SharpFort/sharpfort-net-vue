@@ -39,12 +39,19 @@
         />
 
         <!-- 分页 -->
-        <ArtPagination
-          v-model:current-page="pagination.current"
-          v-model:page-size="pagination.size"
-          :total="pagination.total"
-          @change="handlePageChange"
-        />
+        <div class="pagination custom-pagination center">
+          <ElPagination
+            v-model:current-page="pagination.current"
+            v-model:page-size="pagination.size"
+            :total="pagination.total"
+            :page-sizes="[10, 20, 30, 50]"
+            align="center"
+            layout="total, sizes, prev, pager, next, jumper"
+            background
+            @current-change="handlePageChange"
+            @size-change="handlePageChange"
+          />
+        </div>
       </ElCard>
     </div>
   </div>

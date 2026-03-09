@@ -65,7 +65,7 @@
   import UserProfile from './components/UserProfile.vue'
   import UserPwd from './components/UserPwd.vue'
   import UserLog from './components/UserLog.vue'
-  import defaultAvatarImg from '@/assets/imgs/user/avatar.webp' // Assuming path, check
+  import defaultAvatarImg from '@/assets/images/user/avatar.webp' // Assuming path, check
 
   defineOptions({ name: 'UserCenter' })
 
@@ -76,7 +76,7 @@
   const labelList = ['专注设计', '很有想法', '辣~', '大长腿', '川妹子', '海纳百川']
 
   const getUserInfo = async () => {
-    const userId = userStore.getUserInfo.value?.userId
+    const userId = userStore.getUserInfo?.userId
     if (userId) {
       try {
         const res = await CasbinApi.user.get(userId)

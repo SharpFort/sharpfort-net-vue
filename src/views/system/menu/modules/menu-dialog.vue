@@ -1,7 +1,7 @@
 <template>
   <ElDialog
     v-model="dialogVisible"
-    :title="dialogType === 'add' ? '新增菜单' : '编辑菜单'"
+    :title="type === 'add' ? '新增菜单' : '编辑菜单'"
     width="680px"
     align-center
     class="el-dialog-border"
@@ -13,7 +13,8 @@
             <ElTreeSelect
               v-model="form.parentId"
               :data="menuTreeData"
-              :props="{ label: 'menuName', value: 'id' }"
+              :props="{ label: 'menuName' }"
+              node-key="id"
               placeholder="请选择上级菜单（留空为根菜单）"
               clearable
               check-strictly
@@ -26,9 +27,9 @@
         <ElCol :span="12">
           <ElFormItem label="菜单类型" prop="menuType">
             <ElRadioGroup v-model="form.menuType">
-              <ElRadio label="Catalogue">目录</ElRadio>
-              <ElRadio label="Menu">菜单</ElRadio>
-              <ElRadio label="Button">按钮</ElRadio>
+              <ElRadio value="Catalogue">目录</ElRadio>
+              <ElRadio value="Menu">菜单</ElRadio>
+              <ElRadio value="Button">按钮</ElRadio>
             </ElRadioGroup>
           </ElFormItem>
         </ElCol>

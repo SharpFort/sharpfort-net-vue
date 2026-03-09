@@ -54,7 +54,9 @@
                     v-for="option in getProps(item).options"
                     v-bind="option"
                     :key="option.value"
-                  />
+                  >
+                    {{ option.label }}
+                  </ElRadio>
                 </template>
 
                 <!-- 动态插槽支持 -->

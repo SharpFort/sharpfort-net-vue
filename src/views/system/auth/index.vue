@@ -44,12 +44,19 @@
         </ArtTable>
 
         <!-- 分页 -->
-        <ArtPagination
-          v-model:current-page="pagination.current"
-          v-model:page-size="pagination.size"
-          :total="pagination.total"
-          @change="handlePageChange"
-        />
+        <div class="pagination custom-pagination center">
+          <ElPagination
+            v-model:current-page="pagination.current"
+            v-model:page-size="pagination.size"
+            :total="pagination.total"
+            :page-sizes="[10, 20, 30, 50]"
+            align="center"
+            layout="total, sizes, prev, pager, next, jumper"
+            background
+            @current-change="handlePageChange"
+            @size-change="handlePageChange"
+          />
+        </div>
       </ElCard>
     </div>
   </div>
@@ -142,8 +149,8 @@
         MaxResultCount: pagination.size,
         Sorting: 'creationTime desc'
       })
-      tableData.value = res.items || []
-      pagination.total = res.totalCount || 0
+      tableData.value = (res as any).items || []
+      pagination.total = (res as any).totalCount || 0
     } catch (error) {
       console.error('获取认证列表失败:', error)
     } finally {
