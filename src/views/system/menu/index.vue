@@ -165,7 +165,7 @@
     {
       prop: 'menuName',
       label: '菜单名称',
-      width: 360,
+      width: 260,
       useSlot: true
     },
     {
@@ -183,7 +183,7 @@
     {
       prop: 'component',
       label: '组件路径',
-      minWidth: 160,
+      minWidth: 200,
       formatter: (row: any) => row.component || ''
     },
     {

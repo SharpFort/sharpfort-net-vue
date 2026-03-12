@@ -43,7 +43,8 @@ export const CasbinApi = {
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/user/${id}`, data }),
     updateProfile: (data: any) => request.put<any>({ url: '/api/app/user/profile', data }),
-    del: (id: string | number) => request.del<any>({ url: `/api/app/user/${id}` }),
+    // del: (id: string | number) => request.del<any>({ url: `/api/app/user/${id}` }),
+    del: (id: string | number) => request.del<any>({ url: `/api/app/user?ids=${id}` }),
     getRoles: (id: string | number) => request.get<string[]>({ url: `/api/app/user/${id}/role` }),
     setRoles: (id: string | number, roleNames: string[]) =>
       request.put<any>({ url: `/api/app/user/${id}/role`, data: roleNames }),
@@ -58,7 +59,8 @@ export const CasbinApi = {
     create: (data: any) => request.post<any>({ url: '/api/app/role', data }),
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/role/${id}`, data }),
-    del: (id: string | number) => request.del<any>({ url: `/api/app/role/${id}` }),
+    // del: (id: string | number) => request.del<any>({ url: `/api/app/role/${id}` }),
+    del: (id: string | number) => request.del<any>({ url: `/api/app/role?ids=${id}` }),
     getMenus: (roleId: string | number) =>
       request.get<string[]>({ url: `/api/app/menu/role-id/${roleId}` }),
     getDepts: (roleId: string | number) =>
@@ -75,7 +77,8 @@ export const CasbinApi = {
     create: (data: any) => request.post<any>({ url: '/api/app/menu', data }),
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/menu/${id}`, data }),
-    del: (id: string | number) => request.del<any>({ url: `/api/app/menu/${id}` })
+    // del: (id: string | number) => request.del<any>({ url: `/api/app/menu/${id}` })
+    del: (id: string | number) => request.del<any>({ url: `/api/app/menu?ids=${id}` })
   },
 
   // --- Dept ---
@@ -85,7 +88,8 @@ export const CasbinApi = {
     create: (data: any) => request.post<any>({ url: '/api/app/dept', data }),
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/dept/${id}`, data }),
-    del: (id: string | number) => request.del<any>({ url: `/api/app/dept/${id}` })
+    // del: (id: string | number) => request.del<any>({ url: `/api/app/dept/${id}` })
+    del: (id: string | number) => request.del<any>({ url: `/api/app/dept?ids=${id}` })
   },
 
   // --- Post ---
@@ -95,7 +99,8 @@ export const CasbinApi = {
     create: (data: any) => request.post<any>({ url: '/api/app/post', data }),
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/post/${id}`, data }),
-    del: (id: string | number) => request.del<any>({ url: `/api/app/post/${id}` })
+    // del: (id: string | number) => request.del<any>({ url: `/api/app/post/${id}` })
+    del: (id: string | number) => request.del<any>({ url: `/api/app/post?ids=${id}` })
   },
 
   // --- Dict ---
@@ -106,7 +111,8 @@ export const CasbinApi = {
       create: (data: any) => request.post<any>({ url: '/api/app/dictionary-type', data }),
       update: (id: string | number, data: any) =>
         request.put<any>({ url: `/api/app/dictionary-type/${id}`, data }),
-      del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-type/${id}` })
+      // del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-type/${id}` })
+      del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-type?ids=${id}` })
     },
     data: {
       getList: (params: any) => request.get<any>({ url: '/api/app/dictionary-data', params }),
@@ -114,7 +120,8 @@ export const CasbinApi = {
       create: (data: any) => request.post<any>({ url: '/api/app/dictionary-data', data }),
       update: (id: string | number, data: any) =>
         request.put<any>({ url: `/api/app/dictionary-data/${id}`, data }),
-      del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-data/${id}` }),
+      // del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-data/${id}` }),
+      del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-data?ids=${id}` }),
       getByType: (type: string) =>
         request.get<any[]>({ url: `/api/app/dictionary-data/type/${type}` })
     }
@@ -127,7 +134,11 @@ export const CasbinApi = {
     create: (data: any) => request.post<any>({ url: '/api/app/config', data }),
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/config/${id}`, data }),
-    del: (id: string | number) => request.del<any>({ url: `/api/app/config/${id}` })
+    // del: (id: string | number) => request.del<any>({ url: `/api/app/config/${id}` })
+    del: (id: string | number) =>
+      request.del<any>({
+        url: `/api/app/config?ids=${id}`
+      })
   },
 
   // --- Notice ---
@@ -137,7 +148,8 @@ export const CasbinApi = {
     create: (data: any) => request.post<any>({ url: '/api/app/notice', data }),
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/notice/${id}`, data }),
-    del: (id: string | number) => request.del<any>({ url: `/api/app/notice/${id}` })
+    // del: (id: string | number) => request.del<any>({ url: `/api/app/notice/${id}` })
+    del: (id: string | number) => request.del<any>({ url: `/api/app/notice?ids=${id}` })
   },
 
   // --- Logs ---
