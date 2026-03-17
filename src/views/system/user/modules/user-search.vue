@@ -11,6 +11,9 @@
 </template>
 
 <script setup lang="ts">
+  import { ref, computed, onMounted } from 'vue'
+  import { CasbinApi } from '@/api/casbin-rbac'
+
   interface Props {
     modelValue: Record<string, any>
   }
@@ -36,6 +39,8 @@
 
   // 动态 options
   const statusOptions = ref<{ label: string; value: boolean }[]>([])
+  const postOptions = ref<{ label: string; value: string }[]>([])
+  const roleOptions = ref<{ label: string; value: string }[]>([])
 
   // 模拟接口返回状态数据
   function fetchStatusOptions(): Promise<typeof statusOptions.value> {
@@ -50,7 +55,21 @@
   }
 
   onMounted(async () => {
-    statusOptions.value = await fetchStatusOptions()
+    try {
+      statusOptions.value = await fetchStatusOptions()
+      // 加载岗位类型
+      const postRes = await CasbinApi.post.getList({ SkipCount: 0, MaxResultCount: 1000 })
+      if (postRes && postRes.items) {
+        postOptions.value = postRes.items.map((p: any) => ({ label: p.postName, value: p.id }))
+      }
+      // 加载角色类型
+      const roleRes = await CasbinApi.role.getList({ SkipCount: 0, MaxResultCount: 1000 })
+      if (roleRes && roleRes.items) {
+        roleOptions.value = roleRes.items.map((r: any) => ({ label: r.roleName, value: r.id }))
+      }
+    } catch (error) {
+      console.error('加载选项失败', error)
+    }
   })
 
   // 表单配置
@@ -94,6 +113,24 @@
           { label: '男', value: 'Male' },
           { label: '女', value: 'Female' }
         ]
+      }
+    },
+    {
+      label: '岗位',
+      key: 'PostId',
+      type: 'select',
+      props: {
+        placeholder: '请选择岗位',
+        options: postOptions.value
+      }
+    },
+    {
+      label: '角色',
+      key: 'RoleId',
+      type: 'select',
+      props: {
+        placeholder: '请选择角色',
+        options: roleOptions.value
       }
     }
   ])

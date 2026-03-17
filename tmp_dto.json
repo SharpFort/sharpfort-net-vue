@@ -1,0 +1,80 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "name": {
+      "type": "string",
+      "nullable": true
+    },
+    "age": {
+      "type": "integer",
+      "format": "int32",
+      "nullable": true
+    },
+    "userName": {
+      "type": "string",
+      "nullable": true
+    },
+    "icon": {
+      "type": "string",
+      "nullable": true
+    },
+    "nick": {
+      "type": "string",
+      "nullable": true
+    },
+    "email": {
+      "type": "string",
+      "nullable": true
+    },
+    "ip": {
+      "type": "string",
+      "nullable": true
+    },
+    "address": {
+      "type": "string",
+      "nullable": true
+    },
+    "phone": {
+      "type": "integer",
+      "format": "int64",
+      "nullable": true
+    },
+    "introduction": {
+      "type": "string",
+      "nullable": true
+    },
+    "remark": {
+      "type": "string",
+      "nullable": true
+    },
+    "gender": {
+      "$ref": "#/components/schemas/SharpFort.CasbinRbac.Domain.Shared.Enums.Gender"
+    },
+    "departmentId": {
+      "type": "string",
+      "format": "uuid",
+      "nullable": true
+    },
+    "creationTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "creatorId": {
+      "type": "string",
+      "format": "uuid",
+      "nullable": true
+    },
+    "state": {
+      "type": "boolean"
+    },
+    "deptName": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "additionalProperties": false
+}

@@ -302,8 +302,8 @@
       }
     }
 
-    // 仅在桌面端启用开发者工具检测
-    if (!isMobile()) {
+    // 仅在生产环境的桌面端启用开发者工具检测
+    if (!isMobile() && import.meta.env.PROD) {
       devToolsInterval = setInterval(checkDevTools, 500)
     }
 

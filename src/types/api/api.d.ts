@@ -143,5 +143,49 @@ declare namespace Api {
       os?: string
       browser?: string
     }
+
+    /** 岗位列表响应 */
+    interface PostList {
+      items: PostListItem[]
+      totalCount: number
+    }
+
+    /** 岗位列表项 */
+    interface PostListItem {
+      id: string
+      creationTime: string
+      state: boolean
+      postCode: string
+      postName: string
+      remark: string
+      orderNum: number
+    }
+
+    /** 岗位搜索参数 */
+    interface PostSearchParams {
+      SkipCount?: number
+      MaxResultCount?: number
+      Sorting?: string
+      State?: boolean
+      PostName?: string
+      PostCode?: string
+    }
+
+    /** 岗位创建参数 */
+    interface PostCreateInput {
+      state?: boolean
+      postCode?: string
+      postName?: string
+      remark?: string
+    }
+
+    /** 岗位更新参数 */
+    interface PostUpdateInput {
+      state?: boolean
+      orderNum?: number
+      postCode?: string
+      postName?: string
+      remark?: string
+    }
   }
 }

@@ -4375,10 +4375,10 @@
         }
       }
     },
-    "/api/app/casbin-migration/migrate-all": {
+    "/api/app/api/app/casbin-migration/migrate-all": {
       "post": {
         "tags": ["CasbinMigration"],
-        "summary": "全量数据迁移",
+        "summary": "全量数据迁移\r\n将角色、菜单、用户角色关系迁移到 Casbin 策略表\r\n注意：此操作会清空 casbin_rule 表并重新生成所有策略",
         "parameters": [
           {
             "name": "__tenant",
@@ -4389,9 +4389,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Success"
-          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -4516,9 +4513,184 @@
       }
     },
     "/api/app/config": {
+      "post": {
+        "tags": ["Config"],
+        "summary": "新增配置",
+        "parameters": [
+          {
+            "name": "__tenant",
+            "in": "header",
+            "description": "租户ID或租户名称（留空表示默认租户）",
+            "allowEmptyValue": true,
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "description": "配置创建信息",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigCreateInputVo"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigCreateInputVo"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigCreateInputVo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigGetOutputDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigGetOutputDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigGetOutputDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "get": {
         "tags": ["Config"],
-        "summary": "多查",
+        "summary": "分页查询配置列表",
         "parameters": [
           {
             "name": "ConfigName",
@@ -4767,187 +4939,14 @@
           }
         }
       },
-      "post": {
-        "tags": ["Config"],
-        "summary": "创建实体",
-        "parameters": [
-          {
-            "name": "__tenant",
-            "in": "header",
-            "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
-          }
-        ],
-        "requestBody": {
-          "description": "创建输入",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigCreateInputVo"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigCreateInputVo"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigCreateInputVo"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigGetOutputDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigGetOutputDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigGetOutputDto"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "501": {
-            "description": "Server Error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server Error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
       "delete": {
         "tags": ["Config"],
+        "summary": "批量删除配置",
         "parameters": [
           {
             "name": "ids",
             "in": "query",
+            "description": "配置ID集合",
             "style": "form",
             "schema": {
               "type": "array",
@@ -5095,12 +5094,12 @@
     "/api/app/config/{id}": {
       "put": {
         "tags": ["Config"],
-        "summary": "更新实体",
+        "summary": "修改配置",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "实体ID",
+            "description": "配置ID",
             "required": true,
             "style": "simple",
             "schema": {
@@ -5117,7 +5116,7 @@
           }
         ],
         "requestBody": {
-          "description": "更新输入",
+          "description": "配置更新信息",
           "content": {
             "application/json": {
               "schema": {
@@ -5281,10 +5280,12 @@
       },
       "get": {
         "tags": ["Config"],
+        "summary": "获取单个配置详情",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "配置ID",
             "required": true,
             "style": "simple",
             "schema": {
@@ -5447,7 +5448,7 @@
     "/api/app/config/select-data-list": {
       "get": {
         "tags": ["Config"],
-        "summary": "获取实体动态下拉框列表，子类重写该方法，通过 keywords 进行筛选",
+        "summary": "获取配置动态下拉框列表",
         "parameters": [
           {
             "name": "keywords",
@@ -5613,7 +5614,7 @@
     "/api/app/config/export-excel": {
       "get": {
         "tags": ["Config"],
-        "summary": "导出Excel",
+        "summary": "导出配置Excel",
         "parameters": [
           {
             "name": "ConfigName",
@@ -5846,7 +5847,7 @@
     "/api/app/config/import-excel": {
       "post": {
         "tags": ["Config"],
-        "summary": "导入Excel(需要实现类重写此方法)",
+        "summary": "导入配置Excel",
         "parameters": [
           {
             "name": "__tenant",
@@ -5857,6 +5858,7 @@
           }
         ],
         "requestBody": {
+          "description": "配置列表数据",
           "content": {
             "application/json": {
               "schema": {
@@ -7727,9 +7729,184 @@
         }
       }
     },
-    "/api/app/dictionary": {
+    "/api/app/dictionary-data": {
+      "post": {
+        "tags": ["DictionaryData"],
+        "summary": "新增字典数据",
+        "parameters": [
+          {
+            "name": "__tenant",
+            "in": "header",
+            "description": "租户ID或租户名称（留空表示默认租户）",
+            "allowEmptyValue": true,
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "description": "字典数据创建信息",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryCreateInputVo"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryCreateInputVo"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryCreateInputVo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "get": {
-        "tags": ["Dictionary"],
+        "tags": ["DictionaryData"],
         "summary": "查询",
         "parameters": [
           {
@@ -7937,10 +8114,174 @@
           }
         }
       },
-      "post": {
-        "tags": ["Dictionary"],
-        "summary": "创建实体",
+      "delete": {
+        "tags": ["DictionaryData"],
+        "summary": "批量删除字典数据",
         "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "description": "字典数据ID集合",
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          },
+          {
+            "name": "__tenant",
+            "in": "header",
+            "description": "租户ID或租户名称（留空表示默认租户）",
+            "allowEmptyValue": true,
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/app/dictionary-data/{id}": {
+      "put": {
+        "tags": ["DictionaryData"],
+        "summary": "更新字典数据",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "字典数据ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
           {
             "name": "__tenant",
             "in": "header",
@@ -7950,21 +8291,21 @@
           }
         ],
         "requestBody": {
-          "description": "创建输入",
+          "description": "字典数据更新信息",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryCreateInputVo"
+                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryUpdateInputVo"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryCreateInputVo"
+                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryUpdateInputVo"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryCreateInputVo"
+                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryUpdateInputVo"
               }
             }
           }
@@ -8112,19 +8453,19 @@
           }
         }
       },
-      "delete": {
-        "tags": ["Dictionary"],
+      "get": {
+        "tags": ["DictionaryData"],
+        "summary": "获取单个字典数据详情",
         "parameters": [
           {
-            "name": "ids",
-            "in": "query",
-            "style": "form",
+            "name": "id",
+            "in": "path",
+            "description": "字典数据ID",
+            "required": true,
+            "style": "simple",
             "schema": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "format": "uuid"
-              }
+              "type": "string",
+              "format": "uuid"
             }
           },
           {
@@ -8137,7 +8478,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
+                }
+              }
+            }
           },
           "403": {
             "description": "Forbidden",
@@ -8262,9 +8620,9 @@
         }
       }
     },
-    "/api/app/dictionary/dic-type/{dicType}": {
+    "/api/app/type/{dicType}": {
       "get": {
-        "tags": ["Dictionary"],
+        "tags": ["DictionaryData"],
         "summary": "根据字典类型获取字典列表",
         "parameters": [
           {
@@ -8438,528 +8796,10 @@
         }
       }
     },
-    "/api/app/dictionary/{id}": {
-      "put": {
-        "tags": ["Dictionary"],
-        "summary": "更新实体",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "实体ID",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "__tenant",
-            "in": "header",
-            "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
-          }
-        ],
-        "requestBody": {
-          "description": "更新输入",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryUpdateInputVo"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryUpdateInputVo"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryUpdateInputVo"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "501": {
-            "description": "Server Error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server Error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/api/app/dictionary-data/export-excel": {
       "get": {
-        "tags": ["Dictionary"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "__tenant",
-            "in": "header",
-            "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetOutputDto"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "501": {
-            "description": "Server Error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server Error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/app/dictionary/select-data-list": {
-      "get": {
-        "tags": ["Dictionary"],
-        "summary": "获取实体动态下拉框列表，子类重写该方法，通过 keywords 进行筛选",
-        "parameters": [
-          {
-            "name": "keywords",
-            "in": "query",
-            "description": "查询关键字",
-            "style": "form",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "__tenant",
-            "in": "header",
-            "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetListOutputDto, SharpFort.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetListOutputDto, SharpFort.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetListOutputDto, SharpFort.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "501": {
-            "description": "Server Error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server Error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/app/dictionary/export-excel": {
-      "get": {
-        "tags": ["Dictionary"],
-        "summary": "导出Excel",
+        "tags": ["DictionaryData"],
+        "summary": "导出字典数据Excel",
         "parameters": [
           {
             "name": "DictType",
@@ -9147,10 +8987,10 @@
         }
       }
     },
-    "/api/app/dictionary/import-excel": {
+    "/api/app/dictionary-data/import-excel": {
       "post": {
-        "tags": ["Dictionary"],
-        "summary": "导入Excel(需要实现类重写此方法)",
+        "tags": ["DictionaryData"],
+        "summary": "导入字典数据Excel",
         "parameters": [
           {
             "name": "__tenant",
@@ -9161,6 +9001,7 @@
           }
         ],
         "requestBody": {
+          "description": "字典数据列表",
           "content": {
             "application/json": {
               "schema": {
@@ -9191,6 +9032,172 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/app/dictionary-data/select-data-list": {
+      "get": {
+        "tags": ["DictionaryData"],
+        "summary": "获取实体动态下拉框列表",
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "description": "查询关键字",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "__tenant",
+            "in": "header",
+            "description": "租户ID或租户名称（留空表示默认租户）",
+            "allowEmptyValue": true,
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetListOutputDto, SharpFort.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetListOutputDto, SharpFort.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Application.Dtos.PagedResultDto`1[[SharpFort.CasbinRbac.Application.Contracts.Dtos.Dictionary.DictionaryGetListOutputDto, SharpFort.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
           },
           "403": {
             "description": "Forbidden",
@@ -12146,6 +12153,7 @@
     "/api/app/menu": {
       "post": {
         "tags": ["Menu"],
+        "summary": "新增菜单",
         "parameters": [
           {
             "name": "__tenant",
@@ -12156,6 +12164,7 @@
           }
         ],
         "requestBody": {
+          "description": "菜单创建信息",
           "content": {
             "application/json": {
               "schema": {
@@ -12319,6 +12328,7 @@
       },
       "get": {
         "tags": ["Menu"],
+        "summary": "分页查询菜单列表",
         "parameters": [
           {
             "name": "State",
@@ -12527,10 +12537,12 @@
       },
       "delete": {
         "tags": ["Menu"],
+        "summary": "批量删除菜单",
         "parameters": [
           {
             "name": "ids",
             "in": "query",
+            "description": "菜单ID集合",
             "style": "form",
             "schema": {
               "type": "array",
@@ -12678,10 +12690,12 @@
     "/api/app/menu/{id}": {
       "put": {
         "tags": ["Menu"],
+        "summary": "修改菜单",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "菜单ID",
             "required": true,
             "style": "simple",
             "schema": {
@@ -12698,6 +12712,7 @@
           }
         ],
         "requestBody": {
+          "description": "菜单更新信息",
           "content": {
             "application/json": {
               "schema": {
@@ -12861,10 +12876,12 @@
       },
       "get": {
         "tags": ["Menu"],
+        "summary": "获取单个菜单详情",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "菜单ID",
             "required": true,
             "style": "simple",
             "schema": {
@@ -13204,7 +13221,7 @@
     "/api/app/menu/select-data-list": {
       "get": {
         "tags": ["Menu"],
-        "summary": "获取实体动态下拉框列表，子类重写该方法，通过 keywords 进行筛选",
+        "summary": "获取菜单动态下拉框列表",
         "parameters": [
           {
             "name": "keywords",
@@ -13370,7 +13387,7 @@
     "/api/app/menu/export-excel": {
       "get": {
         "tags": ["Menu"],
-        "summary": "导出Excel",
+        "summary": "导出菜单Excel",
         "parameters": [
           {
             "name": "State",
@@ -13561,7 +13578,7 @@
     "/api/app/menu/import-excel": {
       "post": {
         "tags": ["Menu"],
-        "summary": "导入Excel(需要实现类重写此方法)",
+        "summary": "导入菜单Excel",
         "parameters": [
           {
             "name": "__tenant",
@@ -13572,6 +13589,7 @@
           }
         ],
         "requestBody": {
+          "description": "菜单列表数据",
           "content": {
             "application/json": {
               "schema": {
@@ -22160,7 +22178,7 @@
     "/api/app/user": {
       "get": {
         "tags": ["User"],
-        "summary": "查询用户",
+        "summary": "批量查询用户",
         "parameters": [
           {
             "name": "Name",
@@ -26746,7 +26764,6 @@
             "nullable": true
           },
           "menus": {
-            "uniqueItems": true,
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SharpFort.CasbinRbac.Domain.Shared.Dtos.MenuDto"
@@ -27157,7 +27174,7 @@
       "description": "Config服务实现"
     },
     {
-      "name": "Dictionary",
+      "name": "DictionaryData",
       "description": "Dictionary服务实现"
     },
     {
@@ -27170,7 +27187,7 @@
     },
     {
       "name": "CasbinMigration",
-      "description": "Casbin 迁移服务"
+      "description": "Casbin 迁移服务\r\n用于将 casbin_sys_role、casbin_sys_menu、casbin_sys_role_menu、casbin_sys_user_role 表的数据\r\n迁移到 casbin_rule 表中，生成 Casbin 权限策略"
     },
     {
       "name": "Dept",

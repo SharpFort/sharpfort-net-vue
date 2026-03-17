@@ -18,7 +18,18 @@
         @refresh="handleRefresh"
       >
         <template #left>
-          <ElButton type="primary" @click="handleAddPost" v-ripple> 新增岗位 </ElButton>
+          <ElSpace wrap>
+            <ElButton type="primary" @click="handleAddPost" v-ripple> 新增岗位 </ElButton>
+            <ElButton @click="handleExport" v-ripple> 导出 </ElButton>
+            <ElUpload
+              action="#"
+              :show-file-list="false"
+              :http-request="handleImport"
+              accept=".xlsx,.xls"
+            >
+              <ElButton v-ripple> 导入 </ElButton>
+            </ElUpload>
+          </ElSpace>
         </template>
       </ArtTableHeader>
 
@@ -27,7 +38,7 @@
         rowKey="id"
         :loading="loading"
         :columns="columns"
-        :data="tableData"
+        :data="displayTableData"
         :stripe="true"
       />
 
@@ -57,7 +68,7 @@
   import { useTableColumns } from '@/hooks/core/useTableColumns'
   import PostDialog from './modules/post-dialog.vue'
   import { CasbinApi } from '@/api/casbin-rbac'
-  import { ElTag, ElMessageBox } from 'element-plus'
+  import { ElTag, ElMessageBox, ElMessage, ElSpace, ElUpload } from 'element-plus'
 
   defineOptions({ name: 'Post' })
 
@@ -70,12 +81,18 @@
   // 分页
   const pagination = reactive({
     current: 1,
-    size: 10,
+    size: 20,
     total: 0
   })
 
   // 搜索相关
   const formFilters = reactive({
+    PostCode: '',
+    PostName: '',
+    State: undefined
+  })
+
+  const appliedFilters = reactive({
     PostCode: '',
     PostName: '',
     State: undefined
@@ -98,11 +115,13 @@
       label: '状态',
       key: 'State',
       type: 'select',
-      options: [
-        { label: '正常', value: true },
-        { label: '停用', value: false }
-      ],
-      props: { clearable: true }
+      props: {
+        clearable: true,
+        options: [
+          { label: '启用', value: true },
+          { label: '停用', value: false }
+        ]
+      }
     }
   ])
 
@@ -111,24 +130,55 @@
   })
 
   /**
-   * 获取岗位列表数据
+   * 获取岗位列表数据（全量获取）
    */
   const getPostList = async (): Promise<void> => {
     loading.value = true
     try {
       const res = await CasbinApi.post.getList({
-        ...formFilters,
-        SkipCount: (pagination.current - 1) * pagination.size,
-        MaxResultCount: pagination.size
+        SkipCount: 0,
+        MaxResultCount: 1000
       })
       tableData.value = res.items || []
-      pagination.total = res.totalCount || 0
     } catch (error) {
       console.error('获取岗位失败:', error)
     } finally {
       loading.value = false
     }
   }
+
+  /**
+   * 过滤后的数据
+   */
+  const filteredTableData = computed(() => {
+    const searchCode = appliedFilters.PostCode?.toLowerCase().trim() || ''
+    const searchName = appliedFilters.PostName?.toLowerCase().trim() || ''
+    const searchState = appliedFilters.State
+
+    return tableData.value.filter((item) => {
+      const matchCode = !searchCode || (item.postCode || '').toLowerCase().includes(searchCode)
+      const matchName = !searchName || (item.postName || '').toLowerCase().includes(searchName)
+      const matchState = searchState === undefined || item.state === searchState
+      return matchCode && matchName && matchState
+    })
+  })
+
+  /**
+   * 当前页显示的数据
+   */
+  const displayTableData = computed(() => {
+    const start = (pagination.current - 1) * pagination.size
+    return filteredTableData.value.slice(start, start + pagination.size)
+  })
+
+  // 监听过滤后的数据变化，更新总条数
+  watch(
+    () => filteredTableData.value.length,
+    (val) => {
+      pagination.total = val
+    },
+    { immediate: true }
+  )
 
   // 表格列配置
   const { columnChecks, columns } = useTableColumns(() => [
@@ -177,6 +227,12 @@
       sortable: true
     },
     {
+      prop: 'remark',
+      label: '备注',
+      minWidth: 150,
+      showOverflowTooltip: true
+    },
+    {
       prop: 'operation',
       label: '操作',
       width: 150,
@@ -203,20 +259,59 @@
       PostName: '',
       State: undefined
     })
-    getPostList()
+    Object.assign(appliedFilters, formFilters)
+    pagination.current = 1
   }
 
   const handleSearch = (): void => {
+    Object.assign(appliedFilters, formFilters)
     pagination.current = 1
-    getPostList()
   }
 
   const handleRefresh = (): void => {
     getPostList()
   }
 
+  /**
+   * 导出岗位
+   */
+  const handleExport = async () => {
+    try {
+      ElMessage.info('正在导出数据，请稍候...')
+      const res = await CasbinApi.post.export(appliedFilters)
+      const url = window.URL.createObjectURL(new Blob([res]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `岗位数据_${new Date().getTime()}.xlsx`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+      ElMessage.success('导出成功')
+    } catch (error) {
+      console.error('导出失败:', error)
+      ElMessage.error('导出失败')
+    }
+  }
+
+  /**
+   * 导入岗位
+   */
+  const handleImport = async (options: any) => {
+    try {
+      const formData = new FormData()
+      formData.append('file', options.file)
+      await CasbinApi.post.import(formData)
+      ElMessage.success('导入成功')
+      getPostList()
+    } catch (error) {
+      console.error('导入失败:', error)
+      ElMessage.error('导入失败')
+    }
+  }
+
   const handlePageChange = (): void => {
-    getPostList()
+    // 客户端分页无需重新请求
   }
 
   const handleAddPost = (): void => {

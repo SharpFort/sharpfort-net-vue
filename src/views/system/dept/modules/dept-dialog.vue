@@ -115,7 +115,7 @@
 
   const loadDeptOptions = async () => {
     try {
-      const res = await CasbinApi.dept.getList({ SkipCount: 0, MaxResultCount: 1000 })
+      const res = await CasbinApi.dept.getSelectData()
       deptOptions.value = handleTree(res.items || [])
     } catch (error) {
       console.error('加载部门选项失败:', error)

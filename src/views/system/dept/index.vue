@@ -5,7 +5,7 @@
     <ArtSearchBar
       v-model="formFilters"
       :items="formItems"
-      :showExpand="false"
+      :span="4"
       @reset="handleReset"
       @search="handleSearch"
     />
@@ -19,10 +19,21 @@
         @refresh="handleRefresh"
       >
         <template #left>
-          <ElButton @click="handleAddDept" v-ripple> 新增部门 </ElButton>
-          <ElButton @click="toggleExpand" v-ripple>
-            {{ isExpanded ? '收起' : '展开' }}
-          </ElButton>
+          <ElSpace wrap>
+            <ElButton @click="handleAddDept" v-ripple> 新增部门 </ElButton>
+            <ElButton @click="toggleExpand" v-ripple>
+              {{ isExpanded ? '收起' : '展开' }}
+            </ElButton>
+            <ElButton @click="handleExport" v-ripple> 导出 </ElButton>
+            <ElUpload
+              action="#"
+              :show-file-list="false"
+              :http-request="handleImport"
+              accept=".xlsx,.xls"
+            >
+              <ElButton v-ripple> 导入 </ElButton>
+            </ElUpload>
+          </ElSpace>
         </template>
       </ArtTableHeader>
 
@@ -48,7 +59,7 @@
   import { useTableColumns } from '@/hooks/core/useTableColumns'
   import DeptDialog from './modules/dept-dialog.vue'
   import { CasbinApi } from '@/api/casbin-rbac'
-  import { ElTag, ElMessageBox } from 'element-plus'
+  import { ElTag, ElMessageBox, ElMessage, ElSpace, ElUpload } from 'element-plus'
 
   defineOptions({ name: 'Dept' })
 
@@ -63,10 +74,16 @@
 
   // 搜索相关
   const formFilters = reactive({
-    deptName: ''
+    deptName: '',
+    deptCode: '',
+    leader: '',
+    state: undefined as boolean | undefined
   })
   const appliedFilters = reactive({
-    deptName: ''
+    deptName: '',
+    deptCode: '',
+    leader: '',
+    state: undefined as boolean | undefined
   })
 
   const formItems = computed(() => [
@@ -75,6 +92,30 @@
       key: 'deptName',
       type: 'input',
       props: { clearable: true }
+    },
+    {
+      label: '部门编码',
+      key: 'deptCode',
+      type: 'input',
+      props: { clearable: true }
+    },
+    {
+      label: '负责人',
+      key: 'leader',
+      type: 'input',
+      props: { clearable: true }
+    },
+    {
+      label: '状态',
+      key: 'state',
+      type: 'select',
+      props: {
+        clearable: true,
+        options: [
+          { label: '启用', value: true },
+          { label: '停用', value: false }
+        ]
+      }
     }
   ])
 
@@ -180,11 +221,52 @@
 
   const handleReset = (): void => {
     formFilters.deptName = ''
-    appliedFilters.deptName = ''
+    formFilters.deptCode = ''
+    formFilters.leader = ''
+    formFilters.state = undefined
+    Object.assign(appliedFilters, formFilters)
   }
 
   const handleSearch = (): void => {
-    appliedFilters.deptName = formFilters.deptName
+    Object.assign(appliedFilters, formFilters)
+  }
+
+  /**
+   * 导出部门
+   */
+  const handleExport = async () => {
+    try {
+      ElMessage.info('正在导出数据，请稍候...')
+      const res = await CasbinApi.dept.export(appliedFilters)
+      const url = window.URL.createObjectURL(new Blob([res]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `部门数据_${new Date().getTime()}.xlsx`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+      ElMessage.success('导出成功')
+    } catch (error) {
+      console.error('导出失败:', error)
+      ElMessage.error('导出失败')
+    }
+  }
+
+  /**
+   * 导入部门
+   */
+  const handleImport = async (options: any) => {
+    try {
+      const formData = new FormData()
+      formData.append('file', options.file)
+      await CasbinApi.dept.import(formData)
+      ElMessage.success('导入成功')
+      getDeptList()
+    } catch (error) {
+      console.error('导入失败:', error)
+      ElMessage.error('导入失败')
+    }
   }
 
   const handleRefresh = (): void => {
@@ -211,8 +293,18 @@
   const searchDept = (items: any[]): any[] => {
     const results: any[] = []
     for (const item of items) {
+      // 检查当前节点是否匹配所有搜索条件
       const searchName = appliedFilters.deptName?.toLowerCase().trim() || ''
-      const match = !searchName || (item.deptName || '').toLowerCase().includes(searchName)
+      const searchCode = appliedFilters.deptCode?.toLowerCase().trim() || ''
+      const searchLeader = appliedFilters.leader?.toLowerCase().trim() || ''
+      const searchState = appliedFilters.state
+
+      const matchName = !searchName || (item.deptName || '').toLowerCase().includes(searchName)
+      const matchCode = !searchCode || (item.deptCode || '').toLowerCase().includes(searchCode)
+      const matchLeader = !searchLeader || (item.leader || '').toLowerCase().includes(searchLeader)
+      const matchState = searchState === undefined || item.state === searchState
+
+      const isMatch = matchName && matchCode && matchLeader && matchState
 
       const clonedItem = { ...item, children: [] }
       if (item.children?.length) {
@@ -224,7 +316,7 @@
         }
       }
 
-      if (match) {
+      if (isMatch) {
         results.push(clonedItem)
       }
     }
@@ -233,7 +325,14 @@
 
   const filteredTableData = computed(() => {
     const treeData = handleTree(tableData.value)
-    if (!appliedFilters.deptName) return treeData
+    if (
+      !appliedFilters.deptName &&
+      !appliedFilters.deptCode &&
+      !appliedFilters.leader &&
+      appliedFilters.state === undefined
+    ) {
+      return treeData
+    }
     return searchDept(treeData)
   })
 

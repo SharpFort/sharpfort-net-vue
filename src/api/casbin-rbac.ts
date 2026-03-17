@@ -49,7 +49,12 @@ export const CasbinApi = {
     setRoles: (id: string | number, roleNames: string[]) =>
       request.put<any>({ url: `/api/app/user/${id}/role`, data: roleNames }),
     export: (params: any) =>
-      request.get<any>({ url: '/api/app/user/export-excel', params, responseType: 'blob' })
+      request.get<any>({ url: '/api/app/user/export-excel', params, responseType: 'blob' }),
+    import: (data: FormData) => request.post<any>({ url: '/api/app/user/import-excel', data }),
+    getSelectData: (keywords?: string) =>
+      request.get<any>({ url: '/api/app/user/select-data-list', params: { keywords } }),
+    updateState: (id: string | number, state: boolean) =>
+      request.put<any>({ url: `/api/app/user/${id}/${state}` })
   },
 
   // --- Role ---
@@ -89,18 +94,37 @@ export const CasbinApi = {
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/dept/${id}`, data }),
     // del: (id: string | number) => request.del<any>({ url: `/api/app/dept/${id}` })
-    del: (id: string | number) => request.del<any>({ url: `/api/app/dept?ids=${id}` })
+    del: (id: string | number) => request.del<any>({ url: `/api/app/dept?ids=${id}` }),
+    getDeptsByRoleId: (roleId: string | number) =>
+      request.get<any[]>({ url: `/api/app/dept/role-id/${roleId}` }),
+    getSelectData: (keywords?: string) =>
+      request.get<any>({ url: '/api/app/dept/select-data-list', params: { keywords } }),
+    export: (params: any) =>
+      request.get<any>({ url: '/api/app/dept/export-excel', params, responseType: 'blob' }),
+    import: (data: FormData) => request.post<any>({ url: '/api/app/dept/import-excel', data })
   },
 
   // --- Post ---
   post: {
-    getList: (params: any) => request.get<any>({ url: '/api/app/post', params }),
-    get: (id: string | number) => request.get<any>({ url: `/api/app/post/${id}` }),
-    create: (data: any) => request.post<any>({ url: '/api/app/post', data }),
-    update: (id: string | number, data: any) =>
-      request.put<any>({ url: `/api/app/post/${id}`, data }),
-    // del: (id: string | number) => request.del<any>({ url: `/api/app/post/${id}` })
-    del: (id: string | number) => request.del<any>({ url: `/api/app/post?ids=${id}` })
+    getList: (params: Api.SystemManage.PostSearchParams) =>
+      request.get<Api.SystemManage.PostList>({ url: '/api/app/post', params }),
+    get: (id: string) => request.get<Api.SystemManage.PostListItem>({ url: `/api/app/post/${id}` }),
+    create: (data: Api.SystemManage.PostCreateInput) =>
+      request.post<Api.SystemManage.PostListItem>({ url: '/api/app/post', data }),
+    update: (id: string, data: Api.SystemManage.PostUpdateInput) =>
+      request.put<Api.SystemManage.PostListItem>({ url: `/api/app/post/${id}`, data }),
+    del: (ids: string | string[]) => {
+      const idStr = Array.isArray(ids) ? ids.join(',') : ids
+      return request.del<any>({ url: `/api/app/post?ids=${idStr}` })
+    },
+    getSelectData: (keywords?: string) =>
+      request.get<Api.SystemManage.PostList>({
+        url: '/api/app/post/select-data-list',
+        params: { keywords }
+      }),
+    export: (params: Api.SystemManage.PostSearchParams) =>
+      request.get<any>({ url: '/api/app/post/export-excel', params, responseType: 'blob' }),
+    import: (data: FormData) => request.post<any>({ url: '/api/app/post/import-excel', data })
   },
 
   // --- Dict ---
@@ -149,7 +173,16 @@ export const CasbinApi = {
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/notice/${id}`, data }),
     // del: (id: string | number) => request.del<any>({ url: `/api/app/notice/${id}` })
-    del: (id: string | number) => request.del<any>({ url: `/api/app/notice?ids=${id}` })
+    del: (id: string | number) => request.del<any>({ url: `/api/app/notice?ids=${id}` }),
+    sendOnlineMessage: (id: string | number) =>
+      request.post<any>({ url: `/api/app/notice/online/${id}` }),
+    sendOfflineMessage: (id: string | number) =>
+      request.post<any>({ url: `/api/app/notice/offline/${id}` }),
+    export: (params: any) =>
+      request.get<any>({ url: '/api/app/notice/export-excel', params, responseType: 'blob' }),
+    import: (data: FormData) => request.post<any>({ url: '/api/app/notice/import-excel', data }),
+    getSelectData: (keywords?: string) =>
+      request.get<any>({ url: '/api/app/notice/select-data-list', params: { keywords } })
   },
 
   // --- Logs ---

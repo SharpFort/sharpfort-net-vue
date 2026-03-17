@@ -14,6 +14,15 @@
         <template #left>
           <ElSpace wrap>
             <ElButton @click="showDialog('add')" v-ripple>新增用户</ElButton>
+            <ElButton @click="handleExport" v-ripple>导出</ElButton>
+            <ElUpload
+              action="#"
+              :show-file-list="false"
+              :http-request="handleImport"
+              accept=".xlsx,.xls"
+            >
+              <ElButton v-ripple>导入</ElButton>
+            </ElUpload>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -47,7 +56,7 @@
   import { CasbinApi } from '@/api/casbin-rbac'
   import UserSearch from './modules/user-search.vue'
   import UserDialog from './modules/user-dialog.vue'
-  import { ElTag, ElMessageBox } from 'element-plus'
+  import { ElMessageBox, ElSwitch, ElUpload, ElMessage } from 'element-plus'
   import { DialogType } from '@/types'
 
   defineOptions({ name: 'User' })
@@ -68,7 +77,9 @@
     Phone: undefined,
     Email: undefined,
     State: undefined,
-    Gender: undefined
+    Gender: undefined,
+    PostId: undefined,
+    RoleId: undefined
   })
 
   const {
@@ -110,20 +121,20 @@
         {
           prop: 'userName',
           label: '用户名',
-          minWidth: 120,
+          minWidth: 60,
           showOverflowTooltip: true
         },
         {
           prop: 'nick',
           label: '昵称',
-          minWidth: 120,
+          minWidth: 60,
           showOverflowTooltip: true
         },
         {
           prop: 'gender',
           label: '性别',
-          width: 80,
-          formatter: (row) => {
+          width: 60,
+          formatter: (row: any) => {
             const genderMap: Record<string, string> = {
               Unknown: '未知',
               Male: '男',
@@ -146,28 +157,57 @@
         {
           prop: 'deptName',
           label: '部门',
-          minWidth: 120,
+          minWidth: 40,
           showOverflowTooltip: true
+        },
+        {
+          prop: 'posts',
+          label: '岗位',
+          minWidth: 40,
+          showOverflowTooltip: true,
+          formatter: (row: any) => {
+            return row.posts?.map((p: any) => p.postName).join(', ') || '-'
+          }
+        },
+        {
+          prop: 'roles',
+          label: '角色',
+          minWidth: 40,
+          showOverflowTooltip: true,
+          formatter: (row: any) => {
+            return row.roles?.map((r: any) => r.roleName).join(', ') || '-'
+          }
         },
         {
           prop: 'state',
           label: '状态',
-          width: 80,
-          formatter: (row) => {
-            const statusConfig = row.state
-              ? { type: 'success', text: '正常' }
-              : { type: 'danger', text: '停用' }
-            return h(
-              ElTag,
-              { type: statusConfig.type as 'success' | 'danger' },
-              () => statusConfig.text
-            )
+          width: 60,
+          formatter: (row: any) => {
+            return h(ElSwitch, {
+              modelValue: row.state,
+              activeText: '正常',
+              inactiveText: '停用',
+              inlinePrompt: true,
+              style: '--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949',
+              'onUpdate:modelValue': (val: any) => {
+                const checked = val as boolean
+                row.state = checked
+                CasbinApi.user
+                  .updateState(row.id as string, checked)
+                  .then(() => {
+                    ElMessage.success(checked ? '已启用该用户' : '已停用该用户')
+                  })
+                  .catch(() => {
+                    row.state = !checked // revert on error
+                  })
+              }
+            })
           }
         },
         {
           prop: 'creationTime',
           label: '创建时间',
-          width: 180,
+          width: 260,
           sortable: true
         },
         {
@@ -175,7 +215,7 @@
           label: '操作',
           width: 120,
           fixed: 'right', // 固定列
-          formatter: (row) =>
+          formatter: (row: any) =>
             h('div', [
               h(ArtButtonTable, {
                 type: 'edit',
@@ -196,17 +236,53 @@
    * @param params 参数
    */
   const handleSearch = (params: Record<string, any>) => {
-    console.log(params)
     // 搜索参数赋值
     Object.assign(searchParams, params)
     getData()
   }
 
   /**
+   * 导出用户
+   */
+  const handleExport = async () => {
+    try {
+      ElMessage.info('正在导出数据，请稍候...')
+      const res = await CasbinApi.user.export(searchParams)
+      const url = window.URL.createObjectURL(new Blob([res]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `用户数据_${new Date().getTime()}.xlsx`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+      ElMessage.success('导出成功')
+    } catch (error) {
+      console.error('导出失败:', error)
+      ElMessage.error('导出失败')
+    }
+  }
+
+  /**
+   * 导入用户
+   */
+  const handleImport = async (options: any) => {
+    try {
+      const formData = new FormData()
+      formData.append('file', options.file)
+      await CasbinApi.user.import(formData)
+      ElMessage.success('导入成功')
+      refreshData()
+    } catch (error) {
+      console.error('导入失败:', error)
+      ElMessage.error('导入失败')
+    }
+  }
+
+  /**
    * 显示用户弹窗
    */
   const showDialog = (type: DialogType, row?: UserListItem): void => {
-    console.log('打开弹窗:', { type, row })
     dialogType.value = type
     currentUserData.value = row || {}
     nextTick(() => {
@@ -218,14 +294,23 @@
    * 删除用户
    */
   const deleteUser = (row: UserListItem): void => {
-    console.log('删除用户:', row)
     ElMessageBox.confirm(`确定要注销该用户吗？`, '注销用户', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'error'
-    }).then(() => {
-      ElMessage.success('注销成功')
     })
+      .then(async () => {
+        try {
+          await CasbinApi.user.del(row.id as unknown as string)
+          ElMessage.success('注销成功')
+          refreshData()
+        } catch (error) {
+          console.error('删除用户失败:', error)
+        }
+      })
+      .catch(() => {
+        // 取消操作
+      })
   }
 
   /**
@@ -245,6 +330,5 @@
    */
   const handleSelectionChange = (selection: UserListItem[]): void => {
     selectedRows.value = selection
-    console.log('选中行数据:', selectedRows.value)
   }
 </script>

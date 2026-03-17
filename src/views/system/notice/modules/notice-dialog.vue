@@ -12,8 +12,8 @@
       </ElFormItem>
       <ElFormItem label="公告类型" prop="noticeType">
         <ElSelect v-model="form.noticeType" placeholder="请选择类型" style="width: 100%">
-          <ElOption label="走马灯" value="MerryGoRound" />
-          <ElOption label="提示弹窗" value="Popup" />
+          <ElOption label="走马灯" :value="10" />
+          <ElOption label="提示弹窗" :value="20" />
         </ElSelect>
       </ElFormItem>
       <ElFormItem label="公告内容" prop="content">
@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
+  import { ElMessage } from 'element-plus'
   import { CasbinApi } from '@/api/casbin-rbac'
 
   interface Props {
@@ -63,7 +64,7 @@
   const form = reactive<any>({
     id: undefined,
     title: '',
-    noticeType: 'MerryGoRound',
+    noticeType: 10,
     content: '',
     orderNum: 0,
     state: true
@@ -75,13 +76,22 @@
     content: [{ required: true, message: '请输入公告内容', trigger: 'blur' }]
   })
 
+  // 后端返回字符串枚举名，需要转换为整数值以匹配 ElOption
+  const noticeTypeNameToValue: Record<string, number> = {
+    MerryGoRound: 10,
+    Popup: 20
+  }
+
   const initForm = async () => {
     if (props.editData && props.editData.id) {
       try {
         const detail = await CasbinApi.notice.get(props.editData.id)
+        // 将后端返回的字符串枚举名转换为整数值
+        if (typeof detail.noticeType === 'string') {
+          detail.noticeType = noticeTypeNameToValue[detail.noticeType] ?? 0
+        }
         Object.assign(form, {
-          ...detail,
-          noticeType: detail.type // API 返回的是 type，但输入需要 noticeType
+          ...detail
         })
       } catch (error) {
         console.error('获取公告详情失败:', error)
@@ -90,7 +100,7 @@
       Object.assign(form, {
         id: undefined,
         title: '',
-        noticeType: 'MerryGoRound',
+        noticeType: 10,
         content: '',
         orderNum: 0,
         state: true
@@ -104,11 +114,19 @@
       await formRef.value.validate()
       submitLoading.value = true
 
+      const payload = {
+        title: form.title,
+        noticeType: form.noticeType,
+        content: form.content,
+        orderNum: form.orderNum,
+        state: form.state
+      }
+
       if (form.id) {
-        await CasbinApi.notice.update(form.id, form)
+        await CasbinApi.notice.update(form.id, payload)
         ElMessage.success('更新成功')
       } else {
-        await CasbinApi.notice.create(form)
+        await CasbinApi.notice.create(payload)
         ElMessage.success('添加成功')
       }
 
