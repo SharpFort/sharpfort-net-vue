@@ -63,10 +63,12 @@
         postOptions.value = postRes.items.map((p: any) => ({ label: p.postName, value: p.id }))
       }
       // 加载角色类型
-      const roleRes = await CasbinApi.role.getList({ SkipCount: 0, MaxResultCount: 1000 })
-      if (roleRes && roleRes.items) {
-        roleOptions.value = roleRes.items.map((r: any) => ({ label: r.roleName, value: r.id }))
-      }
+      const roleRes = await CasbinApi.role.getSelectData()
+      const list = Array.isArray(roleRes) ? roleRes : roleRes?.items || []
+      roleOptions.value = list.map((r: any) => ({
+        label: r.roleName || r.label,
+        value: r.id || r.value
+      }))
     } catch (error) {
       console.error('加载选项失败', error)
     }

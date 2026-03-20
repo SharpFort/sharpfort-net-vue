@@ -136,10 +136,21 @@ export const useUserStore = defineStore(
 
     /**
      * 退出登录
-     * 清空所有用户相关状态并跳转到登录页
+     * 调用后端接口销毁Token，然后清空所有用户相关状态并跳转到登录页
      */
-    const logOut = () => {
-      // 清空用户信息
+    const logOut = async () => {
+      // 1. 调用后端接口销毁服务端会话
+      if (accessToken.value) {
+        try {
+          const { CasbinApi } = await import('@/api/casbin-rbac')
+          await CasbinApi.account.logout()
+        } catch (error) {
+          console.error('[Logout] Failed to call backend logout api:', error)
+          // 即使后端接口调用失败，为了安全依然继续清理前端状态
+        }
+      }
+
+      // 2. 清空用户信息
       info.value = {}
       // 重置登录状态
       isLogin.value = false

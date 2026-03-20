@@ -85,6 +85,79 @@ declare namespace Api {
     }
   }
 
+  /** 账号功能类型 */
+  namespace Account {
+    interface AuthCreateOrUpdateInputDto {
+      userId: string
+      openId?: string
+      name?: string
+      authType?: string
+    }
+
+    interface AuthOutputDto {
+      id: string
+      userId: string
+      openId?: string
+      name?: string
+      authType?: string
+      creationTime: string
+    }
+
+    interface CaptchaImageDto {
+      uuid: string
+      img?: string // byte
+      isEnableCaptcha: boolean
+    }
+
+    interface LoginInputVo {
+      userName?: string
+      password?: string
+      uuid?: string
+      code?: string
+    }
+
+    interface LoginOutputDto {
+      token?: string
+      refreshToken?: string
+    }
+
+    interface PhoneCaptchaImageDto {
+      phone?: string
+      uuid?: string
+      code?: string
+    }
+
+    interface RegisterDto {
+      userName?: string
+      password?: string
+      uuid?: string
+      phone?: number
+      code?: string
+      nick?: string
+    }
+
+    interface RestPasswordDto {
+      password?: string
+    }
+
+    interface RetrievePasswordDto {
+      password?: string
+      uuid?: string
+      phone: number
+      code?: string
+    }
+
+    interface UpdateIconDto {
+      icon?: string
+      userId?: string
+    }
+
+    interface UpdatePasswordDto {
+      newPassword?: string
+      oldPassword?: string
+    }
+  }
+
   /** 系统管理类型 */
   namespace SystemManage {
     /** 用户列表 */
@@ -113,24 +186,75 @@ declare namespace Api {
         Api.Common.CommonSearchParams
     >
 
-    /** 角色列表 */
-    type RoleList = Api.Common.PaginatedResponse<RoleListItem>
+    /** 角色列表响应 */
+    interface RoleList {
+      items: RoleGetOutputDto[]
+      totalCount: number
+    }
 
-    /** 角色列表项 */
-    interface RoleListItem {
-      roleId: number
-      roleName: string
-      roleCode: string
-      description: string
-      enabled: boolean
-      createTime: string
+    /** 角色实体信息 */
+    interface RoleGetOutputDto {
+      id: string
+      creationTime: string
+      creatorId?: string
+      roleName?: string
+      roleCode?: string
+      remark?: string
+      dataScope?: number
+      state: boolean
+      orderNum: number
     }
 
     /** 角色搜索参数 */
-    type RoleSearchParams = Partial<
-      Pick<RoleListItem, 'roleId' | 'roleName' | 'roleCode' | 'description' | 'enabled'> &
-        Api.Common.CommonSearchParams
-    >
+    interface RoleSearchParams {
+      SkipCount?: number
+      MaxResultCount?: number
+      Sorting?: string
+      RoleName?: string
+      RoleCode?: string
+      State?: boolean
+      StartTime?: string
+      EndTime?: string
+      OrderByColumn?: string
+      IsAsc?: string
+      IsAscending?: boolean
+    }
+
+    /** 角色创建参数 */
+    interface RoleCreateInputVo {
+      roleName?: string
+      roleCode?: string
+      remark?: string
+      dataScope?: number
+      state?: boolean
+      orderNum?: number
+      departmentIds?: string[]
+      menuIds?: string[]
+    }
+
+    /** 角色更新参数 */
+    interface RoleUpdateInputVo {
+      roleName?: string
+      roleCode?: string
+      remark?: string
+      dataScope?: number
+      state?: boolean
+      orderNum?: number
+      departmentIds?: string[]
+      menuIds?: string[]
+    }
+
+    /** 角色数据权限更新参数 */
+    interface UpdateDataScopeInput {
+      roleId: string
+      departmentIds?: string[]
+      dataScope?: string | number // Enum: ALL, CUSTOM, DEPT, etc.
+    }
+    /** 角色授权用户参数 */
+    interface RoleAuthUserCreateOrDeleteInput {
+      roleId: string
+      userIds: string[]
+    }
 
     /** 在线用户模型 */
     interface OnlineUserModel {

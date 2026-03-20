@@ -22,6 +22,15 @@
         <template #left>
           <ElSpace wrap>
             <ElButton @click="showDialog('add')" v-ripple>新增角色</ElButton>
+            <ElButton @click="handleExport" v-ripple> 导出 </ElButton>
+            <ElUpload
+              action="#"
+              :show-file-list="false"
+              :http-request="handleImport"
+              accept=".xlsx,.xls"
+            >
+              <ElButton v-ripple> 导入 </ElButton>
+            </ElUpload>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -52,6 +61,20 @@
       :role-data="currentRoleData"
       @success="refreshData"
     />
+
+    <!-- 授权账号弹窗 -->
+    <RoleAuthUserDialog
+      v-model="userPermissionDialog"
+      :role-data="currentRoleData"
+      @success="refreshData"
+    />
+
+    <!-- 数据权限弹窗 -->
+    <RoleDataScopeDialog
+      v-model="dataScopeDialog"
+      :role-data="currentRoleData"
+      @success="refreshData"
+    />
   </div>
 </template>
 
@@ -61,7 +84,9 @@
   import RoleSearch from './modules/role-search.vue'
   import RoleEditDialog from './modules/role-edit-dialog.vue'
   import RolePermissionDialog from './modules/role-permission-dialog.vue'
-  import { ElTag, ElMessageBox, ElButton, ElMessage } from 'element-plus'
+  import RoleAuthUserDialog from './modules/role-auth-user-dialog.vue'
+  import RoleDataScopeDialog from './modules/role-data-scope-dialog.vue'
+  import { ElTag, ElMessageBox, ElButton, ElMessage, ElUpload } from 'element-plus'
 
   defineOptions({ name: 'Role' })
 
@@ -76,6 +101,8 @@
 
   const dialogVisible = ref(false)
   const permissionDialog = ref(false)
+  const userPermissionDialog = ref(false)
+  const dataScopeDialog = ref(false)
   const currentRoleData = ref<any>(undefined)
 
   const {
@@ -218,6 +245,16 @@
                   link: true,
                   type: 'primary',
                   size: 'small',
+                  onClick: () => showDataScopeDialog(row)
+                },
+                () => '数据权限'
+              ),
+              h(
+                ElButton,
+                {
+                  link: true,
+                  type: 'primary',
+                  size: 'small',
                   onClick: () => showUserPermissionDialog(row)
                 },
                 () => '授权账号'
@@ -281,11 +318,14 @@
     currentRoleData.value = row
   }
 
-  const showUserPermissionDialog = () => {
-    ElMessage.info('授权账号功能开发中...')
-    // TODO: 实现授权账号对话框
-    // userPermissionDialog.value = true
-    // currentRoleData.value = row
+  const showDataScopeDialog = (row?: any) => {
+    dataScopeDialog.value = true
+    currentRoleData.value = row
+  }
+
+  const showUserPermissionDialog = (row?: any) => {
+    userPermissionDialog.value = true
+    currentRoleData.value = row
   }
 
   const copyRole = async (row: any) => {
@@ -324,5 +364,43 @@
       .catch(() => {
         ElMessage.info('已取消删除')
       })
+  }
+
+  /**
+   * 导出角色
+   */
+  const handleExport = async () => {
+    try {
+      ElMessage.info('正在导出数据，请稍候...')
+      const res = await CasbinApi.role.export(searchParams)
+      const url = window.URL.createObjectURL(new Blob([res]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `角色数据_${new Date().getTime()}.xlsx`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+      ElMessage.success('导出成功')
+    } catch (error) {
+      console.error('导出失败:', error)
+      ElMessage.error('导出失败')
+    }
+  }
+
+  /**
+   * 导入角色
+   */
+  const handleImport = async (options: any) => {
+    try {
+      const formData = new FormData()
+      formData.append('file', options.file)
+      await CasbinApi.role.import(formData)
+      ElMessage.success('导入成功')
+      refreshData()
+    } catch (error) {
+      console.error('导入失败:', error)
+      ElMessage.error('导入失败')
+    }
   }
 </script>

@@ -14,7 +14,7 @@
  * @author Art Design Pro Team
  */
 
-import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import { useUserStore } from '@/store/modules/user'
 import { ApiStatus } from './status'
 import { HttpError, handleError, showError, showSuccess } from './error'
@@ -81,8 +81,20 @@ axiosInstance.interceptors.request.use(
 )
 
 /** 响应拦截器 */
+let isRefreshing = false
+let refreshSubscribers: ((token: string) => void)[] = []
+
+function addRefreshSubscriber(cb: (token: string) => void) {
+  refreshSubscribers.push(cb)
+}
+
+function onRefreshed(token: string) {
+  refreshSubscribers.forEach((cb) => cb(token))
+  refreshSubscribers = []
+}
+
 axiosInstance.interceptors.response.use(
-  (response: AxiosResponse<BaseResponse>) => {
+  async (response) => {
     // 兼容ABP直接返回数据的情况（没有code/msg包装）
     if (!Object.prototype.hasOwnProperty.call(response.data, 'code')) {
       // ABP直接返回数据，包装成标准格式
@@ -94,14 +106,20 @@ axiosInstance.interceptors.response.use(
       return response
     }
 
-    // 标准包装格式
     const { code, msg } = response.data
     if (code === ApiStatus.success) return response
-    if (code === ApiStatus.unauthorized) handleUnauthorizedError(msg)
+
+    // Token过期内层状态码情况
+    if (code === ApiStatus.unauthorized) {
+      return handleTokenRefresh(response.config) as any
+    }
+
     throw createHttpError(msg || $t('httpMsg.requestFailed'), code)
   },
-  (error) => {
-    if (error.response?.status === ApiStatus.unauthorized) handleUnauthorizedError()
+  async (error) => {
+    if (error.response?.status === ApiStatus.unauthorized) {
+      return handleTokenRefresh(error.config)
+    }
     return Promise.reject(handleError(error))
   }
 )
@@ -111,7 +129,59 @@ function createHttpError(message: string, code: number) {
   return new HttpError(message, code)
 }
 
-/** 处理401错误（带防抖） */
+/** 执行 Token 无感刷新与请求重试 */
+async function handleTokenRefresh(config: InternalAxiosRequestConfig): Promise<any> {
+  const userStore = useUserStore()
+  // 如果没有刷新令牌，或者请求本身就是刷新接口，直接退出登录
+  if (!userStore.refreshToken || config.url?.includes('/api/app/account/refresh')) {
+    return handleUnauthorizedError()
+  }
+
+  // 如果正在刷新中，将请求挂起
+  if (isRefreshing) {
+    return new Promise((resolve) => {
+      addRefreshSubscriber((newToken: string) => {
+        config.headers.set('Authorization', `Bearer ${newToken}`)
+        resolve(axiosInstance(config))
+      })
+    })
+  }
+
+  isRefreshing = true
+  try {
+    // 使用单纯的 axios 实例发起刷新请求，避免拦截器死循环
+    const res = await axios.post(`${VITE_API_URL}/api/app/account/refresh`, null, {
+      params: { refresh_token: userStore.refreshToken }
+    })
+
+    // 假设刷新接口返回的数据结构 { data: { token, refreshToken } } 或者直接是 { token, refreshToken } 根据后端的约定
+    // ABP 中可能包裹在 response.data 层，我们尝试提取
+    const newAuthData = res.data?.data || res.data
+    const newToken = newAuthData.token
+    const newRefToken = newAuthData.refreshToken
+
+    if (!newToken) {
+      throw new Error('Refresh failed')
+    }
+
+    userStore.setToken(newToken, newRefToken)
+    // 更新当前失败请求的 token 并重发
+    config.headers.set('Authorization', `Bearer ${newToken}`)
+
+    // 执行队列中的所有挂起请求
+    onRefreshed(newToken)
+
+    return axiosInstance(config)
+  } catch {
+    // 刷新失败，清空队列，跳转登录
+    refreshSubscribers = []
+    return handleUnauthorizedError()
+  } finally {
+    isRefreshing = false
+  }
+}
+
+/** 处理彻底无法授权的情况（带防抖登出） */
 function handleUnauthorizedError(message?: string): never {
   const error = createHttpError(message || $t('httpMsg.unauthorized'), ApiStatus.unauthorized)
 

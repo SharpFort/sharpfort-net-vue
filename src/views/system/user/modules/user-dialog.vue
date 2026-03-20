@@ -274,8 +274,8 @@
    */
   const loadRoleList = async () => {
     try {
-      const res = await CasbinApi.role.getList({ SkipCount: 0, MaxResultCount: 1000 })
-      roleList.value = res.items || []
+      const res = await CasbinApi.role.getSelectData()
+      roleList.value = Array.isArray(res) ? res : res?.items || []
     } catch (error) {
       console.error('加载角色列表失败:', error)
     }

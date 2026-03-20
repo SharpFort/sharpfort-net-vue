@@ -1,59 +1,34 @@
 <!-- 个人中心页面 -->
 <template>
-  <div class="user-center-container">
-    <el-row :gutter="20">
-      <el-col :span="8" :xs="24">
-        <el-card class="box-card">
-          <div class="user-info-header">
-            <div class="user-avatar-box">
-              <img :src="userInfo.icon || defaultAvatar" class="user-avatar" />
-            </div>
-            <h2 class="user-name">{{ userInfo.nick || userInfo.userName }}</h2>
-            <p class="user-desc">{{ userInfo.introduction || '暂无介绍' }}</p>
+  <div class="user-center-container art-full-height p-5">
+    <el-card class="box-card user-center-card border-none" shadow="never">
+      <el-tabs v-model="activeTab" class="user-tabs" tab-position="left">
+        <el-tab-pane label="基本资料" name="profile">
+          <div class="tab-pane-content">
+            <h3 class="tab-title">个人基本资料</h3>
+            <UserProfile :user="userInfo" @refresh="getUserInfo" />
           </div>
-          <div class="user-info-list">
-            <div class="list-item">
-              <el-icon><User /></el-icon>
-              <span>{{ userInfo.userName }}</span>
-            </div>
-            <div class="list-item">
-              <el-icon><Iphone /></el-icon>
-              <span>{{ userInfo.phone || '暂无手机号' }}</span>
-            </div>
-            <div class="list-item">
-              <el-icon><Message /></el-icon>
-              <span>{{ userInfo.email || '暂无邮箱' }}</span>
-            </div>
-            <div class="list-item">
-              <el-icon><Location /></el-icon>
-              <span>{{ userInfo.address || '暂无地址' }}</span>
-            </div>
+        </el-tab-pane>
+        <el-tab-pane label="安全设置" name="security">
+          <div class="tab-pane-content">
+            <h3 class="tab-title">安全设置</h3>
+            <UserPwd />
           </div>
-
-          <div class="user-tags">
-            <div class="tag-title">标签</div>
-            <div class="tag-list">
-              <el-tag v-for="tag in labelList" :key="tag" class="tag-item">{{ tag }}</el-tag>
-            </div>
+        </el-tab-pane>
+        <el-tab-pane label="登录日志" name="loginLog">
+          <div class="tab-pane-content">
+            <h3 class="tab-title">个人登录日志</h3>
+            <UserLog type="login" />
           </div>
-        </el-card>
-      </el-col>
-      <el-col :span="16" :xs="24">
-        <el-card class="box-card">
-          <el-tabs v-model="activeTab">
-            <el-tab-pane label="基本资料" name="profile">
-              <UserProfile :user="userInfo" @refresh="getUserInfo" />
-            </el-tab-pane>
-            <el-tab-pane label="安全设置" name="security">
-              <UserPwd />
-            </el-tab-pane>
-            <el-tab-pane label="操作日志" name="log">
-              <UserLog />
-            </el-tab-pane>
-          </el-tabs>
-        </el-card>
-      </el-col>
-    </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="操作日志" name="opLog">
+          <div class="tab-pane-content">
+            <h3 class="tab-title">个人操作日志</h3>
+            <UserLog type="operation" />
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </el-card>
   </div>
 </template>
 
@@ -61,29 +36,35 @@
   import { ref, onMounted } from 'vue'
   import { useUserStore } from '@/store/modules/user'
   import { CasbinApi } from '@/api/casbin-rbac'
-  import { User, Iphone, Message, Location } from '@element-plus/icons-vue'
   import UserProfile from './components/UserProfile.vue'
   import UserPwd from './components/UserPwd.vue'
   import UserLog from './components/UserLog.vue'
-  import defaultAvatarImg from '@/assets/images/user/avatar.webp' // Assuming path, check
 
   defineOptions({ name: 'UserCenter' })
 
   const userStore = useUserStore()
   const userInfo = ref<any>({})
   const activeTab = ref('profile')
-  const defaultAvatar = defaultAvatarImg
-  const labelList = ['专注设计', '很有想法', '辣~', '大长腿', '川妹子', '海纳百川']
 
   const getUserInfo = async () => {
-    const userId = userStore.getUserInfo?.userId
+    // Handling possible mismatch in UserStore typings vs actual backend response
+    const storedInfo = userStore.getUserInfo || {}
+    const userId = storedInfo.userId || storedInfo.id || storedInfo.user?.id
+
     if (userId) {
       try {
         const res = await CasbinApi.user.get(userId)
         userInfo.value = res
+        // Sync back to store if needed
+        userStore.setUserInfo({ ...storedInfo, ...res })
       } catch (error) {
-        console.error(error)
+        console.error('Failed to get user details:', error)
       }
+    } else {
+      console.warn(
+        'Cannot fetch user profile mapping because userId is missing from auth data:',
+        storedInfo
+      )
     }
   }
 
@@ -94,70 +75,62 @@
 
 <style scoped lang="scss">
   .user-center-container {
-    padding: 20px;
+    height: 100%;
+    background-color: var(--el-bg-color-page);
   }
 
-  .box-card {
-    margin-bottom: 20px;
+  .user-center-card {
+    height: 100%;
+    border-radius: 8px;
+
+    :deep(.el-card__body) {
+      height: 100%;
+      padding: 0;
+    }
   }
 
-  .user-info-header {
-    padding-bottom: 20px;
-    text-align: center;
-    border-bottom: 1px solid var(--el-border-color-lighter);
+  .user-tabs {
+    height: 100%;
 
-    .user-avatar-box {
-      margin-bottom: 15px;
+    :deep(.el-tabs__header.is-left) {
+      width: 200px;
+      padding-top: 20px;
+      margin-right: 0;
+      border-right: 1px solid var(--el-border-color-lighter);
+    }
 
-      .user-avatar {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
+    :deep(.el-tabs__item) {
+      height: 50px;
+      padding: 0 30px;
+      font-size: 15px;
+      line-height: 50px;
+      text-align: left;
+
+      &.is-active {
+        background-color: var(--el-color-primary-light-9);
+        border-right: 3px solid var(--el-color-primary);
       }
     }
 
-    .user-name {
-      margin-bottom: 10px;
+    :deep(.el-tabs__nav-wrap::after) {
+      display: none;
+    }
+
+    :deep(.el-tabs__active-bar) {
+      display: none;
+    }
+  }
+
+  .tab-pane-content {
+    height: 100%;
+    padding: 30px 40px;
+    overflow-y: auto;
+
+    .tab-title {
+      margin-bottom: 30px;
       font-size: 20px;
       font-weight: 500;
-    }
-
-    .user-desc {
-      font-size: 14px;
-      color: var(--el-text-color-secondary);
-    }
-  }
-
-  .user-info-list {
-    padding: 20px 0;
-
-    .list-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-      font-size: 14px;
-      color: var(--el-text-color-regular);
-
-      .el-icon {
-        margin-right: 10px;
-        font-size: 16px;
-      }
-    }
-  }
-
-  .user-tags {
-    margin-top: 10px;
-
-    .tag-title {
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .tag-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      color: var(--el-text-color-primary);
     }
   }
 </style>

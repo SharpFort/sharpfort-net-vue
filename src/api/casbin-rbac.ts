@@ -7,32 +7,37 @@ export const CasbinApi = {
   // --- Account ---
 
   account: {
-    login: (data: any) => request.post<any>({ url: '/api/app/account/login', data }),
-    register: (data: any) => request.post<any>({ url: '/api/app/account/register', data }),
-    getCaptcha: () => request.get<any>({ url: '/api/app/account/captcha-image' }),
-    getPhoneCaptcha: (data: any) =>
+    login: (data: Api.Account.LoginInputVo) =>
+      request.post<Api.Account.LoginOutputDto>({ url: '/api/app/account/login', data }),
+    register: (data: Api.Account.RegisterDto) =>
+      request.post<any>({ url: '/api/app/account/register', data }),
+    getCaptcha: () =>
+      request.get<Api.Account.CaptchaImageDto>({ url: '/api/app/account/captcha-image' }),
+    getPhoneCaptcha: (data: Api.Account.PhoneCaptchaImageDto) =>
       request.post<any>({ url: '/api/app/account/captcha-phone', data }),
-    getPhoneCaptchaForReset: (data: any) =>
+    getPhoneCaptchaForReset: (data: Api.Account.PhoneCaptchaImageDto) =>
       request.post<any>({ url: '/api/app/account/captcha-phone/repassword', data }),
-    retrievePassword: (data: any) =>
+    retrievePassword: (data: Api.Account.RetrievePasswordDto) =>
       request.post<any>({ url: '/api/app/account/retrieve-password', data }),
     refreshToken: (refreshToken: string) =>
-      request.post<any>({
+      request.post<Api.Account.LoginOutputDto>({
         url: '/api/app/account/refresh',
         params: { refresh_token: refreshToken }
       }),
-    restPassword: (userId: string | number, data: { password: string }) =>
+    restPassword: (userId: string | number, data: Api.Account.RestPasswordDto) =>
       request.put<any>({ url: `/api/app/account/rest-password/${userId}`, data }),
-    bindPhone: (data: any) =>
+    bindPhone: (data: Api.Account.PhoneCaptchaImageDto) =>
       request.post<any>({ url: '/api/app/account/captcha-phone/bind', data }),
-    validatePhoneCaptcha: (data: any) =>
+    validatePhoneCaptcha: (data: Api.Account.PhoneCaptchaImageDto) =>
       request.post<any>({ url: '/api/app/account/validation-phone-captcha', data }),
-    getAccountInfo: () => request.get<any>({ url: '/api/app/account' }),
+    getAccountInfo: () => request.get<Api.Account.AuthOutputDto>({ url: '/api/app/account' }),
     getVue3Router: (routerType: string) =>
       request.get<any>({ url: `/api/app/account/Vue3Router/${routerType}` }),
     logout: () => request.post<any>({ url: '/api/app/account/logout' }),
-    updatePassword: (data: any) => request.put<any>({ url: '/api/app/account/password', data }),
-    updateIcon: (data: any) => request.put<any>({ url: '/api/app/account/icon', data })
+    updatePassword: (data: Api.Account.UpdatePasswordDto) =>
+      request.put<any>({ url: '/api/app/account/password', data }),
+    updateIcon: (data: Api.Account.UpdateIconDto) =>
+      request.put<any>({ url: '/api/app/account/icon', data })
   },
 
   // --- User ---
@@ -59,20 +64,38 @@ export const CasbinApi = {
 
   // --- Role ---
   role: {
-    getList: (params: any) => request.get<any>({ url: '/api/app/role', params }),
-    get: (id: string | number) => request.get<any>({ url: `/api/app/role/${id}` }),
-    create: (data: any) => request.post<any>({ url: '/api/app/role', data }),
-    update: (id: string | number, data: any) =>
-      request.put<any>({ url: `/api/app/role/${id}`, data }),
-    // del: (id: string | number) => request.del<any>({ url: `/api/app/role/${id}` }),
-    del: (id: string | number) => request.del<any>({ url: `/api/app/role?ids=${id}` }),
-    getMenus: (roleId: string | number) =>
-      request.get<string[]>({ url: `/api/app/menu/role-id/${roleId}` }),
-    getDepts: (roleId: string | number) =>
-      request.get<string[]>({ url: `/api/app/dept/role-id/${roleId}` }),
-    setDataScope: (data: any) => request.put<any>({ url: '/api/app/role/data-scope', data }),
-    updateState: (id: string | number, state: boolean) =>
-      request.put<any>({ url: `/api/app/role/${id}/${state}` })
+    getList: (params: Api.SystemManage.RoleSearchParams) =>
+      request.get<Api.SystemManage.RoleList>({ url: '/api/app/role', params }),
+    get: (id: string) =>
+      request.get<Api.SystemManage.RoleGetOutputDto>({ url: `/api/app/role/${id}` }),
+    create: (data: Api.SystemManage.RoleCreateInputVo) =>
+      request.post<Api.SystemManage.RoleGetOutputDto>({ url: '/api/app/role', data }),
+    update: (id: string, data: Api.SystemManage.RoleUpdateInputVo) =>
+      request.put<Api.SystemManage.RoleGetOutputDto>({ url: `/api/app/role/${id}`, data }),
+    del: (ids: string | string[]) => {
+      const idStr = Array.isArray(ids) ? ids.join(',') : ids
+      return request.del<any>({ url: `/api/app/role?ids=${idStr}` })
+    },
+    getMenus: (roleId: string) => request.get<string[]>({ url: `/api/app/menu/role-id/${roleId}` }),
+    getDepts: (roleId: string) => request.get<string[]>({ url: `/api/app/dept/role-id/${roleId}` }),
+    setDataScope: (data: Api.SystemManage.UpdateDataScopeInput) =>
+      request.put<any>({ url: '/api/app/role/data-scope', data }),
+    updateState: (id: string, state: boolean) =>
+      request.put<any>({ url: `/api/app/role/${id}/${state}` }),
+    getAuthUsers: (roleId: string, isAllocated: boolean, params?: any) =>
+      request.get<any>({ url: `/api/app/role/auth-user/${roleId}/${isAllocated}`, params }),
+    addAuthUsers: (data: Api.SystemManage.RoleAuthUserCreateOrDeleteInput) =>
+      request.post<any>({ url: '/api/app/role/auth-user', data }),
+    removeAuthUsers: (data: Api.SystemManage.RoleAuthUserCreateOrDeleteInput) =>
+      request.del<any>({ url: '/api/app/role/auth-user', data }),
+    getSelectData: (keywords?: string) =>
+      request.get<any>({
+        url: '/api/app/role/select-data-list',
+        params: { keywords }
+      }),
+    export: (params: Api.SystemManage.RoleSearchParams) =>
+      request.get<any>({ url: '/api/app/role/export-excel', params, responseType: 'blob' }),
+    import: (data: FormData) => request.post<any>({ url: '/api/app/role/import-excel', data })
   },
 
   // --- Menu ---
