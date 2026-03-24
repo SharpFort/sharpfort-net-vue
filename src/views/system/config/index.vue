@@ -64,8 +64,8 @@
   // 状态管理
   const loading = ref(false)
   const dialogVisible = ref(false)
-  const editData = ref<any>(null)
-  const tableData = ref<any[]>([])
+  const editData = ref<Api.SystemManage.ConfigGetOutputDto | null>(null)
+  const tableData = ref<Api.SystemManage.ConfigGetListOutputDto[]>([])
 
   // 分页
   const pagination = reactive({
@@ -151,7 +151,7 @@
       prop: 'configType',
       label: '系统内置',
       width: 100,
-      formatter: (row: any) => (row.configType === 'Y' ? '是' : '否')
+      formatter: (row: Api.SystemManage.ConfigGetListOutputDto) => (row.configType === 'Y' ? '是' : '否')
     },
     {
       prop: 'remark',
@@ -169,7 +169,7 @@
       width: 150,
       align: 'right',
       fixed: 'right',
-      formatter: (row: any) => {
+      formatter: (row: Api.SystemManage.ConfigGetListOutputDto) => {
         return h('div', { style: 'text-align: right' }, [
           h(ArtButtonTable, {
             type: 'edit',
@@ -211,12 +211,12 @@
     dialogVisible.value = true
   }
 
-  const handleEditConfig = (row: any): void => {
+  const handleEditConfig = (row: Api.SystemManage.ConfigGetListOutputDto | Api.SystemManage.ConfigGetOutputDto): void => {
     editData.value = row
     dialogVisible.value = true
   }
 
-  const handleDeleteConfig = async (row: any): Promise<void> => {
+  const handleDeleteConfig = async (row: Api.SystemManage.ConfigGetListOutputDto): Promise<void> => {
     try {
       await ElMessageBox.confirm(`确定要删除参数 [${row.configName}] 吗？`, '提示', {
         confirmButtonText: '确定',

@@ -239,7 +239,7 @@
       // 存储token和用户信息
       userStore.setToken(token, refreshToken)
       const userInfo = await fetchGetUserInfo()
-      userStore.setUserInfo(userInfo)
+      userStore.setUserInfo(userInfo as any)
       userStore.setLoginStatus(true)
 
       // 登录成功处理

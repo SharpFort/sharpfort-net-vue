@@ -10,6 +10,14 @@
         <template #left>
           <ElSpace wrap>
             <ElButton type="primary" v-ripple @click="showDialog('add')">新增租户</ElButton>
+            <ElButton
+              type="danger"
+              v-ripple
+              :disabled="selectedRows.length === 0"
+              @click="handleBatchDelete"
+            >
+              批量删除
+            </ElButton>
             <ElButton type="warning" v-ripple @click="handleExport">导出Excel</ElButton>
             <ElButton type="success" v-ripple @click="handleImportClick">导入Excel</ElButton>
           </ElSpace>
@@ -19,7 +27,7 @@
       <!-- 表格 -->
       <ArtTable
         :loading="loading"
-        :data="data as any[]"
+        :data="data as TenantDto.TenantGetListOutputDto[]"
         :columns="columns"
         :pagination="pagination"
         table-layout="auto"
@@ -64,16 +72,16 @@
   // 弹窗相关
   const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
-  const currentTenantData = ref<any>({})
+  const currentTenantData = ref<TenantDto.TenantGetOutputDto | {}>({})
 
   // 选中行
-  const selectedRows = ref<any[]>([])
+  const selectedRows = ref<TenantDto.TenantGetListOutputDto[]>([])
 
   // 文件上传
   const fileInputRef = ref<HTMLInputElement | null>(null)
 
   // 搜索表单
-  const searchForm = ref({
+  const searchForm = ref<TenantDto.TenantGetListInput>({
     Name: undefined,
     StartTime: undefined,
     EndTime: undefined
@@ -137,7 +145,7 @@
           label: '操作',
           width: 220,
           fixed: 'right',
-          formatter: (row: any) =>
+          formatter: (row: TenantDto.TenantGetListOutputDto) =>
             h('div', [
               h(ArtButtonTable, {
                 type: 'edit',
@@ -165,7 +173,7 @@
     getData()
   }
 
-  const showDialog = (type: DialogType, row?: any): void => {
+  const showDialog = (type: DialogType, row?: TenantDto.TenantGetListOutputDto): void => {
     dialogType.value = type
     currentTenantData.value = row || {}
     nextTick(() => {
@@ -173,7 +181,7 @@
     })
   }
 
-  const deleteTenant = (row: any): void => {
+  const deleteTenant = (row: TenantDto.TenantGetListOutputDto): void => {
     ElMessageBox.confirm(`确定要删除租户 [${row.name}] 吗？`, '警告', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -185,7 +193,20 @@
     })
   }
 
-  const initTenant = (row: any): void => {
+  const handleBatchDelete = () => {
+    ElMessageBox.confirm(`确定要删除选中的 ${selectedRows.value.length} 个租户吗？`, '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(async () => {
+      const ids = selectedRows.value.map((row) => row.id!)
+      await TenantApi.del(ids)
+      ElMessage.success('批量删除成功')
+      refreshRemove()
+    })
+  }
+
+  const initTenant = (row: TenantDto.TenantGetListOutputDto): void => {
     ElMessageBox.confirm(`确定要初始化租户 [${row.name}] 吗？这可能需要一些时间。`, '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -202,7 +223,8 @@
 
   const handleExport = async () => {
     try {
-      const response = await TenantApi.exportExcel(searchParams)
+      const { current: _c, size: _s, ...others } = searchParams
+      const response = await TenantApi.exportExcel(others as TenantDto.TenantGetListInput)
       const blob = new Blob([response], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       })
@@ -266,7 +288,7 @@
     refreshData()
   }
 
-  const handleSelectionChange = (selection: any[]): void => {
+  const handleSelectionChange = (selection: TenantDto.TenantGetListOutputDto[]): void => {
     selectedRows.value = selection
   }
 </script>

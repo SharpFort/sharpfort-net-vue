@@ -124,31 +124,50 @@ export const thirdParty = {
     }),
 
   /**
+   * 获取当前账户的授权信息
+   * @param params 搜索参数
+   */
+  getAuthAccount: (params?: Api.Account.AuthSearchParams) =>
+    request.get<Api.Account.AuthOutputDto[]>({
+      url: '/api/app/auth/account',
+      params
+    }),
+
+  /**
    * 获取认证列表 (管理)
    * @param params 搜索参数
    */
-  getList: (params: Api.Auth.AuthSearchParams) =>
-    request.get<Api.Common.PaginatedResponse<Api.Auth.AuthOutputDto>>({
+  getList: (params: Api.Account.AuthSearchParams) =>
+    request.get<Api.Common.PaginatedResponse<Api.Account.AuthOutputDto>>({
       url: '/api/app/auth',
       params
+    }),
+
+  /**
+   * 获取详情
+   * @param id ID
+   */
+  get: (id: string | number) =>
+    request.get<Api.Account.AuthOutputDto>({
+      url: `/api/app/auth/${id}`
     }),
 
   /**
    * 删除第三方认证
    * @param id ID
    */
-  delete: (id: string) =>
+  delete: (id: string | string[]) =>
     request.del<void>({
       url: '/api/app/auth',
-      params: { id: [id] }
+      params: { id: Array.isArray(id) ? id : [id] }
     }),
 
   /**
    * 尝试获取认证信息
    * @param params 参数
    */
-  getAuthInfo: (params: { openId?: string; authType?: string; userId?: string }) =>
-    request.post<Api.Auth.AuthOutputDto>({
+  getAuthInfo: (params: Api.Account.TryGetAuthInfoInput) =>
+    request.post<Api.Account.AuthOutputDto>({
       url: '/api/app/auth/try-get-auth-info',
       params
     }),
@@ -156,7 +175,7 @@ export const thirdParty = {
   /**
    * 导出Excel
    */
-  export: (params: Api.Auth.AuthSearchParams) =>
+  export: (params: Api.Account.AuthSearchParams) =>
     request.get<Blob>({
       url: '/api/app/auth/export-excel',
       params,
@@ -164,10 +183,20 @@ export const thirdParty = {
     }),
 
   /**
+   * 导入Excel
+   * @param data FormData or array
+   */
+  import: (data: FormData | Api.Account.AuthCreateOrUpdateInputDto[]) =>
+    request.post<void>({
+      url: '/api/app/auth/import-excel',
+      data
+    }),
+
+  /**
    * 获取下拉数据
    */
   selectDataList: (keywords?: string) =>
-    request.get<any>({
+    request.get<Api.Common.PaginatedResponse<Api.Account.AuthOutputDto>>({
       url: '/api/app/auth/select-data-list',
       params: { keywords }
     })

@@ -1,12 +1,18 @@
 <template>
   <div class="online-user-page art-full-height">
     <!-- Search Bar -->
-    <ElForm :model="searchForm" inline class="search-form" @keyup.enter="getData">
+    <ElForm :model="searchParams" inline class="search-form" @keyup.enter="getData">
+      <ElFormItem label="会话编号">
+        <ElInput v-model="searchParams.ConnnectionId" placeholder="请输入会话编号" clearable />
+      </ElFormItem>
       <ElFormItem label="用户名">
-        <ElInput v-model="searchForm.userName" placeholder="请输入用户名" clearable />
+        <ElInput v-model="searchParams.UserName" placeholder="请输入用户名" clearable />
       </ElFormItem>
       <ElFormItem label="IP地址">
-        <ElInput v-model="searchForm.ipaddr" placeholder="请输入IP地址" clearable />
+        <ElInput v-model="searchParams.Ipaddr" placeholder="请输入IP地址" clearable />
+      </ElFormItem>
+      <ElFormItem label="登录地点">
+        <ElInput v-model="searchParams.LoginLocation" placeholder="请输入登录地点" clearable />
       </ElFormItem>
       <ElFormItem>
         <ElButton type="primary" @click="getData">查询</ElButton>
@@ -42,11 +48,7 @@
 
   defineOptions({ name: 'OnlineUser' })
 
-  // Search Form
-  const searchForm = ref({
-    userName: undefined,
-    ipaddr: undefined
-  })
+  // Online users rows
 
   const selectedRows = ref<Api.SystemManage.OnlineUserModel[]>([])
 
@@ -56,6 +58,7 @@
     data,
     loading,
     pagination,
+    searchParams,
     getData,
     resetSearchParams,
     handleSizeChange,
@@ -66,11 +69,11 @@
       apiFn: (params: any) => {
         // Map pagination to backend expectation if needed (User view uses SkipCount/MaxResultCount)
         // Check if CasbinApi.user.getList used { SkipCount, MaxResultCount }
-        // CasbinApi.monitor.online(params)
+        // CasbinApi.online.getList(params)
         // If the backend for online users is standard ABP, it might need PagedResultRequestDto
         const { current, size, ...others } = params
         // Assuming standard params for now, adjust if needed
-        return CasbinApi.monitor.online({
+        return CasbinApi.online.getList({
           SkipCount: (current - 1) * size,
           MaxResultCount: size,
           ...others
@@ -79,7 +82,10 @@
       apiParams: {
         current: 1,
         size: 20,
-        ...searchForm.value
+        ConnnectionId: undefined,
+        UserName: undefined,
+        Ipaddr: undefined,
+        LoginLocation: undefined
       },
       columnsFactory: () => [
         { type: 'index', width: 60, label: '序号' },
@@ -120,7 +126,18 @@
           prop: 'loginTime',
           label: '登录时间',
           width: 180,
-          sortable: true
+          sortable: true,
+          formatter: (row: Api.SystemManage.OnlineUserModel) => {
+            if (!row.loginTime) return '-'
+            const d = new Date(row.loginTime)
+            const year = d.getFullYear()
+            const month = String(d.getMonth() + 1).padStart(2, '0')
+            const day = String(d.getDate()).padStart(2, '0')
+            const hours = String(d.getHours()).padStart(2, '0')
+            const minutes = String(d.getMinutes()).padStart(2, '0')
+            const seconds = String(d.getSeconds()).padStart(2, '0')
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+          }
         },
         {
           prop: 'operation',
@@ -152,10 +169,10 @@
     }).then(() => {
       // API call
       // Note: The row has 'connnectionId' (typo), but the API might expect 'connectionId' in the URL path?
-      // Wait, CasbinApi.monitor.forceLogout takes 'connectionId' and puts it in URL.
+      // Wait, CasbinApi.online.forceLogout takes 'connectionId' and puts it in URL.
       // If row.connnectionId is the value, we pass it.
       if (row.connnectionId) {
-        CasbinApi.monitor.forceLogout(row.connnectionId).then(() => {
+        CasbinApi.online.forceLogout(row.connnectionId).then(() => {
           ElMessage.success('强退成功')
           refreshData()
         })

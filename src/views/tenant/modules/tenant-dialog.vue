@@ -2,49 +2,68 @@
   <ElDialog
     v-model="dialogVisible"
     :title="dialogType === 'add' ? '添加租户' : '编辑租户'"
-    width="550px"
+    width="800px"
     align-center
+    destroy-on-close
   >
-    <ElForm ref="formRef" :model="formData" :rules="rules" label-width="120px">
-      <ElFormItem label="租户名称" prop="name" :error="fieldErrors.name">
-        <ElInput v-model="formData.name" placeholder="请输入租户名称" />
-      </ElFormItem>
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-width="120px" class="tenant-form">
+      <ElRow :gutter="20">
+        <ElCol :span="12">
+          <ElFormItem label="租户名称" prop="name" :error="fieldErrors.name">
+            <ElInput v-model="formData.name" placeholder="租户名称" />
+          </ElFormItem>
+        </ElCol>
 
-      <ElFormItem label="数据库类型" prop="dbType" :error="fieldErrors.dbType">
-        <ElSelect v-model="formData.dbType" placeholder="请选择数据库类型" class="w-full">
-          <ElOption
-            v-for="(label, value) in DB_TYPE_OPTIONS"
-            :key="value"
-            :label="label"
-            :value="value"
-          />
-        </ElSelect>
-      </ElFormItem>
+        <ElCol :span="12">
+          <ElFormItem label="数据库类型" prop="dbType" :error="fieldErrors.dbType">
+            <ElSelect v-model="formData.dbType" placeholder="请选择" class="w-full">
+              <ElOption
+                v-for="(label, value) in DB_TYPE_OPTIONS"
+                :key="value"
+                :label="label"
+                :value="value"
+              />
+            </ElSelect>
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
 
-      <ElFormItem
-        label="连接字符串"
-        prop="tenantConnectionString"
-        :error="fieldErrors.tenantConnectionString"
-      >
-        <ElInput
-          v-model="formData.tenantConnectionString"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入连接字符串（为空则使用默认数据库）"
-        />
-      </ElFormItem>
+      <ElRow :gutter="20">
+        <ElCol :span="24">
+          <ElFormItem
+            label="连接字符串"
+            prop="tenantConnectionString"
+            :error="fieldErrors.tenantConnectionString"
+          >
+            <ElInput
+              v-model="formData.tenantConnectionString"
+              type="textarea"
+              :rows="4"
+              placeholder="请输入连接字符串（为空则使用默认数据库）"
+            />
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
 
       <template v-if="dialogType === 'edit'">
-        <ElFormItem label="实体版本" prop="entityVersion">
-          <ElInput v-model="formData.entityVersion" disabled />
-        </ElFormItem>
+        <ElRow :gutter="20">
+          <ElCol :span="12">
+            <ElFormItem label="实体版本" prop="entityVersion">
+              <ElInput v-model="formData.entityVersion" disabled />
+            </ElFormItem>
+          </ElCol>
+        </ElRow>
       </template>
     </ElForm>
 
     <template #footer>
       <div class="dialog-footer">
-        <ElButton @click="dialogVisible = false">取消</ElButton>
-        <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">提交</ElButton>
+        <ElButton @click="dialogVisible = false">
+          <Icon icon="ep:close-bold" class="mr-1" /> 取消
+        </ElButton>
+        <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">
+          <Icon icon="ep:check" class="mr-1" /> 确定
+        </ElButton>
       </div>
     </template>
   </ElDialog>

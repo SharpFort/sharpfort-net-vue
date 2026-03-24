@@ -71,8 +71,8 @@
   // 状态管理
   const loading = ref(false)
   const dialogVisible = ref(false)
-  const editData = ref<any>(null)
-  const tableData = ref<any[]>([])
+  const editData = ref<Api.SystemManage.DictionaryTypeGetListOutputDto | null>(null)
+  const tableData = ref<Api.SystemManage.DictionaryTypeGetListOutputDto[]>([])
 
   // 分页
   const pagination = reactive({
@@ -148,7 +148,7 @@
       prop: 'dictType',
       label: '字典类型',
       minWidth: 150,
-      formatter: (row: any) => {
+      formatter: (row: Api.SystemManage.DictionaryTypeGetListOutputDto) => {
         return h(
           'span',
           {
@@ -163,7 +163,7 @@
       prop: 'state',
       label: '状态',
       width: 100,
-      formatter: (row: any) =>
+      formatter: (row: Api.SystemManage.DictionaryTypeGetListOutputDto) =>
         h(ElTag, { type: row.state ? 'success' : 'danger' }, () => (row.state ? '正常' : '停用'))
     },
     {
@@ -182,7 +182,7 @@
       width: 180,
       align: 'right',
       fixed: 'right',
-      formatter: (row: any) => {
+      formatter: (row: Api.SystemManage.DictionaryTypeGetListOutputDto) => {
         return h('div', { style: 'text-align: right' }, [
           h(ArtButtonTable, {
             type: 'edit',
@@ -224,12 +224,14 @@
     dialogVisible.value = true
   }
 
-  const handleEditDictType = (row: any): void => {
+  const handleEditDictType = (row: Api.SystemManage.DictionaryTypeGetListOutputDto): void => {
     editData.value = row
     dialogVisible.value = true
   }
 
-  const handleDeleteDictType = async (row: any): Promise<void> => {
+  const handleDeleteDictType = async (
+    row: Api.SystemManage.DictionaryTypeGetListOutputDto
+  ): Promise<void> => {
     try {
       await ElMessageBox.confirm(`确定要删除字典 [${row.dictName}] 吗？`, '提示', {
         confirmButtonText: '确定',
@@ -244,7 +246,7 @@
     }
   }
 
-  const handleViewData = (row: any) => {
+  const handleViewData = (row: Api.SystemManage.DictionaryTypeGetListOutputDto) => {
     // 假设路由已经配置好，或者可以通过 query 传递
     router.push({
       path: '/system/dict/data',

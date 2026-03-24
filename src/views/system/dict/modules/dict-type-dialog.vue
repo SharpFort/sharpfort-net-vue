@@ -35,12 +35,12 @@
 
   interface Props {
     visible: boolean
-    editData?: any
+    editData?: Api.SystemManage.DictionaryTypeGetListOutputDto | null
   }
 
   interface Emits {
     (event: 'update:visible', value: boolean): void
-    (event: 'submit', data: any): void
+    (event: 'submit'): void
   }
 
   const props = defineProps<Props>()
@@ -54,7 +54,11 @@
     set: (value) => emit('update:visible', value)
   })
 
-  const form = reactive<any>({
+  interface DictTypeForm extends Api.SystemManage.DictionaryTypeUpdateInputVo {
+    id?: string
+  }
+
+  const form = reactive<DictTypeForm>({
     id: undefined,
     dictName: '',
     dictType: '',
@@ -100,7 +104,7 @@
         ElMessage.success('添加成功')
       }
 
-      emit('submit', { ...form })
+      emit('submit')
       handleCancel()
     } catch (error) {
       console.error('表单校验失败:', error)

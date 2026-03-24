@@ -35,6 +35,10 @@ export interface DirectoryDescriptorGetOutputDto {
   creatorId?: string
 }
 
+export interface DirectoryDescriptorGetListInput {
+  parentId?: string
+}
+
 export interface DirectoryDescriptorUpdateInput {
   name?: string
 }
@@ -128,6 +132,28 @@ export interface FileStorageProviderUpdateInput {
   remark?: string
 }
 
+export interface FileDescriptorGetListInput {
+  name?: string
+  directoryId?: string
+  fileType?: FileType
+  sorting?: string
+  skipCount?: number
+  maxResultCount?: number
+}
+
+export interface FileStorageProviderGetListInput {
+  name?: string
+  providerType?: StorageProviderType
+  isEnabled?: boolean
+  sorting?: string
+  skipCount?: number
+  maxResultCount?: number
+}
+
+export interface FileStorageProviderGetSelectDataListInput {
+  keywords?: string
+}
+
 export type FileType = 'File' | 'Image' | 'Video' | 'Audio' | 'Document' | 'Archive'
 
 export type StorageProviderType = 'Local' | 'S3Compatible' | 'Aliyun' | 'TencentCloud'
@@ -136,7 +162,7 @@ export const FileApi = {
   directory: {
     create: (data: DirectoryDescriptorCreateInput) =>
       request.post<DirectoryDescriptorGetOutputDto>({ url: `/api/app/directory-descriptor`, data }),
-    getList: (params?: any) =>
+    getList: (params?: DirectoryDescriptorGetListInput) =>
       request.get<DirectoryDescriptorGetOutputDto[]>({
         url: `/api/app/directory-descriptor`,
         params
@@ -148,7 +174,7 @@ export const FileApi = {
         url: `/api/app/directory-descriptor/${id}`,
         data
       }),
-    del: (id: string) => request.delete<any>({ url: `/api/app/directory-descriptor/${id}` }),
+    del: (id: string) => request.del<any>({ url: `/api/app/directory-descriptor/${id}` }),
     move: (id: string, newParentId: string) =>
       request.post<any>({ url: `/api/app/directory-descriptor/${id}/move/${newParentId}` })
   },
@@ -163,21 +189,21 @@ export const FileApi = {
       request.post<Blob>({ url: `/api/app/file-descriptor/${id}/download`, responseType: 'blob' }),
     get: (id: string) =>
       request.get<FileDescriptorGetOutputDto>({ url: `/api/app/file-descriptor/${id}` }),
-    del: (id: string) => request.delete<any>({ url: `/api/app/file-descriptor/${id}` }),
-    getList: (params?: any) =>
+    del: (id: string) => request.del<any>({ url: `/api/app/file-descriptor/${id}` }),
+    getList: (params?: FileDescriptorGetListInput) =>
       request.get<PagedResultDto<FileDescriptorGetListOutputDto>>({
         url: `/api/app/file-descriptor`,
         params
       }),
     deleteMany: (ids?: string[]) =>
-      request.delete<any>({ url: `/api/app/file-descriptor/many`, params: { ids } }),
+      request.del<any>({ url: `/api/app/file-descriptor/many`, params: { ids } }),
     move: (id: string, directoryId: string) =>
       request.post<any>({ url: `/api/app/file-descriptor/${id}/move/${directoryId}` }),
     rename: (id: string, newName?: string) =>
       request.post<any>({ url: `/api/app/file-descriptor/${id}/rename`, params: { newName } })
   },
   storageProvider: {
-    getList: (params?: any) =>
+    getList: (params?: FileStorageProviderGetListInput) =>
       request.get<PagedResultDto<FileStorageProviderGetListOutputDto>>({
         url: `/api/app/file-storage-provider`,
         params
@@ -188,7 +214,7 @@ export const FileApi = {
         data
       }),
     del: (ids?: string[]) =>
-      request.delete<any>({ url: `/api/app/file-storage-provider`, params: { ids } }),
+      request.del<any>({ url: `/api/app/file-storage-provider`, params: { ids } }),
     setDefault: (id: string) =>
       request.post<any>({ url: `/api/app/file-storage-provider/${id}/set-default` }),
     update: (id: string, data: FileStorageProviderUpdateInput) =>
@@ -198,12 +224,12 @@ export const FileApi = {
       }),
     get: (id: string) =>
       request.get<FileStorageProviderGetOutputDto>({ url: `/api/app/file-storage-provider/${id}` }),
-    getSelectDataList: (params?: any) =>
+    getSelectDataList: (params?: FileStorageProviderGetSelectDataListInput) =>
       request.get<PagedResultDto<FileStorageProviderGetListOutputDto>>({
         url: `/api/app/file-storage-provider/select-data-list`,
         params
       }),
-    exportExcel: (params?: any) =>
+    exportExcel: (params?: FileStorageProviderGetListInput) =>
       request.get<any>({ url: `/api/app/file-storage-provider/export-excel`, params }),
     importExcel: (data: FileStorageProviderCreateInput[]) =>
       request.post<any>({ url: `/api/app/file-storage-provider/import-excel`, data })

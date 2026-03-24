@@ -41,12 +41,12 @@
 
   interface Props {
     visible: boolean
-    editData?: any
+    editData?: Api.SystemManage.ConfigGetOutputDto | null
   }
 
   interface Emits {
     (e: 'update:visible', value: boolean): void
-    (e: 'submit', data: any): void
+    (e: 'submit', data: Api.SystemManage.ConfigUpdateInputVo): void
   }
 
   const props = defineProps<Props>()
@@ -60,7 +60,7 @@
     set: (value) => emit('update:visible', value)
   })
 
-  const form = reactive<any>({
+  const form = reactive<Api.SystemManage.ConfigUpdateInputVo>({
     id: undefined,
     configName: '',
     configKey: '',

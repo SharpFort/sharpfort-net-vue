@@ -38,12 +38,16 @@
 <script setup lang="ts">
   import { ref, computed } from 'vue'
   import { ElMessage, type UploadRequestOptions } from 'element-plus'
-  import { CasbinApi } from '@/api/casbin-rbac'
+  import { FileApi } from '@/api/file'
 
   const props = defineProps({
     modelValue: {
       type: Boolean,
       default: false
+    },
+    directoryId: {
+      type: String,
+      default: ''
     }
   })
 
@@ -62,7 +66,7 @@
     formData.append('file', file)
 
     try {
-      const res = await CasbinApi.file.upload(formData)
+      const res = await FileApi.file.upload(props.directoryId || '00000000-0000-0000-0000-000000000000', formData)
       // res should be FileGetListOutputDto[]
       // We emit the first item (since we upload one by one here)
       if (Array.isArray(res) && res.length > 0) {
@@ -80,8 +84,8 @@
         emit('success') // Fallback
       }
       onSuccess(true)
-    } catch (err) {
-      onError(err as Error)
+    } catch (err: any) {
+      onError(err)
     }
   }
 

@@ -100,13 +100,30 @@ export const CasbinApi = {
 
   // --- Menu ---
   menu: {
-    getList: (params: any) => request.get<any>({ url: '/api/app/menu', params }),
-    get: (id: string | number) => request.get<any>({ url: `/api/app/menu/${id}` }),
-    create: (data: any) => request.post<any>({ url: '/api/app/menu', data }),
-    update: (id: string | number, data: any) =>
-      request.put<any>({ url: `/api/app/menu/${id}`, data }),
-    // del: (id: string | number) => request.del<any>({ url: `/api/app/menu/${id}` })
-    del: (id: string | number) => request.del<any>({ url: `/api/app/menu?ids=${id}` })
+    getList: (params: Api.SystemManage.MenuSearchParams) =>
+      request.get<Api.SystemManage.MenuList>({ url: '/api/app/menu', params }),
+    get: (id: string | number) =>
+      request.get<Api.SystemManage.MenuGetOutputDto>({ url: `/api/app/menu/${id}` }),
+    create: (data: Api.SystemManage.MenuCreateInputVo) =>
+      request.post<Api.SystemManage.MenuGetOutputDto>({ url: '/api/app/menu', data }),
+    update: (id: string | number, data: Api.SystemManage.MenuUpdateInputVo) =>
+      request.put<Api.SystemManage.MenuGetOutputDto>({ url: `/api/app/menu/${id}`, data }),
+    del: (ids: string | string[]) => {
+      const idStr = Array.isArray(ids) ? ids.join(',') : ids
+      return request.del<any>({ url: `/api/app/menu?ids=${idStr}` })
+    },
+    getMenusByRoleId: (roleId: string) =>
+      request.get<Api.SystemManage.MenuGetListOutputDto[]>({
+        url: `/api/app/menu/role-id/${roleId}`
+      }),
+    getSelectData: (keywords?: string) =>
+      request.get<Api.SystemManage.MenuList>({
+        url: '/api/app/menu/select-data-list',
+        params: { keywords }
+      }),
+    export: (params: Api.SystemManage.MenuSearchParams) =>
+      request.get<any>({ url: '/api/app/menu/export-excel', params, responseType: 'blob' }),
+    import: (data: FormData) => request.post<any>({ url: '/api/app/menu/import-excel', data })
   },
 
   // --- Dept ---
@@ -153,39 +170,106 @@ export const CasbinApi = {
   // --- Dict ---
   dictionary: {
     type: {
-      getList: (params: any) => request.get<any>({ url: '/api/app/dictionary-type', params }),
-      get: (id: string | number) => request.get<any>({ url: `/api/app/dictionary-type/${id}` }),
-      create: (data: any) => request.post<any>({ url: '/api/app/dictionary-type', data }),
-      update: (id: string | number, data: any) =>
-        request.put<any>({ url: `/api/app/dictionary-type/${id}`, data }),
-      // del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-type/${id}` })
-      del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-type?ids=${id}` })
+      getList: (params: Api.SystemManage.DictionaryTypeSearchParams) =>
+        request.get<Api.SystemManage.DictionaryTypeList>({
+          url: '/api/app/dictionary-type',
+          params
+        }),
+      get: (id: string) =>
+        request.get<Api.SystemManage.DictionaryTypeGetOutputDto>({
+          url: `/api/app/dictionary-type/${id}`
+        }),
+      create: (data: Api.SystemManage.DictionaryTypeCreateInputVo) =>
+        request.post<Api.SystemManage.DictionaryTypeGetOutputDto>({
+          url: '/api/app/dictionary-type',
+          data
+        }),
+      update: (id: string, data: Api.SystemManage.DictionaryTypeUpdateInputVo) =>
+        request.put<Api.SystemManage.DictionaryTypeGetOutputDto>({
+          url: `/api/app/dictionary-type/${id}`,
+          data
+        }),
+      del: (ids: string | string[]) => {
+        const idStr = Array.isArray(ids) ? ids.join(',') : ids
+        return request.del<any>({ url: `/api/app/dictionary-type?ids=${idStr}` })
+      },
+      getSelectData: (keywords?: string) =>
+        request.get<Api.SystemManage.DictionaryTypeList>({
+          url: '/api/app/dictionary-type/select-data-list',
+          params: { keywords }
+        }),
+      export: (params: Api.SystemManage.DictionaryTypeSearchParams) =>
+        request.get<any>({
+          url: '/api/app/dictionary-type/export-excel',
+          params,
+          responseType: 'blob'
+        }),
+      import: (data: FormData) =>
+        request.post<any>({ url: '/api/app/dictionary-type/import-excel', data })
     },
     data: {
-      getList: (params: any) => request.get<any>({ url: '/api/app/dictionary-data', params }),
-      get: (id: string | number) => request.get<any>({ url: `/api/app/dictionary-data/${id}` }),
-      create: (data: any) => request.post<any>({ url: '/api/app/dictionary-data', data }),
-      update: (id: string | number, data: any) =>
-        request.put<any>({ url: `/api/app/dictionary-data/${id}`, data }),
-      // del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-data/${id}` }),
-      del: (id: string | number) => request.del<any>({ url: `/api/app/dictionary-data?ids=${id}` }),
+      getList: (params: Api.SystemManage.DictionarySearchParams) =>
+        request.get<Api.SystemManage.DictionaryList>({ url: '/api/app/dictionary-data', params }),
+      get: (id: string) =>
+        request.get<Api.SystemManage.DictionaryGetOutputDto>({
+          url: `/api/app/dictionary-data/${id}`
+        }),
+      create: (data: Api.SystemManage.DictionaryCreateInputVo) =>
+        request.post<Api.SystemManage.DictionaryGetOutputDto>({
+          url: '/api/app/dictionary-data',
+          data
+        }),
+      update: (id: string, data: Api.SystemManage.DictionaryUpdateInputVo) =>
+        request.put<Api.SystemManage.DictionaryGetOutputDto>({
+          url: `/api/app/dictionary-data/${id}`,
+          data
+        }),
+      del: (ids: string | string[]) => {
+        const idStr = Array.isArray(ids) ? ids.join(',') : ids
+        return request.del<any>({ url: `/api/app/dictionary-data?ids=${idStr}` })
+      },
       getByType: (type: string) =>
-        request.get<any[]>({ url: `/api/app/dictionary-data/type/${type}` })
+        request.get<Api.SystemManage.DictionaryGetListOutputDto[]>({
+          url: `/api/app/dictionary-data/type/${type}`
+        }),
+      getSelectData: (keywords?: string) =>
+        request.get<Api.SystemManage.DictionaryList>({
+          url: '/api/app/dictionary-data/select-data-list',
+          params: { keywords }
+        }),
+      export: (params: Api.SystemManage.DictionarySearchParams) =>
+        request.get<any>({
+          url: '/api/app/dictionary-data/export-excel',
+          params,
+          responseType: 'blob'
+        }),
+      import: (data: FormData) =>
+        request.post<any>({ url: '/api/app/dictionary-data/import-excel', data })
     }
   },
 
   // --- Config ---
   config: {
-    getList: (params: any) => request.get<any>({ url: '/api/app/config', params }),
-    get: (id: string | number) => request.get<any>({ url: `/api/app/config/${id}` }),
-    create: (data: any) => request.post<any>({ url: '/api/app/config', data }),
-    update: (id: string | number, data: any) =>
-      request.put<any>({ url: `/api/app/config/${id}`, data }),
-    // del: (id: string | number) => request.del<any>({ url: `/api/app/config/${id}` })
-    del: (id: string | number) =>
-      request.del<any>({
-        url: `/api/app/config?ids=${id}`
-      })
+    getList: (params: Api.SystemManage.ConfigSearchParams) =>
+      request.get<Api.SystemManage.ConfigList>({ url: '/api/app/config', params }),
+    get: (id: string) =>
+      request.get<Api.SystemManage.ConfigGetOutputDto>({ url: `/api/app/config/${id}` }),
+    create: (data: Api.SystemManage.ConfigCreateInputVo) =>
+      request.post<Api.SystemManage.ConfigGetOutputDto>({ url: '/api/app/config', data }),
+    update: (id: string, data: Api.SystemManage.ConfigUpdateInputVo) =>
+      request.put<Api.SystemManage.ConfigGetOutputDto>({ url: `/api/app/config/${id}`, data }),
+    del: (ids: string | string[]) => {
+      const idStr = Array.isArray(ids) ? ids.join(',') : ids
+      return request.del<any>({ url: `/api/app/config?ids=${idStr}` })
+    },
+    getSelectData: (keywords?: string) =>
+      request.get<Api.SystemManage.ConfigList>({
+        url: '/api/app/config/select-data-list',
+        params: { keywords }
+      }),
+    export: (params: Api.SystemManage.ConfigSearchParams) =>
+      request.get<any>({ url: '/api/app/config/export-excel', params, responseType: 'blob' }),
+    import: (data: FormData) => request.post<any>({ url: '/api/app/config/import-excel', data })
   },
 
   // --- Notice ---
@@ -214,24 +298,28 @@ export const CasbinApi = {
     operation: (params: any) => request.get<any>({ url: '/api/app/operation-log', params })
   },
 
+  // --- Online ---
+  online: {
+    getList: (params: Api.SystemManage.OnlineUserSearchParams) =>
+      request.get<Api.SystemManage.OnlineUserList>({ url: '/api/app/online', params }),
+    forceLogout: (connectionId: string) =>
+      request.del<boolean>({ url: `/api/app/online/${connectionId}` })
+  },
+
   // --- Monitor ---
   monitor: {
-    online: (params: any) =>
-      request.get<Api.SystemManage.OnlineUserModel[]>({ url: '/api/app/online', params }),
-    forceLogout: (connectionId: string) =>
-      request.del<any>({ url: `/api/app/online/${connectionId}` }),
     server: () => request.get<any>({ url: '/api/app/monitor/server' }),
     serverInfo: () =>
       request.get<Api.Monitor.MonitorServerInfoDto>({ url: '/api/app/monitor-server/info' }),
     cache: {
-      getNames: () => request.get<any>({ url: '/api/app/monitor-cache/name' }),
-      getKeys: (name: string) => request.get<any>({ url: `/api/app/monitor-cache/key/${name}` }),
+      getNames: () => request.get<Api.Monitor.MonitorCacheNameGetListOutputDto[]>({ url: '/api/app/monitor-cache/name' }),
+      getKeys: (name: string) => request.get<string[]>({ url: `/api/app/monitor-cache/key/${name}` }),
       getValue: (name: string, key: string) =>
-        request.get<any>({ url: `/api/app/monitor-cache/value/${name}/${key}` }),
-      clearName: (name: string) => request.del<any>({ url: `/api/app/monitor-cache/key/${name}` }),
+        request.get<Api.Monitor.MonitorCacheGetListOutputDto>({ url: `/api/app/monitor-cache/value/${name}/${key}` }),
+      clearName: (name: string) => request.del<boolean>({ url: `/api/app/monitor-cache/key/${name}` }),
       clearKey: (name: string, key: string) =>
-        request.del<any>({ url: `/api/app/monitor-cache/value/${name}/${key}` }),
-      clearAll: () => request.del<any>({ url: '/api/app/monitor-cache/clear' })
+        request.del<boolean>({ url: `/api/app/monitor-cache/value/${name}/${key}` }),
+      clearAll: () => request.del<boolean>({ url: '/api/app/monitor-cache/clear' })
     }
   },
 

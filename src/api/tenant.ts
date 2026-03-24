@@ -43,6 +43,18 @@ export namespace TenantDto {
     id?: string
     name?: string
   }
+
+  export interface TenantGetListInput {
+    Name?: string
+    StartTime?: string
+    EndTime?: string
+    OrderByColumn?: string
+    IsAsc?: string
+    IsAscending?: boolean
+    Sorting?: string
+    SkipCount?: number
+    MaxResultCount?: number
+  }
 }
 
 export namespace SqlSugar {
@@ -85,21 +97,29 @@ export namespace SqlSugar {
 }
 
 export const TenantApi = {
-  getList: (params: any) => request.get<any>({ url: '/api/app/tenant', params }),
+  getList: (params: TenantDto.TenantGetListInput) =>
+    request.get<{ items: TenantDto.TenantGetListOutputDto[]; totalCount: number }>({
+      url: '/api/app/tenant',
+      params
+    }),
   get: (id: string | number) =>
     request.get<TenantDto.TenantGetOutputDto>({ url: `/api/app/tenant/${id}` }),
   create: (data: TenantDto.TenantCreateInput) =>
     request.post<TenantDto.TenantGetOutputDto>({ url: '/api/app/tenant', data }),
   update: (id: string | number, data: TenantDto.TenantUpdateInput) =>
     request.put<TenantDto.TenantGetOutputDto>({ url: `/api/app/tenant/${id}`, data }),
-  del: (id: string | number) => request.del<void>({ url: '/api/app/tenant', params: { id } }),
+  del: (ids: string | number | string[] | number[]) =>
+    request.del<void>({ url: '/api/app/tenant', params: { id: ids } }),
 
   // New endpoints
   select: () => request.get<TenantDto.TenantSelectOutputDto[]>({ url: '/api/app/tenant/select' }),
   init: (id: string | number) => request.put<void>({ url: `/api/app/tenant/init/${id}` }),
   selectDataList: (keywords?: string) =>
-    request.get<any>({ url: '/api/app/tenant/select-data-list', params: { keywords } }),
-  exportExcel: (params: any) =>
+    request.get<{ items: TenantDto.TenantGetListOutputDto[]; totalCount: number }>({
+      url: '/api/app/tenant/select-data-list',
+      params: { keywords }
+    }),
+  exportExcel: (params: TenantDto.TenantGetListInput) =>
     request.get<Blob>({ url: '/api/app/tenant/export-excel', params, responseType: 'blob' }),
   importExcel: (data: TenantDto.TenantCreateInput[]) =>
     request.post<void>({ url: '/api/app/tenant/import-excel', data })

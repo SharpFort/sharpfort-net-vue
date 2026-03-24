@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
   import { ref, computed, watch } from 'vue'
-  import { CasbinApi } from '@/api/casbin-rbac'
+  import { FileApi } from '@/api/file'
 
   const props = defineProps({
     modelValue: {
@@ -67,7 +67,7 @@
     imageUrl.value = ''
 
     try {
-      const blob = await CasbinApi.file.download(props.fileId, false)
+      const blob = await FileApi.file.download(props.fileId)
       if (blob.type.startsWith('image/')) {
         imageUrl.value = URL.createObjectURL(blob)
       } else {
@@ -84,7 +84,7 @@
 
   const downloadFile = async () => {
     try {
-      const blob = await CasbinApi.file.download(props.fileId, false)
+      const blob = await FileApi.file.download(props.fileId)
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url

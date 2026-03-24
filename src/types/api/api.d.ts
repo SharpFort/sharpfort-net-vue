@@ -103,6 +103,26 @@ declare namespace Api {
       creationTime: string
     }
 
+    interface AuthSearchParams {
+      SkipCount?: number
+      MaxResultCount?: number
+      Sorting?: string
+      UserId?: string
+      OpenId?: string
+      AuthType?: string
+      StartTime?: string
+      EndTime?: string
+      OrderByColumn?: string
+      IsAsc?: string
+      IsAscending?: boolean
+    }
+
+    interface TryGetAuthInfoInput {
+      openId?: string
+      authType?: string
+      userId?: string
+    }
+
     interface CaptchaImageDto {
       uuid: string
       img?: string // byte
@@ -256,6 +276,27 @@ declare namespace Api {
       userIds: string[]
     }
 
+    /** 在线用户搜索参数 */
+    interface OnlineUserSearchParams {
+      SkipCount?: number
+      MaxResultCount?: number
+      Sorting?: string
+      ConnnectionId?: string
+      UserId?: string
+      UserName?: string
+      LoginTime?: string
+      Ipaddr?: string
+      LoginLocation?: string
+      Os?: string
+      Browser?: string
+    }
+
+    /** 在线用户列表响应 */
+    interface OnlineUserList {
+      items: OnlineUserModel[]
+      totalCount: number
+    }
+
     /** 在线用户模型 */
     interface OnlineUserModel {
       connnectionId?: string // Note: Typo in backend/swagger
@@ -310,6 +351,280 @@ declare namespace Api {
       postCode?: string
       postName?: string
       remark?: string
+    }
+
+    /** 菜单列表响应 */
+    interface MenuList {
+      items: MenuGetListOutputDto[]
+      totalCount: number
+    }
+
+    /** 菜单详情输出 */
+    interface MenuGetOutputDto {
+      id: string
+      creationTime: string
+      creatorId?: string
+      state: boolean
+      menuName?: string
+      menuType?: string
+      permissionCode?: string
+      parentId: string
+      menuIcon?: string
+      router?: string
+      isLink: boolean
+      isCache: boolean
+      isShow: boolean
+      remark?: string
+      component?: string
+      query?: string
+      routerName?: string
+      apiUrl?: string
+      apiMethod?: string
+      orderNum: number
+    }
+
+    /** 菜单列表项输出 */
+    type MenuGetListOutputDto = MenuGetOutputDto
+
+    /** 菜单搜索参数 */
+    interface MenuSearchParams {
+      SkipCount?: number
+      MaxResultCount?: number
+      Sorting?: string
+      State?: boolean
+      MenuName?: string
+      MenuSource?: string
+    }
+
+    /** 菜单创建参数 */
+    interface MenuCreateInputVo {
+      id?: string
+      creationTime?: string
+      creatorId?: string
+      state?: boolean
+      menuName?: string
+      menuType?: string
+      permissionCode?: string
+      parentId?: string
+      menuIcon?: string
+      router?: string
+      isLink?: boolean
+      isCache?: boolean
+      isShow?: boolean
+      remark?: string
+      component?: string
+      query?: string
+      orderNum?: number
+      menuSource?: string
+      routerName?: string
+      apiUrl?: string
+      apiMethod?: string
+    }
+
+    /** 菜单更新参数 */
+    type MenuUpdateInputVo = Omit<MenuCreateInputVo, 'creationTime'>
+
+    interface DictionarySearchParams {
+      SkipCount?: number
+      MaxResultCount?: number
+      Sorting?: string
+      DictType?: string
+      DictLabel?: string
+      State?: boolean
+    }
+
+    interface DictionaryTypeSearchParams {
+      SkipCount?: number
+      MaxResultCount?: number
+      Sorting?: string
+      DictName?: string
+      DictType?: string
+      Remark?: string
+      State?: boolean
+      StartTime?: string
+      EndTime?: string
+      OrderByColumn?: string
+      IsAsc?: string
+      IsAscending?: boolean
+    }
+
+    interface DictionaryList {
+      items: DictionaryGetListOutputDto[]
+      totalCount: number
+    }
+
+    interface DictionaryTypeList {
+      items: DictionaryTypeGetListOutputDto[]
+      totalCount: number
+    }
+
+    interface DictionaryCreateInputVo {
+      orderNum?: number
+      remark?: string
+      listClass?: string
+      cssClass?: string
+      dictType?: string
+      dictLabel?: string
+      dictValue?: string
+      isDefault?: boolean
+      state?: boolean
+    }
+
+    interface DictionaryGetListOutputDto {
+      id: string
+      orderNum: number
+      creationTime: string
+      creatorId?: string
+      remark?: string
+      listClass?: string
+      cssClass?: string
+      dictType?: string
+      dictLabel?: string
+      dictValue?: string
+      isDefault?: boolean
+      state: boolean
+    }
+
+    interface DictionaryGetOutputDto {
+      id: string
+      orderNum: number
+      creationTime: string
+      creatorId?: string
+      remark?: string
+      listClass?: string
+      cssClass?: string
+      dictType?: string
+      dictLabel?: string
+      dictValue?: string
+      isDefault?: boolean
+      state: boolean
+    }
+
+    interface DictionaryUpdateInputVo {
+      orderNum?: number
+      remark?: string
+      listClass?: string
+      cssClass?: string
+      dictType?: string
+      dictLabel?: string
+      dictValue?: string
+      isDefault?: boolean
+      state?: boolean
+    }
+
+    interface DictionaryTypeCreateInputVo {
+      dictName?: string
+      dictType?: string
+      remark?: string
+      state?: boolean
+    }
+
+    interface DictionaryTypeGetListOutputDto {
+      id: string
+      creationTime: string
+      creatorId?: string
+      dictName?: string
+      dictType?: string
+      remark?: string
+      state: boolean
+    }
+
+    interface DictionaryTypeGetOutputDto {
+      id: string
+      creationTime: string
+      creatorId?: string
+      dictName?: string
+      dictType?: string
+      remark?: string
+      state: boolean
+    }
+
+    interface DictionaryTypeUpdateInputVo {
+      dictName?: string
+      dictType?: string
+      remark?: string
+      state?: boolean
+    }
+
+    interface ConfigGetListOutputDto {
+      id: string
+      configName?: string
+      configKey?: string
+      configValue?: string
+      configType?: string
+      orderNum: number
+      remark?: string
+      creationTime: string
+    }
+
+    interface ConfigGetOutputDto {
+      id: string
+      configName?: string
+      configKey?: string
+      configValue?: string
+      configType?: string
+      orderNum: number
+      remark?: string
+      creationTime: string
+    }
+
+    interface ConfigList {
+      items: ConfigGetListOutputDto[]
+      totalCount: number
+    }
+
+    interface ConfigSearchParams {
+      SkipCount?: number
+      MaxResultCount?: number
+      Sorting?: string
+      ConfigName?: string
+      ConfigKey?: string
+      StartTime?: string
+      EndTime?: string
+      OrderByColumn?: string
+      IsAsc?: string
+      IsAscending?: boolean
+    }
+
+    interface ConfigCreateInputVo {
+      id?: string
+      configName?: string
+      configKey?: string
+      configValue?: string
+      configType?: string
+      orderNum?: number
+      remark?: string
+      creationTime?: string
+    }
+
+    interface ConfigUpdateInputVo {
+      id?: string
+      configName?: string
+      configKey?: string
+      configValue?: string
+      configType?: string
+      orderNum?: number
+      remark?: string
+      creationTime?: string
+    }
+  }
+
+  /** 监控类型 */
+  namespace Monitor {
+    interface MonitorCacheNameGetListOutputDto {
+      cacheName?: string
+      remark?: string
+    }
+
+    interface MonitorCacheGetListOutputDto {
+      cacheName?: string
+      cacheKey?: string
+      cacheValue?: string
+      remark?: string
+    }
+
+    interface MonitorServerInfoDto {
+      [key: string]: any // Placeholder as it was missing previously
     }
   }
 }

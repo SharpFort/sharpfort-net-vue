@@ -74,8 +74,8 @@
   // 状态管理
   const loading = ref(false)
   const dialogVisible = ref(false)
-  const editData = ref<any>(null)
-  const tableData = ref<any[]>([])
+  const editData = ref<Api.SystemManage.DictionaryGetListOutputDto | null>(null)
+  const tableData = ref<Api.SystemManage.DictionaryGetListOutputDto[]>([])
 
   // 分页
   const pagination = reactive({
@@ -157,14 +157,14 @@
       prop: 'state',
       label: '状态',
       width: 100,
-      formatter: (row: any) =>
+      formatter: (row: Api.SystemManage.DictionaryGetListOutputDto) =>
         h(ElTag, { type: row.state ? 'success' : 'danger' }, () => (row.state ? '正常' : '停用'))
     },
     {
       prop: 'isDefault',
       label: '默认',
       width: 80,
-      formatter: (row: any) => (row.isDefault ? '是' : '否')
+      formatter: (row: Api.SystemManage.DictionaryGetListOutputDto) => (row.isDefault ? '是' : '否')
     },
     {
       prop: 'remark',
@@ -182,7 +182,7 @@
       width: 150,
       align: 'right',
       fixed: 'right',
-      formatter: (row: any) => {
+      formatter: (row: Api.SystemManage.DictionaryGetListOutputDto) => {
         return h('div', { style: 'text-align: right' }, [
           h(ArtButtonTable, {
             type: 'edit',
@@ -221,12 +221,14 @@
     dialogVisible.value = true
   }
 
-  const handleEditDictData = (row: any): void => {
+  const handleEditDictData = (row: Api.SystemManage.DictionaryGetListOutputDto): void => {
     editData.value = row
     dialogVisible.value = true
   }
 
-  const handleDeleteDictData = async (row: any): Promise<void> => {
+  const handleDeleteDictData = async (
+    row: Api.SystemManage.DictionaryGetListOutputDto
+  ): Promise<void> => {
     try {
       await ElMessageBox.confirm(`确定要删除 [${row.dictLabel}] 吗？`, '提示', {
         confirmButtonText: '确定',

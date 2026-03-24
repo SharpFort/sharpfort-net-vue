@@ -16,16 +16,19 @@
       </template>
       <div v-loading="loadingNames" class="h-full overflow-y-auto p-2">
         <div
-          v-for="name in cacheNames"
-          :key="name"
+          v-for="item in cacheNames"
+          :key="item.cacheName!"
           class="p-3 cursor-pointer hover:bg-gray-100 rounded flex justify-between items-center group"
-          :class="{ 'bg-blue-50 text-blue-600': selectedName === name }"
-          @click="selectName(name)"
+          :class="{ 'bg-blue-50 text-blue-600': selectedName === item.cacheName }"
+          @click="selectName(item.cacheName!)"
         >
-          <span class="truncate" :title="name">{{ name }}</span>
-          <ElPopconfirm title="确定要清空该缓存吗？" @confirm="clearName(name)">
+          <div class="flex flex-col overflow-hidden w-full pr-2">
+            <span class="truncate text-sm font-medium" :title="item.cacheName">{{ item.cacheName }}</span>
+            <span v-if="item.remark" class="text-xs text-gray-500 truncate" :title="item.remark">{{ item.remark }}</span>
+          </div>
+          <ElPopconfirm title="确定要清空该缓存吗？" @confirm="clearName(item.cacheName!)">
             <template #reference>
-              <ElButton v-if="selectedName === name" type="danger" link size="small" @click.stop>
+              <ElButton v-if="selectedName === item.cacheName" type="danger" link size="small" @click.stop>
                 <ArtSvgIcon icon="ri:delete-bin-line" />
               </ElButton>
             </template>
@@ -75,7 +78,7 @@
     <ElCard
       shadow="never"
       class="w-1/3 flex flex-col"
-      :body-style="{ height: '100%', padding: '0' }"
+      :body-style="{ height: '100%', padding: '0', display: 'flex', flexDirection: 'column' }"
     >
       <template #header>
         <div class="flex justify-between items-center">
@@ -85,20 +88,27 @@
           </ElButton>
         </div>
       </template>
-      <div v-loading="loadingValue" class="h-full p-4 overflow-y-auto">
-        <div v-if="selectedKey && cacheValue">
-          <pre
-            class="bg-gray-50 p-4 rounded text-sm overflow-x-auto break-all whitespace-pre-wrap"
-            >{{ formatValue(cacheValue) }}</pre
-          >
-        </div>
+      <div v-loading="loadingValue" class="flex-1 p-4 flex flex-col min-h-0 overflow-hidden">
+        <template v-if="selectedKey && cacheValue">
+          <ElDescriptions border :column="1" size="small" class="mb-4 flex-shrink-0">
+            <ElDescriptionsItem label="缓存名称">{{ cacheValue.cacheName }}</ElDescriptionsItem>
+            <ElDescriptionsItem label="键名">{{ cacheValue.cacheKey }}</ElDescriptionsItem>
+            <ElDescriptionsItem label="备注" v-if="cacheValue.remark">{{ cacheValue.remark }}</ElDescriptionsItem>
+          </ElDescriptions>
+          <div class="flex-1 overflow-y-auto w-full">
+            <pre class="bg-gray-50 p-4 rounded text-sm break-all whitespace-pre-wrap m-0 min-h-full">{{ formatValue(cacheValue.cacheValue) }}</pre>
+          </div>
+        </template>
         <ElEmpty v-else-if="!selectedKey" description="请选择键名" />
-        <ElEmpty v-else description="暂无内容" />
+        <ElEmpty v-else-if="!loadingValue" description="暂无内容" />
       </div>
-      <div class="p-4 border-t" v-if="cacheNames.length > 0">
+      <div class="p-4 border-t flex-shrink-0" v-if="cacheNames.length > 0">
         <ElPopconfirm title="确定要清空所有缓存吗？" @confirm="clearAll">
           <template #reference>
-            <ElButton type="danger" class="w-full">清空所有缓存</ElButton>
+            <ElButton type="danger" class="w-full">
+              <template #icon><ArtSvgIcon icon="ri:delete-bin-line" /></template>
+              清空所有缓存
+            </ElButton>
           </template>
         </ElPopconfirm>
       </div>
@@ -116,9 +126,9 @@
   const loadingKeys = ref(false)
   const loadingValue = ref(false)
 
-  const cacheNames = ref<string[]>([])
+  const cacheNames = ref<Api.Monitor.MonitorCacheNameGetListOutputDto[]>([])
   const cacheKeys = ref<string[]>([])
-  const cacheValue = ref<any>(null)
+  const cacheValue = ref<Api.Monitor.MonitorCacheGetListOutputDto | null>(null)
 
   const selectedName = ref('')
   const selectedKey = ref('')
@@ -131,15 +141,8 @@
     loadingNames.value = true
     try {
       const res = await CasbinApi.monitor.cache.getNames()
-      // Swagger says returns MonitorCacheGetListOutputDto items, which has cacheName
-      // Let's verify data structure. If it's list of objects, map to strings.
-      // Based on DTO analysis: [{cacheName: string, ...}]
-      if (Array.isArray(res)) {
-        cacheNames.value = res.map((item: any) => item.cacheName || item).filter(Boolean)
-      } else {
-        cacheNames.value = []
-      }
-      // content reset
+      cacheNames.value = res || []
+      // Reset content
       selectedName.value = ''
       cacheKeys.value = []
       selectedKey.value = ''
@@ -165,12 +168,7 @@
     loadingKeys.value = true
     try {
       const res = await CasbinApi.monitor.cache.getKeys(selectedName.value)
-      // Assuming res is string[] or similar list of keys
-      if (Array.isArray(res)) {
-        cacheKeys.value = res
-      } else {
-        cacheKeys.value = []
-      }
+      cacheKeys.value = res || []
     } catch (error) {
       console.error(error)
       ElMessage.error('获取键名失败')
@@ -190,8 +188,7 @@
     loadingValue.value = true
     try {
       const res = await CasbinApi.monitor.cache.getValue(selectedName.value, selectedKey.value)
-      // DTO field cacheValue
-      cacheValue.value = res?.cacheValue !== undefined ? res.cacheValue : res
+      cacheValue.value = res || null
     } catch (error) {
       console.error(error)
       ElMessage.error('获取缓存内容失败')
@@ -200,11 +197,13 @@
     }
   }
 
-  const formatValue = (val: any) => {
-    if (typeof val === 'object') {
-      return JSON.stringify(val, null, 2)
-    }
+  const formatValue = (val: string | undefined | null) => {
+    if (!val) return ''
     try {
+      // Handle the case where the value itself is an object (unexpected as DTO returns string, but just in case)
+      if (typeof val === 'object') {
+        return JSON.stringify(val, null, 2)
+      }
       return JSON.stringify(JSON.parse(val), null, 2)
     } catch {
       return val

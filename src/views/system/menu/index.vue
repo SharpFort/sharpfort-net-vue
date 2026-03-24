@@ -20,6 +20,7 @@
         <template #left>
           <ElSpace wrap>
             <ElButton @click="showDialog('add')" v-ripple>新增菜单</ElButton>
+            <ElButton @click="handleExport" type="warning" v-ripple>导出菜单</ElButton>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -100,10 +101,17 @@
 
   defineOptions({ name: 'MenuManage' })
 
+  // 扩展树形节点属性
+  type MenuTableNode = Api.SystemManage.MenuGetListOutputDto & {
+    children?: MenuTableNode[]
+    level?: number
+    indexText?: string
+  }
+
   // 状态管理
   const loading = ref(false)
-  const tableData = ref<any[]>([])
-  const filteredTableData = ref<any[]>([])
+  const tableData = ref<MenuTableNode[]>([])
+  const filteredTableData = ref<MenuTableNode[]>([])
 
   // 搜索相关
   const formFilters = reactive({
@@ -178,19 +186,19 @@
       prop: 'router',
       label: '路由地址',
       minWidth: 160,
-      formatter: (row: any) => row.router || ''
+      formatter: (row: MenuTableNode) => row.router || ''
     },
     {
       prop: 'component',
       label: '组件路径',
       minWidth: 200,
-      formatter: (row: any) => row.component || ''
+      formatter: (row: MenuTableNode) => row.component || ''
     },
     {
       prop: 'routerName',
       label: '路由名称',
       width: 160,
-      formatter: (row: any) => row.routerName || ''
+      formatter: (row: MenuTableNode) => row.routerName || ''
     },
     {
       prop: 'orderNum',
@@ -253,28 +261,28 @@
   /**
    * 构造树型结构
    */
-  const handleTree = (data: any[]) => {
-    const res: any[] = []
-    const map = new Map()
+  const handleTree = (data: Api.SystemManage.MenuGetListOutputDto[]) => {
+    const res: MenuTableNode[] = []
+    const map = new Map<string, MenuTableNode>()
     data.forEach((item) => {
       map.set(item.id, { ...item, children: [] })
     })
     data.forEach((item) => {
       const parent = map.get(item.parentId)
-      if (parent) {
-        parent.children.push(map.get(item.id))
+      if (parent && parent.children) {
+        parent.children.push(map.get(item.id)!)
       } else {
-        res.push(map.get(item.id))
+        res.push(map.get(item.id)!)
       }
     })
 
     // 递归计算序号和层级
-    const setIndexText = (nodes: any[], parentIndex = '', level = 0) => {
+    const setIndexText = (nodes: MenuTableNode[], parentIndex = '', level = 0) => {
       nodes.forEach((node, index) => {
         const currentIndex = parentIndex ? `${parentIndex}.${index + 1}` : `${index + 1}`
         node.indexText = currentIndex
         node.level = level
-        if (node.children?.length > 0) {
+        if (node.children && node.children.length > 0) {
           setIndexText(node.children, currentIndex, level + 1)
         }
       })
@@ -343,28 +351,36 @@
   // 弹窗相关
   const dialogVisible = ref(false)
   const dialogType = ref<'add' | 'edit'>('add')
-  const currentMenuData = ref<any>(null)
+  const currentMenuData = ref<
+    Api.SystemManage.MenuUpdateInputVo | { parentId: string; parentName: string } | null
+  >(null)
 
-  const showDialog = (type: 'add' | 'edit', row?: any): void => {
+  const showDialog = (type: 'add' | 'edit', row?: MenuTableNode): void => {
     dialogType.value = type
     if (type === 'add' && row) {
       // 新增下级，传递父级信息
-      currentMenuData.value = { parentId: row.id, parentName: row.menuName }
-    } else if (type === 'edit') {
-      currentMenuData.value = { ...row }
+      currentMenuData.value = { parentId: row.id, parentName: row.menuName || '' }
+    } else if (type === 'edit' && row) {
+      const { level, children, indexText, ...menuProps } = row
+      currentMenuData.value = { ...menuProps }
     } else {
       currentMenuData.value = null
     }
     dialogVisible.value = true
   }
 
-  const handleDialogSubmit = async (formData: any): Promise<void> => {
+  const handleDialogSubmit = async (
+    formData: Api.SystemManage.MenuCreateInputVo | Api.SystemManage.MenuUpdateInputVo
+  ): Promise<void> => {
     try {
       if (dialogType.value === 'add') {
         await CasbinApi.menu.create(formData)
         ElMessage.success('新增成功')
       } else {
-        await CasbinApi.menu.update(currentMenuData.value.id, formData)
+        await CasbinApi.menu.update(
+          (currentMenuData.value as any).id,
+          formData as Api.SystemManage.MenuUpdateInputVo
+        )
         ElMessage.success('修改成功')
       }
       dialogVisible.value = false
@@ -374,9 +390,9 @@
     }
   }
 
-  const handleDelete = async (row: any): Promise<void> => {
+  const handleDelete = async (row: MenuTableNode): Promise<void> => {
     try {
-      await ElMessageBox.confirm('确定要删除该菜单吗？', '提示', {
+      await ElMessageBox.confirm(`确定要删除配置 "${row.menuName}" 吗？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -388,6 +404,28 @@
       if (error !== 'cancel') {
         console.error('删除失败:', error)
       }
+    }
+  }
+
+  const handleExport = async (): Promise<void> => {
+    try {
+      loading.value = true
+      const blob = await CasbinApi.menu.export({
+        MenuName: formFilters.MenuName || undefined
+      })
+      const url = window.URL.createObjectURL(new Blob([blob]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', '菜单数据.xlsx')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('导出失败:', error)
+      ElMessage.error('导出失败')
+    } finally {
+      loading.value = false
     }
   }
 </script>

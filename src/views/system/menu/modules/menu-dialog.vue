@@ -166,13 +166,16 @@
   interface Props {
     visible: boolean
     type: 'add' | 'edit'
-    menuData?: any
-    menuList: any[]
+    menuData?: Api.SystemManage.MenuUpdateInputVo | { parentId: string; parentName: string } | null
+    menuList: Api.SystemManage.MenuGetListOutputDto[]
   }
 
   interface Emits {
     (e: 'update:visible', value: boolean): void
-    (e: 'submit', data: any): void
+    (
+      e: 'submit',
+      data: Api.SystemManage.MenuCreateInputVo | Api.SystemManage.MenuUpdateInputVo
+    ): void
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -229,9 +232,8 @@
   ]
 
   // 默认表单数据
-  const defaultForm = {
+  const defaultForm: Api.SystemManage.MenuCreateInputVo = {
     id: undefined,
-    concurrencyStamp: undefined,
     state: true,
     parentId: '',
     menuType: 'Menu',
@@ -249,9 +251,9 @@
     isLink: false,
     isAffix: false,
     menuSource: 'Ruoyi'
-  }
+  } as Api.SystemManage.MenuCreateInputVo
 
-  const form = reactive({ ...defaultForm })
+  const form = reactive<Api.SystemManage.MenuCreateInputVo>({ ...defaultForm })
 
   const rules = {
     menuName: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
@@ -280,7 +282,7 @@
 
         // 2. 根据类型赋值
         if (props.type === 'edit' && props.menuData) {
-          const data = props.menuData
+          const data = props.menuData as any
           // 智能赋值：处理 PascalCase 到 camelCase 的映射 (例如 ApiUrl -> apiUrl)
           Object.keys(form).forEach((key) => {
             // 1. 尝试直接获取 (key)
@@ -295,16 +297,9 @@
               }
             }
           })
-
-          // 特殊处理：如果 menuData 还是有额外的需要保留的字段，可以根据需求处理，
-          // 但原则上 form 应该只包含表单需要的字段。
-          // id 是更新必须的，但不在 display form 中，不过 update 需要 ID。
-          // update 调用的是 currentMenuData.value.id (outside) 还是 form.id?
-          // index.vue HandleDialogSubmit: await CasbinApi.menu.update(currentMenuData.value.id, formData)
-          // 所以 form 不需要 id。
-        } else if (props.type === 'add' && props.menuData?.parentId) {
+        } else if (props.type === 'add' && (props.menuData as any)?.parentId) {
           // 新增下级
-          form.parentId = props.menuData.parentId
+          form.parentId = (props.menuData as any).parentId
         }
 
         nextTick(() => {

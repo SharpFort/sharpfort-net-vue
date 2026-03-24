@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
   import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
-  import { CasbinApi } from '@/api/casbin-rbac'
+  import { FileApi } from '@/api/file'
 
   const props = defineProps({
     fileId: { type: String, required: true },
@@ -38,7 +38,7 @@
     loading.value = true
     try {
       // Try to fetch thumbnail. If it fails (404/400), it might not be an image.
-      const blob = await CasbinApi.file.download(props.fileId, true)
+      const blob = await FileApi.file.download(props.fileId)
       if (blob.size > 0 && blob.type.startsWith('image/')) {
         src.value = URL.createObjectURL(blob)
       } else {
