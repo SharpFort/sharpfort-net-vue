@@ -1,0 +1,179 @@
+{
+  "SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigCreateInputVo": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "configName": {
+        "type": "string",
+        "nullable": true
+      },
+      "configKey": {
+        "type": "string",
+        "nullable": true
+      },
+      "configValue": {
+        "type": "string",
+        "nullable": true
+      },
+      "configType": {
+        "type": "string",
+        "nullable": true
+      },
+      "orderNum": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "remark": {
+        "type": "string",
+        "nullable": true
+      },
+      "creationTime": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Config输入创建对象"
+  },
+  "SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigGetListOutputDto": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "configName": {
+        "type": "string",
+        "description": "Config Name",
+        "nullable": true
+      },
+      "configKey": {
+        "type": "string",
+        "description": "Config Key",
+        "nullable": true
+      },
+      "configValue": {
+        "type": "string",
+        "description": "Config Value",
+        "nullable": true
+      },
+      "configType": {
+        "type": "string",
+        "description": "Config Type",
+        "nullable": true
+      },
+      "orderNum": {
+        "type": "integer",
+        "description": "Order Num",
+        "format": "int32"
+      },
+      "remark": {
+        "type": "string",
+        "description": "Remark",
+        "nullable": true
+      },
+      "creationTime": {
+        "type": "string",
+        "description": "Creation Time",
+        "format": "date-time"
+      }
+    },
+    "additionalProperties": false
+  },
+  "SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigGetOutputDto": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "configName": {
+        "type": "string",
+        "nullable": true
+      },
+      "configKey": {
+        "type": "string",
+        "nullable": true
+      },
+      "configValue": {
+        "type": "string",
+        "nullable": true
+      },
+      "configType": {
+        "type": "string",
+        "nullable": true
+      },
+      "orderNum": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "remark": {
+        "type": "string",
+        "nullable": true
+      },
+      "creationTime": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "additionalProperties": false
+  },
+  "SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigUpdateInputVo": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "configName": {
+        "type": "string",
+        "nullable": true
+      },
+      "configKey": {
+        "type": "string",
+        "nullable": true
+      },
+      "configValue": {
+        "type": "string",
+        "nullable": true
+      },
+      "configType": {
+        "type": "string",
+        "nullable": true
+      },
+      "orderNum": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "remark": {
+        "type": "string",
+        "nullable": true
+      },
+      "creationTime": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "additionalProperties": false
+  },
+  "Volo.Abp.Application.Dtos.PagedResultDto`1[[SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigGetListOutputDto, SharpFort.CasbinRbac.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SharpFort.CasbinRbac.Application.Contracts.Dtos.Config.ConfigGetListOutputDto"
+        },
+        "nullable": true
+      },
+      "totalCount": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    "additionalProperties": false
+  }
+}

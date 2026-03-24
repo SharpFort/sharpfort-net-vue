@@ -64,8 +64,18 @@
           <ElTag :type="getProviderTag(row.providerType)">{{ row.providerType }}</ElTag>
         </template>
       </ElTableColumn>
-      <ElTableColumn prop="bucketName" label="存储桶/空间名称" show-overflow-tooltip min-width="150" />
-      <ElTableColumn prop="endpoint" label="访问节点(Endpoint)" show-overflow-tooltip min-width="150" />
+      <ElTableColumn
+        prop="bucketName"
+        label="存储桶/空间名称"
+        show-overflow-tooltip
+        min-width="150"
+      />
+      <ElTableColumn
+        prop="endpoint"
+        label="访问节点(Endpoint)"
+        show-overflow-tooltip
+        min-width="150"
+      />
       <ElTableColumn prop="isDefault" label="是否默认" width="90" align="center">
         <template #default="{ row }">
           <ElTag v-if="row.isDefault" type="success" effect="dark" size="small">默认</ElTag>
@@ -122,12 +132,7 @@
       append-to-body
       destroy-on-close
     >
-      <ElForm
-        ref="formRef"
-        :model="formData"
-        :rules="rules"
-        label-width="120px"
-      >
+      <ElForm ref="formRef" :model="formData" :rules="rules" label-width="120px">
         <ElFormItem label="配置名称" prop="name">
           <ElInput v-model="formData.name" placeholder="请输入配置名称" />
         </ElFormItem>
@@ -144,7 +149,7 @@
             <ElOption label="腾讯云 COS (TencentCloud)" value="TencentCloud" />
           </ElSelect>
         </ElFormItem>
-        
+
         <template v-if="formData.providerType !== 'Local'">
           <ElFormItem label="访问凭证(AK)" prop="accessKey">
             <ElInput v-model="formData.accessKey" placeholder="AccessKey ID" />
@@ -177,7 +182,7 @@
             <ElInput v-model="formData.endpoint" placeholder="如 http://localhost:5000/files" />
           </ElFormItem>
         </template>
-        
+
         <ElFormItem label="自定义域名" prop="customDomain">
           <ElInput v-model="formData.customDomain" placeholder="CDN 或自定义访问域名 (选填)" />
         </ElFormItem>
@@ -198,212 +203,222 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
-import { FileApi, type FileStorageProviderGetListOutputDto, type FileStorageProviderCreateInput, type FileStorageProviderUpdateInput } from '@/api/file'
-import type { StorageProviderType } from '@/api/file'
-import dayjs from 'dayjs'
+  import { ref, reactive, onMounted } from 'vue'
+  import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
+  import {
+    FileApi,
+    type FileStorageProviderGetListOutputDto,
+    type FileStorageProviderCreateInput,
+    type FileStorageProviderUpdateInput
+  } from '@/api/file'
+  import type { StorageProviderType } from '@/api/file'
+  import dayjs from 'dayjs'
 
-defineOptions({ name: 'FileStorageProviderAdmin' })
+  defineOptions({ name: 'FileStorageProviderAdmin' })
 
-// Data
-const loading = ref(false)
-const tableData = ref<FileStorageProviderGetListOutputDto[]>([])
-const total = ref(0)
-const selectedIds = ref<string[]>([])
+  // Data
+  const loading = ref(false)
+  const tableData = ref<FileStorageProviderGetListOutputDto[]>([])
+  const total = ref(0)
+  const selectedIds = ref<string[]>([])
 
-// Query params
-const queryParams = reactive({
-  name: '',
-  providerType: undefined as StorageProviderType | undefined,
-  isEnabled: undefined as boolean | undefined,
-  skipCount: 1, // Will map to 0-based for API
-  maxResultCount: 20
-})
+  // Query params
+  const queryParams = reactive({
+    name: '',
+    providerType: undefined as StorageProviderType | undefined,
+    isEnabled: undefined as boolean | undefined,
+    skipCount: 1, // Will map to 0-based for API
+    maxResultCount: 20
+  })
 
-// Dialog
-const dialogVisible = ref(false)
-const submitLoading = ref(false)
-const isEdit = ref(false)
-const currentId = ref<string | null>(null)
+  // Dialog
+  const dialogVisible = ref(false)
+  const submitLoading = ref(false)
+  const isEdit = ref(false)
+  const currentId = ref<string | null>(null)
 
-const formRef = ref<FormInstance>()
-const formData = reactive<FileStorageProviderCreateInput & FileStorageProviderUpdateInput>({
-  name: '',
-  providerType: 'Local' as StorageProviderType,
-  bucketName: '',
-  accessKey: '',
-  secretKey: '',
-  endpoint: '',
-  region: '',
-  customDomain: '',
-  isEnableHttps: false,
-  remark: ''
-})
+  const formRef = ref<FormInstance>()
+  const formData = reactive<FileStorageProviderCreateInput & FileStorageProviderUpdateInput>({
+    name: '',
+    providerType: 'Local' as StorageProviderType,
+    bucketName: '',
+    accessKey: '',
+    secretKey: '',
+    endpoint: '',
+    region: '',
+    customDomain: '',
+    isEnableHttps: false,
+    remark: ''
+  })
 
-const rules = reactive<FormRules>({
-  name: [{ required: true, message: '请输入配置名称', trigger: 'blur' }],
-  providerType: [{ required: true, message: '请选择存储类型', trigger: 'change' }]
-})
+  const rules = reactive<FormRules>({
+    name: [{ required: true, message: '请输入配置名称', trigger: 'blur' }],
+    providerType: [{ required: true, message: '请选择存储类型', trigger: 'change' }]
+  })
 
-const loadData = async () => {
-  loading.value = true
-  try {
-    const res = await FileApi.storageProvider.getList({
-      ...queryParams,
-      // Convert typical 1-based UI `skipCount` concept to actual skipped items for API
-      skipCount: (queryParams.skipCount - 1) * queryParams.maxResultCount
-    })
-    tableData.value = res.items
-    total.value = res.totalCount
-  } catch (error) {
-    console.error('Failed to load table', error)
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleSearch = () => {
-  queryParams.skipCount = 1
-  loadData()
-}
-
-const resetQuery = () => {
-  queryParams.name = ''
-  queryParams.providerType = undefined
-  queryParams.isEnabled = undefined
-  handleSearch()
-}
-
-const handleSelectionChange = (selection: FileStorageProviderGetListOutputDto[]) => {
-  selectedIds.value = selection.map(row => row.id!)
-}
-
-const handleBatchDelete = async () => {
-  if (selectedIds.value.length === 0) return
-  try {
-    await ElMessageBox.confirm('确认删除所选的存储配置吗？', '提示', { type: 'warning' })
-    await FileApi.storageProvider.del(selectedIds.value)
-    ElMessage.success('批量删除成功')
-    loadData()
-  } catch (err) {
-    if (err !== 'cancel') ElMessage.error('删除失败')
-  }
-}
-
-const handleDelete = async (row: FileStorageProviderGetListOutputDto) => {
-  try {
-    await ElMessageBox.confirm(`确认删除配置 "${row.name}" 吗？`, '提示', { type: 'warning' })
-    await FileApi.storageProvider.del([row.id!])
-    ElMessage.success('删除成功')
-    loadData()
-  } catch (err) {
-    if (err !== 'cancel') ElMessage.error('删除失败')
-  }
-}
-
-const handleSetDefault = async (row: FileStorageProviderGetListOutputDto) => {
-  try {
-    await FileApi.storageProvider.setDefault(row.id!)
-    ElMessage.success('已应用为默认存储策略')
-    loadData()
-  } catch (err) {
-    ElMessage.error('设置失败')
-  }
-}
-
-const openForm = async (row: FileStorageProviderGetListOutputDto | null) => {
-  isEdit.value = !!row
-  dialogVisible.value = true
-  
-  if (formRef.value) formRef.value.clearValidate()
-
-  if (row) {
-    currentId.value = row.id!
-    submitLoading.value = true
+  const loadData = async () => {
+    loading.value = true
     try {
-      const detail = await FileApi.storageProvider.get(row.id!)
-      Object.assign(formData, {
-        name: detail.name || '',
-        providerType: detail.providerType || 'Local',
-        bucketName: detail.bucketName || '',
-        accessKey: detail.accessKey || '',
-        secretKey: '', // Usually omitted from output side for security
-        endpoint: detail.endpoint || '',
-        region: detail.region || '',
-        customDomain: detail.customDomain || '',
-        isEnableHttps: !!detail.isEnableHttps,
-        remark: detail.remark || ''
+      const res = await FileApi.storageProvider.getList({
+        ...queryParams,
+        // Convert typical 1-based UI `skipCount` concept to actual skipped items for API
+        skipCount: (queryParams.skipCount - 1) * queryParams.maxResultCount
       })
-    } catch {
-      ElMessage.error('获取详情失败')
+      tableData.value = res.items
+      total.value = res.totalCount
+    } catch (error) {
+      console.error('Failed to load table', error)
     } finally {
-      submitLoading.value = false
+      loading.value = false
     }
-  } else {
-    currentId.value = null
-    Object.assign(formData, {
-      name: '',
-      providerType: 'Local',
-      bucketName: '',
-      accessKey: '',
-      secretKey: '',
-      endpoint: '',
-      region: '',
-      customDomain: '',
-      isEnableHttps: false,
-      remark: ''
-    })
   }
-}
 
-const submitForm = async () => {
-  if (!formRef.value) return
-  await formRef.value.validate(async (valid) => {
-    if (valid) {
+  const handleSearch = () => {
+    queryParams.skipCount = 1
+    loadData()
+  }
+
+  const resetQuery = () => {
+    queryParams.name = ''
+    queryParams.providerType = undefined
+    queryParams.isEnabled = undefined
+    handleSearch()
+  }
+
+  const handleSelectionChange = (selection: FileStorageProviderGetListOutputDto[]) => {
+    selectedIds.value = selection.map((row) => row.id!)
+  }
+
+  const handleBatchDelete = async () => {
+    if (selectedIds.value.length === 0) return
+    try {
+      await ElMessageBox.confirm('确认删除所选的存储配置吗？', '提示', { type: 'warning' })
+      await FileApi.storageProvider.del(selectedIds.value)
+      ElMessage.success('批量删除成功')
+      loadData()
+    } catch (err) {
+      if (err !== 'cancel') ElMessage.error('删除失败')
+    }
+  }
+
+  const handleDelete = async (row: FileStorageProviderGetListOutputDto) => {
+    try {
+      await ElMessageBox.confirm(`确认删除配置 "${row.name}" 吗？`, '提示', { type: 'warning' })
+      await FileApi.storageProvider.del([row.id!])
+      ElMessage.success('删除成功')
+      loadData()
+    } catch (err) {
+      if (err !== 'cancel') ElMessage.error('删除失败')
+    }
+  }
+
+  const handleSetDefault = async (row: FileStorageProviderGetListOutputDto) => {
+    try {
+      await FileApi.storageProvider.setDefault(row.id!)
+      ElMessage.success('已应用为默认存储策略')
+      loadData()
+    } catch {
+      ElMessage.error('设置失败')
+    }
+  }
+
+  const openForm = async (row: FileStorageProviderGetListOutputDto | null) => {
+    isEdit.value = !!row
+    dialogVisible.value = true
+
+    if (formRef.value) formRef.value.clearValidate()
+
+    if (row) {
+      currentId.value = row.id!
       submitLoading.value = true
       try {
-        if (isEdit.value && currentId.value) {
-          const updateDto: FileStorageProviderUpdateInput = { ...formData }
-          // Don't send empty secret key so it won't overwrite with blank
-          if (!updateDto.secretKey) delete updateDto.secretKey
-          await FileApi.storageProvider.update(currentId.value, updateDto)
-          ElMessage.success('更新成功')
-        } else {
-          await FileApi.storageProvider.create(formData)
-          ElMessage.success('创建成功')
-        }
-        dialogVisible.value = false
-        loadData()
-      } catch (err) {
-        ElMessage.error(isEdit.value ? '更新失败' : '创建失败')
+        const detail = await FileApi.storageProvider.get(row.id!)
+        Object.assign(formData, {
+          name: detail.name || '',
+          providerType: detail.providerType || 'Local',
+          bucketName: detail.bucketName || '',
+          accessKey: detail.accessKey || '',
+          secretKey: '', // Usually omitted from output side for security
+          endpoint: detail.endpoint || '',
+          region: detail.region || '',
+          customDomain: detail.customDomain || '',
+          isEnableHttps: !!detail.isEnableHttps,
+          remark: detail.remark || ''
+        })
+      } catch {
+        ElMessage.error('获取详情失败')
       } finally {
         submitLoading.value = false
       }
+    } else {
+      currentId.value = null
+      Object.assign(formData, {
+        name: '',
+        providerType: 'Local',
+        bucketName: '',
+        accessKey: '',
+        secretKey: '',
+        endpoint: '',
+        region: '',
+        customDomain: '',
+        isEnableHttps: false,
+        remark: ''
+      })
     }
-  })
-}
-
-const getProviderTag = (type?: StorageProviderType) => {
-  switch (type) {
-    case 'Local': return 'info'
-    case 'Aliyun': return 'primary'
-    case 'TencentCloud': return 'success'
-    case 'S3Compatible': return 'warning'
-    default: return ''
   }
-}
 
-const formatDate = (dateStr?: string) => {
-  if (!dateStr) return '-'
-  return dayjs(dateStr).format('YYYY-MM-DD HH:mm:ss')
-}
+  const submitForm = async () => {
+    if (!formRef.value) return
+    await formRef.value.validate(async (valid) => {
+      if (valid) {
+        submitLoading.value = true
+        try {
+          if (isEdit.value && currentId.value) {
+            const updateDto: FileStorageProviderUpdateInput = { ...formData }
+            // Don't send empty secret key so it won't overwrite with blank
+            if (!updateDto.secretKey) delete updateDto.secretKey
+            await FileApi.storageProvider.update(currentId.value, updateDto)
+            ElMessage.success('更新成功')
+          } else {
+            await FileApi.storageProvider.create(formData)
+            ElMessage.success('创建成功')
+          }
+          dialogVisible.value = false
+          loadData()
+        } catch {
+          ElMessage.error(isEdit.value ? '更新失败' : '创建失败')
+        } finally {
+          submitLoading.value = false
+        }
+      }
+    })
+  }
 
-onMounted(() => {
-  loadData()
-})
+  const getProviderTag = (type?: StorageProviderType) => {
+    switch (type) {
+      case 'Local':
+        return 'info'
+      case 'Aliyun':
+        return 'primary'
+      case 'TencentCloud':
+        return 'success'
+      case 'S3Compatible':
+        return 'warning'
+      default:
+        return undefined
+    }
+  }
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return '-'
+    return dayjs(dateStr).format('YYYY-MM-DD HH:mm:ss')
+  }
+
+  onMounted(() => {
+    loadData()
+  })
 </script>
 
 <style scoped>
-/* Scoped overrides if needed */
+  /* Scoped overrides if needed */
 </style>

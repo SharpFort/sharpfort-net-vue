@@ -312,11 +312,18 @@ export const CasbinApi = {
     serverInfo: () =>
       request.get<Api.Monitor.MonitorServerInfoDto>({ url: '/api/app/monitor-server/info' }),
     cache: {
-      getNames: () => request.get<Api.Monitor.MonitorCacheNameGetListOutputDto[]>({ url: '/api/app/monitor-cache/name' }),
-      getKeys: (name: string) => request.get<string[]>({ url: `/api/app/monitor-cache/key/${name}` }),
+      getNames: () =>
+        request.get<Api.Monitor.MonitorCacheNameGetListOutputDto[]>({
+          url: '/api/app/monitor-cache/name'
+        }),
+      getKeys: (name: string) =>
+        request.get<string[]>({ url: `/api/app/monitor-cache/key/${name}` }),
       getValue: (name: string, key: string) =>
-        request.get<Api.Monitor.MonitorCacheGetListOutputDto>({ url: `/api/app/monitor-cache/value/${name}/${key}` }),
-      clearName: (name: string) => request.del<boolean>({ url: `/api/app/monitor-cache/key/${name}` }),
+        request.get<Api.Monitor.MonitorCacheGetListOutputDto>({
+          url: `/api/app/monitor-cache/value/${name}/${key}`
+        }),
+      clearName: (name: string) =>
+        request.del<boolean>({ url: `/api/app/monitor-cache/key/${name}` }),
       clearKey: (name: string, key: string) =>
         request.del<boolean>({ url: `/api/app/monitor-cache/value/${name}/${key}` }),
       clearAll: () => request.del<boolean>({ url: '/api/app/monitor-cache/clear' })

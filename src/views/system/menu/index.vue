@@ -361,7 +361,8 @@
       // 新增下级，传递父级信息
       currentMenuData.value = { parentId: row.id, parentName: row.menuName || '' }
     } else if (type === 'edit' && row) {
-      const { level, children, indexText, ...menuProps } = row
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { level: _level, children: _children, indexText: _indexText, ...menuProps } = row
       currentMenuData.value = { ...menuProps }
     } else {
       currentMenuData.value = null

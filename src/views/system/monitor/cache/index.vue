@@ -23,12 +23,22 @@
           @click="selectName(item.cacheName!)"
         >
           <div class="flex flex-col overflow-hidden w-full pr-2">
-            <span class="truncate text-sm font-medium" :title="item.cacheName">{{ item.cacheName }}</span>
-            <span v-if="item.remark" class="text-xs text-gray-500 truncate" :title="item.remark">{{ item.remark }}</span>
+            <span class="truncate text-sm font-medium" :title="item.cacheName">{{
+              item.cacheName
+            }}</span>
+            <span v-if="item.remark" class="text-xs text-gray-500 truncate" :title="item.remark">{{
+              item.remark
+            }}</span>
           </div>
           <ElPopconfirm title="确定要清空该缓存吗？" @confirm="clearName(item.cacheName!)">
             <template #reference>
-              <ElButton v-if="selectedName === item.cacheName" type="danger" link size="small" @click.stop>
+              <ElButton
+                v-if="selectedName === item.cacheName"
+                type="danger"
+                link
+                size="small"
+                @click.stop
+              >
                 <ArtSvgIcon icon="ri:delete-bin-line" />
               </ElButton>
             </template>
@@ -93,10 +103,15 @@
           <ElDescriptions border :column="1" size="small" class="mb-4 flex-shrink-0">
             <ElDescriptionsItem label="缓存名称">{{ cacheValue.cacheName }}</ElDescriptionsItem>
             <ElDescriptionsItem label="键名">{{ cacheValue.cacheKey }}</ElDescriptionsItem>
-            <ElDescriptionsItem label="备注" v-if="cacheValue.remark">{{ cacheValue.remark }}</ElDescriptionsItem>
+            <ElDescriptionsItem label="备注" v-if="cacheValue.remark">{{
+              cacheValue.remark
+            }}</ElDescriptionsItem>
           </ElDescriptions>
           <div class="flex-1 overflow-y-auto w-full">
-            <pre class="bg-gray-50 p-4 rounded text-sm break-all whitespace-pre-wrap m-0 min-h-full">{{ formatValue(cacheValue.cacheValue) }}</pre>
+            <pre
+              class="bg-gray-50 p-4 rounded text-sm break-all whitespace-pre-wrap m-0 min-h-full"
+              >{{ formatValue(cacheValue.cacheValue) }}</pre
+            >
           </div>
         </template>
         <ElEmpty v-else-if="!selectedKey" description="请选择键名" />

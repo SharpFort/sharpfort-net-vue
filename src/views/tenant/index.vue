@@ -72,7 +72,7 @@
   // 弹窗相关
   const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
-  const currentTenantData = ref<TenantDto.TenantGetOutputDto | {}>({})
+  const currentTenantData = ref<TenantDto.TenantGetOutputDto | Record<string, any>>({})
 
   // 选中行
   const selectedRows = ref<TenantDto.TenantGetListOutputDto[]>([])
@@ -187,7 +187,7 @@
       cancelButtonText: '取消',
       type: 'warning'
     }).then(async () => {
-      await TenantApi.del(row.id)
+      await TenantApi.del(row.id!)
       ElMessage.success('删除成功')
       refreshRemove()
     })
@@ -213,7 +213,7 @@
       type: 'info'
     }).then(async () => {
       try {
-        await TenantApi.init(row.id)
+        await TenantApi.init(row.id!)
         ElMessage.success('租户初始化成功')
       } catch (error) {
         console.error(error)
@@ -223,6 +223,7 @@
 
   const handleExport = async () => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { current: _c, size: _s, ...others } = searchParams
       const response = await TenantApi.exportExcel(others as TenantDto.TenantGetListInput)
       const blob = new Blob([response], {

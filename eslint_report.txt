@@ -1,0 +1,44 @@
+
+> art-design-pro@0.0.0 fix E:\Projects\sharpfort-net-vue
+> eslint --fix
+
+
+E:\Projects\sharpfort-net-vue\api_tools\extract_swagger_api.cjs
+  1:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+E:\Projects\sharpfort-net-vue\api_tools\extract_tenant.cjs
+  1:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+E:\Projects\sharpfort-net-vue\api_tools\extract_user_api.cjs
+  1:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+E:\Projects\sharpfort-net-vue\api_tools\gen_dict_interfaces.cjs
+  1:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+E:\Projects\sharpfort-net-vue\src\views\file\file-manager\index.vue
+  27:39  error  'data' is defined but never used  vue/no-unused-vars
+
+E:\Projects\sharpfort-net-vue\src\views\file\storage-provider\index.vue
+  320:14  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+  388:18  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+E:\Projects\sharpfort-net-vue\src\views\system\menu\index.vue
+  364:15  error  'level' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  364:22  error  'children' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  364:32  error  'indexText' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+E:\Projects\sharpfort-net-vue\src\views\tenant\index.vue
+   75:64  error  The `{}` ("empty object") type allows any non-nullish value, including literals like `0` and `""`.
+- If that's what you want, disable this lint rule with an inline comment or configure the 'allowObjectTypes' rule option.
+- If you want a type meaning "any object", you probably want `object` instead.
+- If you want a type meaning "any value", you probably want `unknown` instead  @typescript-eslint/no-empty-object-type
+  226:24  error  '_c' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  226:34  error  '_s' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+
+鉁?17 problems (17 errors, 0 warnings)
+
+鈥塃LIFECYCLE鈥?Command failed with exit code 1.
