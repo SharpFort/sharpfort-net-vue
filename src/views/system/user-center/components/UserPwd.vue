@@ -3,7 +3,7 @@
     <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" label-position="top">
       <el-form-item label="当前密码" prop="oldPassword">
         <el-input
-          v-model="form.oldPassword"
+          v-model.trim="form.oldPassword"
           type="password"
           show-password
           placeholder="请输入当前密码"
@@ -11,7 +11,7 @@
       </el-form-item>
       <el-form-item label="新密码" prop="newPassword">
         <el-input
-          v-model="form.newPassword"
+          v-model.trim="form.newPassword"
           type="password"
           show-password
           placeholder="请输入新密码"
@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item label="确认新密码" prop="confirmPassword">
         <el-input
-          v-model="form.confirmPassword"
+          v-model.trim="form.confirmPassword"
           type="password"
           show-password
           placeholder="请确认新密码"

@@ -3,10 +3,10 @@
     <!-- Search -->
     <el-form :inline="true" :model="searchForm" class="search-form bg-white p-4 mb-4">
       <el-form-item label="用户名">
-        <el-input v-model="searchForm.userName" placeholder="用户名" clearable />
+        <el-input v-model.trim="searchForm.userName" placeholder="用户名" clearable />
       </el-form-item>
       <el-form-item label="手机号">
-        <el-input v-model="searchForm.phone" placeholder="手机号" clearable />
+        <el-input v-model.trim="searchForm.phone" placeholder="手机号" clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -62,10 +62,10 @@
     <el-dialog v-model="dialogVisible" title="重置密码" width="400px">
       <el-form :model="pwdForm" ref="pwdFormRef" :rules="pwdRules" label-width="80px">
         <el-form-item label="用户名">
-          <el-input v-model="currentUserName" disabled />
+          <el-input v-model.trim="currentUserName" disabled />
         </el-form-item>
         <el-form-item label="新密码" prop="password">
-          <el-input v-model="pwdForm.password" type="password" show-password />
+          <el-input v-model.trim="pwdForm.password" type="password" show-password />
         </el-form-item>
       </el-form>
       <template #footer>

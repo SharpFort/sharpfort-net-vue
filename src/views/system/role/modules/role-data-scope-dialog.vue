@@ -9,10 +9,10 @@
   >
     <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" v-loading="loading">
       <el-form-item label="角色名称">
-        <el-input v-model="form.roleName" disabled />
+        <el-input v-model.trim="form.roleName" disabled />
       </el-form-item>
       <el-form-item label="角色编码">
-        <el-input v-model="form.roleCode" disabled />
+        <el-input v-model.trim="form.roleCode" disabled />
       </el-form-item>
 
       <el-form-item label="数据范围" prop="dataScope">

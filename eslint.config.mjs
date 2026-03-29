@@ -65,6 +65,16 @@ export default [
     files: ['**/*.vue'],
     languageOptions: {
       parserOptions: { parser: tseslint.parser }
+    },
+    rules: {
+      'vue/no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "VElement[name='el-input'] VDirectiveKey[name.name='model']:not(:has(VIdentifier[name='trim']))",
+          message: '<el-input> 必须使用 v-model.trim 修饰符以防止首尾空格'
+        }
+      ]
     }
   },
   // 忽略文件

@@ -12,14 +12,14 @@
       <el-tab-pane label="已分配用户" name="allocated">
         <div class="filter-container" style="display: flex; gap: 10px; margin-bottom: 12px">
           <el-input
-            v-model="allocatedQuery.userName"
+            v-model.trim="allocatedQuery.userName"
             placeholder="用户名"
             style="width: 200px"
             clearable
             @keyup.enter="getAllocatedData"
           />
           <el-input
-            v-model="allocatedQuery.phone"
+            v-model.trim="allocatedQuery.phone"
             placeholder="手机号"
             style="width: 200px"
             clearable
@@ -75,14 +75,14 @@
       <el-tab-pane label="未分配用户" name="unallocated">
         <div class="filter-container" style="display: flex; gap: 10px; margin-bottom: 12px">
           <el-input
-            v-model="unallocatedQuery.userName"
+            v-model.trim="unallocatedQuery.userName"
             placeholder="用户名"
             style="width: 200px"
             clearable
             @keyup.enter="getUnallocatedData"
           />
           <el-input
-            v-model="unallocatedQuery.phone"
+            v-model.trim="unallocatedQuery.phone"
             placeholder="手机号"
             style="width: 200px"
             clearable

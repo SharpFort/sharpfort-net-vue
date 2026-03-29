@@ -33,16 +33,16 @@
       </div>
 
       <el-form-item label="账号" prop="name">
-        <el-input v-model="form.name" disabled />
+        <el-input v-model.trim="form.name" disabled />
       </el-form-item>
 
       <el-form-item label="昵称" prop="nick">
-        <el-input v-model="form.nick" :disabled="!isEdit" />
+        <el-input v-model.trim="form.nick" :disabled="!isEdit" />
       </el-form-item>
 
       <el-form-item label="手机" prop="phone">
         <div class="flex w-full gap-2">
-          <el-input v-model="form.phone" disabled placeholder="未绑定手机号" class="flex-1" />
+          <el-input v-model.trim="form.phone" disabled placeholder="未绑定手机号" class="flex-1" />
           <el-button type="primary" plain @click="openBindPhoneDialog">
             {{ form.phone ? '换绑' : '绑定' }}
           </el-button>
@@ -50,7 +50,7 @@
       </el-form-item>
 
       <el-form-item label="邮箱" prop="email">
-        <el-input v-model="form.email" :disabled="!isEdit" />
+        <el-input v-model.trim="form.email" :disabled="!isEdit" />
       </el-form-item>
 
       <el-form-item label="性别" prop="gender">
@@ -65,14 +65,14 @@
       </el-form-item>
 
       <el-form-item label="地址" prop="address">
-        <el-input v-model="form.address" :disabled="!isEdit" />
+        <el-input v-model.trim="form.address" :disabled="!isEdit" />
       </el-form-item>
 
       <el-form-item label="个人介绍" prop="introduction">
         <el-input
           type="textarea"
           :rows="4"
-          v-model="form.introduction"
+          v-model.trim="form.introduction"
           :disabled="!isEdit"
           placeholder="介绍一下自己吧..."
         />

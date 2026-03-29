@@ -12,7 +12,7 @@
       </el-form-item>
 
       <el-form-item label="新手机号" prop="phone">
-        <el-input v-model="form.phone" placeholder="请输入新的手机号" maxlength="11">
+        <el-input v-model.trim="form.phone" placeholder="请输入新的手机号" maxlength="11">
           <template #prefix>
             <el-icon><Iphone /></el-icon>
           </template>
@@ -21,7 +21,12 @@
 
       <el-form-item label="验证码" prop="code">
         <div class="flex w-full gap-2">
-          <el-input v-model="form.code" placeholder="请输入验证码" maxlength="6" class="flex-1">
+          <el-input
+            v-model.trim="form.code"
+            placeholder="请输入验证码"
+            maxlength="6"
+            class="flex-1"
+          >
             <template #prefix>
               <el-icon><Message /></el-icon>
             </template>
