@@ -7,16 +7,16 @@
   >
     <ElForm ref="formRef" :model="formData" :rules="rules" label-width="120px">
       <ElFormItem label="模板名称" prop="name" :error="fieldErrors.name">
-        <ElInput v-model="formData.name" placeholder="请输入模板名称" />
+        <ElInput v-model.trim="formData.name" placeholder="请输入模板名称" />
       </ElFormItem>
 
       <ElFormItem label="生成路径" prop="buildPath" :error="fieldErrors.buildPath">
-        <ElInput v-model="formData.buildPath" placeholder="请输入生成路径" />
+        <ElInput v-model.trim="formData.buildPath" placeholder="请输入生成路径" />
       </ElFormItem>
 
       <ElFormItem label="模板内容" prop="templateStr" :error="fieldErrors.templateStr">
         <ElInput
-          v-model="formData.templateStr"
+          v-model.trim="formData.templateStr"
           type="textarea"
           :rows="15"
           placeholder="请输入模板内容"
@@ -25,7 +25,12 @@
       </ElFormItem>
 
       <ElFormItem label="备注" prop="remarks" :error="fieldErrors.remarks">
-        <ElInput v-model="formData.remarks" type="textarea" :rows="2" placeholder="请输入备注" />
+        <ElInput
+          v-model.trim="formData.remarks"
+          type="textarea"
+          :rows="2"
+          placeholder="请输入备注"
+        />
       </ElFormItem>
     </ElForm>
 

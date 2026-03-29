@@ -10,7 +10,7 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="租户名称" prop="name" :error="fieldErrors.name">
-            <ElInput v-model="formData.name" placeholder="租户名称" />
+            <ElInput v-model.trim="formData.name" placeholder="租户名称" />
           </ElFormItem>
         </ElCol>
 
@@ -36,7 +36,7 @@
             :error="fieldErrors.tenantConnectionString"
           >
             <ElInput
-              v-model="formData.tenantConnectionString"
+              v-model.trim="formData.tenantConnectionString"
               type="textarea"
               :rows="4"
               placeholder="请输入连接字符串（为空则使用默认数据库）"
@@ -49,7 +49,7 @@
         <ElRow :gutter="20">
           <ElCol :span="12">
             <ElFormItem label="实体版本" prop="entityVersion">
-              <ElInput v-model="formData.entityVersion" disabled />
+              <ElInput v-model.trim="formData.entityVersion" disabled />
             </ElFormItem>
           </ElCol>
         </ElRow>

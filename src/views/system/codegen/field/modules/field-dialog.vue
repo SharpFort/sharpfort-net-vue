@@ -9,7 +9,7 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="字段名称" prop="name" :error="fieldErrors.name">
-            <ElInput v-model="formData.name" placeholder="请输入字段名称" />
+            <ElInput v-model.trim="formData.name" placeholder="请输入字段名称" />
           </ElFormItem>
         </ElCol>
         <ElCol :span="12">
@@ -36,7 +36,7 @@
         </ElCol>
         <ElCol :span="12">
           <ElFormItem label="长度" prop="length" :error="fieldErrors.length">
-            <ElInputNumber v-model="formData.length" :min="0" class="w-full" />
+            <ElInputNumber v-model.trim="formData.length" :min="0" class="w-full" />
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -44,7 +44,7 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="排序" prop="orderNum" :error="fieldErrors.orderNum">
-            <ElInputNumber v-model="formData.orderNum" :min="0" class="w-full" />
+            <ElInputNumber v-model.trim="formData.orderNum" :min="0" class="w-full" />
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -74,7 +74,7 @@
 
       <ElFormItem label="备注" prop="description" :error="fieldErrors.description">
         <ElInput
-          v-model="formData.description"
+          v-model.trim="formData.description"
           type="textarea"
           :rows="2"
           placeholder="请输入备注"

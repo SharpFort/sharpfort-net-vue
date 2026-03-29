@@ -36,7 +36,7 @@
 
         <ElCol :span="12">
           <ElFormItem label="菜单名称" prop="menuName">
-            <ElInput v-model="form.menuName" placeholder="请输入菜单名称" clearable />
+            <ElInput v-model.trim="form.menuName" placeholder="请输入菜单名称" clearable />
           </ElFormItem>
         </ElCol>
 
@@ -44,7 +44,7 @@
           <ElFormItem label="菜单图标" prop="menuIcon">
             <ElPopover trigger="click" width="400">
               <template #reference>
-                <ElInput v-model="form.menuIcon" placeholder="点击选择图标" clearable>
+                <ElInput v-model.trim="form.menuIcon" placeholder="点击选择图标" clearable>
                   <template #prefix>
                     <ArtSvgIcon v-if="form.menuIcon" :icon="form.menuIcon" />
                   </template>
@@ -85,7 +85,7 @@
         <ElCol :span="12">
           <ElFormItem label="排序" prop="orderNum">
             <ElInputNumber
-              v-model="form.orderNum"
+              v-model.trim="form.orderNum"
               :min="0"
               controls-position="right"
               style="width: 100%"
@@ -95,31 +95,35 @@
 
         <ElCol :span="12" v-if="form.menuType !== 'Button'">
           <ElFormItem label="路由地址" prop="router">
-            <ElInput v-model="form.router" placeholder="请输入路由地址" clearable />
+            <ElInput v-model.trim="form.router" placeholder="请输入路由地址" clearable />
           </ElFormItem>
         </ElCol>
 
         <ElCol :span="12" v-if="form.menuType !== 'Button'">
           <ElFormItem label="路由名称" prop="routerName">
-            <ElInput v-model="form.routerName" placeholder="请输入路由名称" clearable />
+            <ElInput v-model.trim="form.routerName" placeholder="请输入路由名称" clearable />
           </ElFormItem>
         </ElCol>
 
         <ElCol :span="12" v-if="form.menuType === 'Menu'">
           <ElFormItem label="组件路径" prop="component">
-            <ElInput v-model="form.component" placeholder="请输入组件路径" clearable />
+            <ElInput v-model.trim="form.component" placeholder="请输入组件路径" clearable />
           </ElFormItem>
         </ElCol>
 
         <ElCol :span="12">
           <ElFormItem label="权限标识" prop="permissionCode">
-            <ElInput v-model="form.permissionCode" placeholder="请输入权限标识" clearable />
+            <ElInput v-model.trim="form.permissionCode" placeholder="请输入权限标识" clearable />
           </ElFormItem>
         </ElCol>
 
         <ElCol :span="12">
           <ElFormItem label="ApiUrl" prop="apiUrl">
-            <ElInput v-model="form.apiUrl" placeholder="请输入 ApiUrl (例如 /api/user)" clearable />
+            <ElInput
+              v-model.trim="form.apiUrl"
+              placeholder="请输入 ApiUrl (例如 /api/user)"
+              clearable
+            />
           </ElFormItem>
         </ElCol>
 

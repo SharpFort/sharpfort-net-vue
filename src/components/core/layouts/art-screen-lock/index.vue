@@ -32,7 +32,7 @@
           >
             <ElFormItem prop="password">
               <ElInput
-                v-model="formData.password"
+                v-model.trim="formData.password"
                 type="password"
                 :placeholder="$t('lockScreen.lock.inputPlaceholder')"
                 :show-password="true"
@@ -71,7 +71,7 @@
         >
           <ElFormItem prop="password">
             <ElInput
-              v-model="unlockForm.password"
+              v-model.trim="unlockForm.password"
               type="password"
               :placeholder="$t('lockScreen.unlock.inputPlaceholder')"
               :show-password="true"

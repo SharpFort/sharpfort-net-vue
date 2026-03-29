@@ -7,13 +7,13 @@
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="100px" label-position="right">
       <ElFormItem label="规则名称" prop="ruleName">
-        <ElInput v-model="form.ruleName" placeholder="请输入规则名称" />
+        <ElInput v-model.trim="form.ruleName" placeholder="请输入规则名称" />
       </ElFormItem>
       <ElFormItem label="规则代码" prop="ruleCode">
-        <ElInput v-model="form.ruleCode" placeholder="请输入规则代码" :disabled="isEdit" />
+        <ElInput v-model.trim="form.ruleCode" placeholder="请输入规则代码" :disabled="isEdit" />
       </ElFormItem>
       <ElFormItem label="模板" prop="template">
-        <ElInput v-model="form.template" placeholder="例如: {Year}{Month}{Day}{Seq:4}">
+        <ElInput v-model.trim="form.template" placeholder="例如: {Year}{Month}{Day}{Seq:4}">
           <template #append>
             <el-tooltip content="点击查看可用占位符" placement="top">
               <el-button :icon="InfoFilled" @click="showPlaceholders" />
@@ -26,7 +26,7 @@
         <ElCol :span="12">
           <ElFormItem label="步长" prop="step">
             <ElInputNumber
-              v-model="form.step"
+              v-model.trim="form.step"
               :min="1"
               controls-position="right"
               style="width: 100%"
@@ -36,7 +36,7 @@
         <ElCol :span="12">
           <ElFormItem label="序列长度" prop="seqLength">
             <ElInputNumber
-              v-model="form.seqLength"
+              v-model.trim="form.seqLength"
               :min="1"
               controls-position="right"
               style="width: 100%"
@@ -49,7 +49,7 @@
         <ElCol :span="12">
           <ElFormItem label="最小值" prop="minValue">
             <ElInputNumber
-              v-model="form.minValue"
+              v-model.trim="form.minValue"
               :min="0"
               controls-position="right"
               style="width: 100%"
@@ -59,7 +59,7 @@
         <ElCol :span="12">
           <ElFormItem label="最大值" prop="maxValue">
             <ElInputNumber
-              v-model="form.maxValue"
+              v-model.trim="form.maxValue"
               :min="1"
               controls-position="right"
               style="width: 100%"
@@ -81,7 +81,7 @@
       </ElFormItem>
 
       <ElFormItem label="备注" prop="remark">
-        <ElInput v-model="form.remark" type="textarea" :rows="3" />
+        <ElInput v-model.trim="form.remark" type="textarea" :rows="3" />
       </ElFormItem>
     </ElForm>
 

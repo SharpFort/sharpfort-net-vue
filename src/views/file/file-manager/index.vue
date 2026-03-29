@@ -5,7 +5,7 @@
       <div class="mb-3 px-1">
         <!-- 💡 TODO: 后端支持后，这里可以对接分页式平铺搜索 -->
         <ElInput
-          v-model="treeSearchKeyword"
+          v-model.trim="treeSearchKeyword"
           placeholder="过滤目录..."
           prefix-icon="search"
           clearable
@@ -52,7 +52,7 @@
         <div class="flex gap-2">
           <!-- 💡 TODO: 对接后端文件搜索的时候，可在此处请求 FileApi.file.getList 传入 name 等 -->
           <ElInput
-            v-model="fileSearchKeyword"
+            v-model.trim="fileSearchKeyword"
             placeholder="搜索当前目录内容"
             class="w-64"
             prefix-icon="search"

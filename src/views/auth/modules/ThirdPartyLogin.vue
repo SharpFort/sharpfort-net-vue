@@ -38,7 +38,7 @@
 
         <ElDivider>授权后输入Code</ElDivider>
 
-        <ElInput v-model="authCode" placeholder="请输入获取到的授权码(Code)" clearable />
+        <ElInput v-model.trim="authCode" placeholder="请输入获取到的授权码(Code)" clearable />
 
         <ElButton
           type="success"

@@ -4,7 +4,7 @@
     <ElForm :inline="true" :model="searchForm" class="search-form">
       <ElFormItem label="字段名称">
         <ElInput
-          v-model="searchForm.Name"
+          v-model.trim="searchForm.Name"
           placeholder="请输入字段名称"
           clearable
           @keyup.enter="handleSearch"
@@ -12,7 +12,7 @@
       </ElFormItem>
       <ElFormItem label="表ID">
         <ElInput
-          v-model="searchForm.TableId"
+          v-model.trim="searchForm.TableId"
           placeholder="请输入表ID"
           clearable
           @keyup.enter="handleSearch"

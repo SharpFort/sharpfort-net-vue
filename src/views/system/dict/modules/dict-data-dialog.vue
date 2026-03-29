@@ -8,16 +8,16 @@
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="100px">
       <ElFormItem label="字典类型" prop="dictType">
-        <ElInput v-model="form.dictType" disabled />
+        <ElInput v-model.trim="form.dictType" disabled />
       </ElFormItem>
       <ElFormItem label="字典标签" prop="dictLabel">
-        <ElInput v-model="form.dictLabel" placeholder="请输入字典标签" />
+        <ElInput v-model.trim="form.dictLabel" placeholder="请输入字典标签" />
       </ElFormItem>
       <ElFormItem label="字典键值" prop="dictValue">
-        <ElInput v-model="form.dictValue" placeholder="请输入字典键值" />
+        <ElInput v-model.trim="form.dictValue" placeholder="请输入字典键值" />
       </ElFormItem>
       <ElFormItem label="显示顺序" prop="orderNum">
-        <ElInputNumber v-model="form.orderNum" :min="0" style="width: 100%" />
+        <ElInputNumber v-model.trim="form.orderNum" :min="0" style="width: 100%" />
       </ElFormItem>
       <ElFormItem label="系统默认" prop="isDefault">
         <ElRadioGroup v-model="form.isDefault">
@@ -39,10 +39,10 @@
         </ElSelect>
       </ElFormItem>
       <ElFormItem label="CSS类名" prop="cssClass">
-        <ElInput v-model="form.cssClass" placeholder="请输入CSS类名" />
+        <ElInput v-model.trim="form.cssClass" placeholder="请输入CSS类名" />
       </ElFormItem>
       <ElFormItem label="备注" prop="remark">
-        <ElInput v-model="form.remark" type="textarea" placeholder="请输入备注" />
+        <ElInput v-model.trim="form.remark" type="textarea" placeholder="请输入备注" />
       </ElFormItem>
     </ElForm>
     <template #footer>

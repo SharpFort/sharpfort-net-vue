@@ -8,10 +8,10 @@
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="100px">
       <ElFormItem label="角色名称" prop="roleName">
-        <ElInput v-model="form.roleName" placeholder="请输入角色名称" />
+        <ElInput v-model.trim="form.roleName" placeholder="请输入角色名称" />
       </ElFormItem>
       <ElFormItem label="角色编码" prop="roleCode">
-        <ElInput v-model="form.roleCode" placeholder="请输入角色编码" />
+        <ElInput v-model.trim="form.roleCode" placeholder="请输入角色编码" />
       </ElFormItem>
       <ElFormItem label="数据范围" prop="dataScope">
         <ElSelect v-model="form.dataScope" placeholder="请选择数据范围" style="width: 100%">
@@ -23,13 +23,13 @@
         </ElSelect>
       </ElFormItem>
       <ElFormItem label="显示顺序" prop="orderNum">
-        <ElInputNumber v-model="form.orderNum" :min="0" style="width: 100%" />
+        <ElInputNumber v-model.trim="form.orderNum" :min="0" style="width: 100%" />
       </ElFormItem>
       <ElFormItem label="状态">
         <ElSwitch v-model="form.state" active-text="启用" inactive-text="停用" />
       </ElFormItem>
       <ElFormItem label="备注" prop="remark">
-        <ElInput v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
+        <ElInput v-model.trim="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
       </ElFormItem>
     </ElForm>
     <template #footer>

@@ -71,7 +71,7 @@ export default [
         'error',
         {
           selector:
-            "VElement[name='el-input'] VDirectiveKey[name.name='model']:not(:has(VIdentifier[name='trim']))",
+            "VElement[name='el-input'] VDirectiveKey[name.name='model']:not(:has(VIdentifier[name='trim'])), VElement[name='ElInput'] VDirectiveKey[name.name='model']:not(:has(VIdentifier[name='trim']))",
           message: '<el-input> 必须使用 v-model.trim 修饰符以防止首尾空格'
         }
       ]

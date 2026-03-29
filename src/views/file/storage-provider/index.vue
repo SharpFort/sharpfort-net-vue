@@ -3,7 +3,7 @@
     <!-- Filter Bar -->
     <div class="filter-container mb-4 flex gap-4 items-center">
       <ElInput
-        v-model="queryParams.name"
+        v-model.trim="queryParams.name"
         placeholder="搜索配置名称"
         clearable
         class="w-48"
@@ -134,7 +134,7 @@
     >
       <ElForm ref="formRef" :model="formData" :rules="rules" label-width="120px">
         <ElFormItem label="配置名称" prop="name">
-          <ElInput v-model="formData.name" placeholder="请输入配置名称" />
+          <ElInput v-model.trim="formData.name" placeholder="请输入配置名称" />
         </ElFormItem>
         <ElFormItem label="存储类型" prop="providerType">
           <ElSelect
@@ -152,45 +152,56 @@
 
         <template v-if="formData.providerType !== 'Local'">
           <ElFormItem label="访问凭证(AK)" prop="accessKey">
-            <ElInput v-model="formData.accessKey" placeholder="AccessKey ID" />
+            <ElInput v-model.trim="formData.accessKey" placeholder="AccessKey ID" />
           </ElFormItem>
           <ElFormItem label="安全凭证(SK)" prop="secretKey">
             <ElInput
-              v-model="formData.secretKey"
+              v-model.trim="formData.secretKey"
               type="password"
               show-password
               placeholder="SecretKey (部分接口返回时不展示)"
             />
           </ElFormItem>
           <ElFormItem label="存储桶(Bucket)" prop="bucketName">
-            <ElInput v-model="formData.bucketName" placeholder="Bucket Name" />
+            <ElInput v-model.trim="formData.bucketName" placeholder="Bucket Name" />
           </ElFormItem>
           <ElFormItem label="节点(Endpoint)" prop="endpoint">
-            <ElInput v-model="formData.endpoint" placeholder="Endpoint" />
+            <ElInput v-model.trim="formData.endpoint" placeholder="Endpoint" />
           </ElFormItem>
           <ElFormItem label="地域(Region)" prop="region">
-            <ElInput v-model="formData.region" placeholder="Region (选填)" />
+            <ElInput v-model.trim="formData.region" placeholder="Region (选填)" />
           </ElFormItem>
         </template>
         <!-- For local it might use endpoint for local base url, bucket for base path -->
         <template v-else>
           <ElFormItem label="存储根路径" prop="bucketName" :required="true">
-            <ElInput v-model="formData.bucketName" placeholder="如 D:\Uploads 或 /var/uploads" />
+            <ElInput
+              v-model.trim="formData.bucketName"
+              placeholder="如 D:\Uploads 或 /var/uploads"
+            />
             <div class="text-xs text-g-400 mt-1">本地存储使用 BucketName 作为存储绝对路径</div>
           </ElFormItem>
           <ElFormItem label="外部访问前缀" prop="endpoint">
-            <ElInput v-model="formData.endpoint" placeholder="如 http://localhost:5000/files" />
+            <ElInput
+              v-model.trim="formData.endpoint"
+              placeholder="如 http://localhost:5000/files"
+            />
           </ElFormItem>
         </template>
 
         <ElFormItem label="自定义域名" prop="customDomain">
-          <ElInput v-model="formData.customDomain" placeholder="CDN 或自定义访问域名 (选填)" />
+          <ElInput v-model.trim="formData.customDomain" placeholder="CDN 或自定义访问域名 (选填)" />
         </ElFormItem>
         <ElFormItem label="启用 HTTPS" prop="isEnableHttps">
           <ElSwitch v-model="formData.isEnableHttps" />
         </ElFormItem>
         <ElFormItem label="备注说明" prop="remark">
-          <ElInput v-model="formData.remark" type="textarea" :rows="2" placeholder="备注信息" />
+          <ElInput
+            v-model.trim="formData.remark"
+            type="textarea"
+            :rows="2"
+            placeholder="备注信息"
+          />
         </ElFormItem>
       </ElForm>
 

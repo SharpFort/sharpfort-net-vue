@@ -2,7 +2,7 @@
   <ElDialog v-model="visibleModel" title="测试生成" width="400px" @close="handleClose">
     <ElForm :model="form" class="mt-4">
       <ElFormItem label="规则代码">
-        <ElInput v-model="form.ruleCode" placeholder="请输入规则代码" />
+        <ElInput v-model.trim="form.ruleCode" placeholder="请输入规则代码" />
       </ElFormItem>
       <ElFormItem label="生成结果">
         <div class="result-box">{{ result || '点击生成查看结果' }}</div>

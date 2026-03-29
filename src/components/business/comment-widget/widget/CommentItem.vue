@@ -36,11 +36,11 @@
 
     <ElForm v-if="showReplyForm === comment.id" @submit.prevent="handleSubmit" class="mt-4">
       <ElFormItem prop="author">
-        <ElInput v-model="replyAuthor" placeholder="你的名称" clearable />
+        <ElInput v-model.trim="replyAuthor" placeholder="你的名称" clearable />
       </ElFormItem>
       <ElFormItem prop="content">
         <ElInput
-          v-model="replyContent"
+          v-model.trim="replyContent"
           placeholder="你的回复..."
           type="textarea"
           :rows="3"

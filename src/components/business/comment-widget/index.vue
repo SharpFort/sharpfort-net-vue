@@ -3,7 +3,7 @@
     <ElForm @submit.prevent="addComment" class="w-full mx-auto mb-10">
       <ElFormItem prop="author" class="mt-5">
         <ElInput
-          v-model="newComment.author"
+          v-model.trim="newComment.author"
           placeholder="你的名称"
           class="block w-full"
           clearable
@@ -11,7 +11,7 @@
       </ElFormItem>
       <ElFormItem prop="content">
         <ElInput
-          v-model="newComment.content"
+          v-model.trim="newComment.content"
           placeholder="简单说两句..."
           type="textarea"
           :rows="5"

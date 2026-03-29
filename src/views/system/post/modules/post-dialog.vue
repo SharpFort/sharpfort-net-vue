@@ -11,12 +11,12 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="岗位名称" prop="postName">
-            <ElInput v-model="form.postName" placeholder="请输入岗位名称" />
+            <ElInput v-model.trim="form.postName" placeholder="请输入岗位名称" />
           </ElFormItem>
         </ElCol>
         <ElCol :span="12">
           <ElFormItem label="岗位编码" prop="postCode">
-            <ElInput v-model="form.postCode" placeholder="请输入岗位编码" />
+            <ElInput v-model.trim="form.postCode" placeholder="请输入岗位编码" />
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -24,7 +24,7 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="显示顺序" prop="orderNum">
-            <ElInputNumber v-model="form.orderNum" :min="0" style="width: 100%" />
+            <ElInputNumber v-model.trim="form.orderNum" :min="0" style="width: 100%" />
           </ElFormItem>
         </ElCol>
         <ElCol :span="12">
@@ -35,7 +35,7 @@
       </ElRow>
 
       <ElFormItem label="备注" prop="remark">
-        <ElInput v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
+        <ElInput v-model.trim="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
       </ElFormItem>
     </ElForm>
     <template #footer>

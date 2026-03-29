@@ -8,16 +8,16 @@
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="100px">
       <ElFormItem label="字典名称" prop="dictName">
-        <ElInput v-model="form.dictName" placeholder="请输入字典名称" />
+        <ElInput v-model.trim="form.dictName" placeholder="请输入字典名称" />
       </ElFormItem>
       <ElFormItem label="字典类型" prop="dictType">
-        <ElInput v-model="form.dictType" placeholder="请输入字典类型" />
+        <ElInput v-model.trim="form.dictType" placeholder="请输入字典类型" />
       </ElFormItem>
       <ElFormItem label="状态" prop="state">
         <ElSwitch v-model="form.state" />
       </ElFormItem>
       <ElFormItem label="备注" prop="remark">
-        <ElInput v-model="form.remark" type="textarea" placeholder="请输入备注" />
+        <ElInput v-model.trim="form.remark" type="textarea" placeholder="请输入备注" />
       </ElFormItem>
     </ElForm>
     <template #footer>

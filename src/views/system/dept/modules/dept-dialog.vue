@@ -27,12 +27,12 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="部门名称" prop="deptName">
-            <ElInput v-model="form.deptName" placeholder="请输入部门名称" />
+            <ElInput v-model.trim="form.deptName" placeholder="请输入部门名称" />
           </ElFormItem>
         </ElCol>
         <ElCol :span="12">
           <ElFormItem label="部门编码" prop="deptCode">
-            <ElInput v-model="form.deptCode" placeholder="请输入部门编码" />
+            <ElInput v-model.trim="form.deptCode" placeholder="请输入部门编码" />
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -40,12 +40,12 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="负责人" prop="leader">
-            <ElInput v-model="form.leader" placeholder="请输入负责人" />
+            <ElInput v-model.trim="form.leader" placeholder="请输入负责人" />
           </ElFormItem>
         </ElCol>
         <ElCol :span="12">
           <ElFormItem label="显示顺序" prop="orderNum">
-            <ElInputNumber v-model="form.orderNum" :min="0" style="width: 100%" />
+            <ElInputNumber v-model.trim="form.orderNum" :min="0" style="width: 100%" />
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -59,7 +59,7 @@
       </ElRow>
 
       <ElFormItem label="备注" prop="remark">
-        <ElInput v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
+        <ElInput v-model.trim="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
       </ElFormItem>
     </ElForm>
     <template #footer>

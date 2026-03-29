@@ -8,7 +8,7 @@
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="100px">
       <ElFormItem label="公告标题" prop="title">
-        <ElInput v-model="form.title" placeholder="请输入公告标题" />
+        <ElInput v-model.trim="form.title" placeholder="请输入公告标题" />
       </ElFormItem>
       <ElFormItem label="公告类型" prop="noticeType">
         <ElSelect v-model="form.noticeType" placeholder="请选择类型" style="width: 100%">
@@ -17,10 +17,15 @@
         </ElSelect>
       </ElFormItem>
       <ElFormItem label="公告内容" prop="content">
-        <ElInput v-model="form.content" type="textarea" :rows="6" placeholder="请输入公告内容" />
+        <ElInput
+          v-model.trim="form.content"
+          type="textarea"
+          :rows="6"
+          placeholder="请输入公告内容"
+        />
       </ElFormItem>
       <ElFormItem label="显示顺序" prop="orderNum">
-        <ElInputNumber v-model="form.orderNum" :min="0" style="width: 100%" />
+        <ElInputNumber v-model.trim="form.orderNum" :min="0" style="width: 100%" />
       </ElFormItem>
       <ElFormItem label="状态" prop="state">
         <ElSwitch v-model="form.state" active-text="启用" inactive-text="停用" />

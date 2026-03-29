@@ -60,7 +60,7 @@
         <!-- 聊天输入区域 -->
         <div class="px-4 pt-4">
           <ElInput
-            v-model="messageText"
+            v-model.trim="messageText"
             type="textarea"
             :rows="3"
             placeholder="输入消息"

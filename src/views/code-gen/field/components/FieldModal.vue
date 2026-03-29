@@ -8,10 +8,10 @@
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="100px" label-position="right">
       <ElFormItem label="字段名称" prop="name">
-        <ElInput v-model="form.name" placeholder="请输入字段名称" />
+        <ElInput v-model.trim="form.name" placeholder="请输入字段名称" />
       </ElFormItem>
       <ElFormItem label="描述" prop="description">
-        <ElInput v-model="form.description" type="textarea" placeholder="请输入描述" />
+        <ElInput v-model.trim="form.description" type="textarea" placeholder="请输入描述" />
       </ElFormItem>
       <ElFormItem label="字段类型" prop="fieldType">
         <ElSelect v-model="form.fieldType" placeholder="请选择字段类型">
@@ -21,18 +21,18 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="排序" prop="orderNum">
-            <ElInputNumber v-model="form.orderNum" :min="0" />
+            <ElInputNumber v-model.trim="form.orderNum" :min="0" />
           </ElFormItem>
         </ElCol>
         <ElCol :span="12">
           <ElFormItem label="长度" prop="length">
-            <ElInputNumber v-model="form.length" :min="0" />
+            <ElInputNumber v-model.trim="form.length" :min="0" />
           </ElFormItem>
         </ElCol>
       </ElRow>
 
       <ElFormItem label="关联表ID" prop="tableId">
-        <ElInput v-model="form.tableId" placeholder="请输入关联表ID" />
+        <ElInput v-model.trim="form.tableId" placeholder="请输入关联表ID" />
       </ElFormItem>
 
       <ElFormItem label="选项">

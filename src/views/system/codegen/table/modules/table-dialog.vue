@@ -7,12 +7,12 @@
   >
     <ElForm ref="formRef" :model="formData" :rules="rules" label-width="120px">
       <ElFormItem label="表名" prop="name" :error="fieldErrors.name">
-        <ElInput v-model="formData.name" placeholder="请输入表名" />
+        <ElInput v-model.trim="formData.name" placeholder="请输入表名" />
       </ElFormItem>
 
       <ElFormItem label="备注" prop="description" :error="fieldErrors.description">
         <ElInput
-          v-model="formData.description"
+          v-model.trim="formData.description"
           type="textarea"
           :rows="3"
           placeholder="请输入备注"

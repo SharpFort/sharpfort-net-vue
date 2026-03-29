@@ -9,12 +9,12 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="用户名" prop="userName">
-            <ElInput v-model="formData.userName" placeholder="请输入用户名" />
+            <ElInput v-model.trim="formData.userName" placeholder="请输入用户名" />
           </ElFormItem>
         </ElCol>
         <ElCol :span="12">
           <ElFormItem label="昵称" prop="nick">
-            <ElInput v-model="formData.nick" placeholder="请输入昵称" />
+            <ElInput v-model.trim="formData.nick" placeholder="请输入昵称" />
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -22,7 +22,7 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="姓名" prop="name">
-            <ElInput v-model="formData.name" placeholder="请输入姓名" />
+            <ElInput v-model.trim="formData.name" placeholder="请输入姓名" />
           </ElFormItem>
         </ElCol>
         <ElCol :span="12">
@@ -39,12 +39,12 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="手机号" prop="phone">
-            <ElInput v-model="formData.phone" placeholder="请输入手机号" type="number" />
+            <ElInput v-model.trim="formData.phone" placeholder="请输入手机号" type="number" />
           </ElFormItem>
         </ElCol>
         <ElCol :span="12">
           <ElFormItem label="邮箱" prop="email">
-            <ElInput v-model="formData.email" placeholder="请输入邮箱" />
+            <ElInput v-model.trim="formData.email" placeholder="请输入邮箱" />
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -52,7 +52,7 @@
       <ElRow :gutter="20">
         <ElCol :span="12">
           <ElFormItem label="年龄" prop="age">
-            <ElInput v-model="formData.age" placeholder="请输入年龄" type="number" />
+            <ElInput v-model.trim="formData.age" placeholder="请输入年龄" type="number" />
           </ElFormItem>
         </ElCol>
         <ElCol :span="12">
@@ -125,7 +125,7 @@
         <ElCol :span="12">
           <ElFormItem label="密码" prop="password" v-if="dialogType === 'add'">
             <ElInput
-              v-model="formData.password"
+              v-model.trim="formData.password"
               type="password"
               placeholder="请输入密码"
               show-password
@@ -137,7 +137,7 @@
       <ElRow :gutter="20">
         <ElCol :span="24">
           <ElFormItem label="地址" prop="address">
-            <ElInput v-model="formData.address" placeholder="请输入地址" />
+            <ElInput v-model.trim="formData.address" placeholder="请输入地址" />
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -146,7 +146,7 @@
         <ElCol :span="24">
           <ElFormItem label="个人简介" prop="introduction">
             <ElInput
-              v-model="formData.introduction"
+              v-model.trim="formData.introduction"
               type="textarea"
               :rows="3"
               placeholder="请输入个人简介"
@@ -158,7 +158,12 @@
       <ElRow :gutter="20">
         <ElCol :span="24">
           <ElFormItem label="备注" prop="remark">
-            <ElInput v-model="formData.remark" type="textarea" :rows="2" placeholder="请输入备注" />
+            <ElInput
+              v-model.trim="formData.remark"
+              type="textarea"
+              :rows="2"
+              placeholder="请输入备注"
+            />
           </ElFormItem>
         </ElCol>
       </ElRow>

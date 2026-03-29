@@ -89,26 +89,26 @@
         <ElTabPane label="OAuth登录" name="login">
           <ElForm :model="testForm">
             <ElFormItem label="Scheme (如 Github)"
-              ><ElInput v-model="testForm.scheme"
+              ><ElInput v-model.trim="testForm.scheme"
             /></ElFormItem>
-            <ElFormItem label="Code"><ElInput v-model="testForm.code" /></ElFormItem>
+            <ElFormItem label="Code"><ElInput v-model.trim="testForm.code" /></ElFormItem>
             <ElButton type="primary" @click="testOauthLogin">发起 OauthLogin</ElButton>
           </ElForm>
         </ElTabPane>
         <ElTabPane label="OAuth绑定" name="bind">
           <ElForm :model="testForm">
             <ElFormItem label="Scheme (如 Github)"
-              ><ElInput v-model="testForm.scheme"
+              ><ElInput v-model.trim="testForm.scheme"
             /></ElFormItem>
-            <ElFormItem label="Code"><ElInput v-model="testForm.code" /></ElFormItem>
+            <ElFormItem label="Code"><ElInput v-model.trim="testForm.code" /></ElFormItem>
             <ElButton type="primary" @click="testOauthBind">发起 OauthBind</ElButton>
           </ElForm>
         </ElTabPane>
         <ElTabPane label="获取绑定信息" name="info">
           <ElForm :model="testForm">
-            <ElFormItem label="OpenId"><ElInput v-model="testForm.openId" /></ElFormItem>
-            <ElFormItem label="AuthType"><ElInput v-model="testForm.authType" /></ElFormItem>
-            <ElFormItem label="UserId"><ElInput v-model="testForm.userId" /></ElFormItem>
+            <ElFormItem label="OpenId"><ElInput v-model.trim="testForm.openId" /></ElFormItem>
+            <ElFormItem label="AuthType"><ElInput v-model.trim="testForm.authType" /></ElFormItem>
+            <ElFormItem label="UserId"><ElInput v-model.trim="testForm.userId" /></ElFormItem>
             <ElButton type="primary" @click="testAuthInfo">获取 (TryGetAuthInfo)</ElButton>
           </ElForm>
         </ElTabPane>

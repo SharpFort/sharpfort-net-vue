@@ -3,16 +3,16 @@
     <!-- Search Bar -->
     <ElForm :model="searchParams" inline class="search-form" @keyup.enter="getData">
       <ElFormItem label="会话编号">
-        <ElInput v-model="searchParams.ConnnectionId" placeholder="请输入会话编号" clearable />
+        <ElInput v-model.trim="searchParams.ConnnectionId" placeholder="请输入会话编号" clearable />
       </ElFormItem>
       <ElFormItem label="用户名">
-        <ElInput v-model="searchParams.UserName" placeholder="请输入用户名" clearable />
+        <ElInput v-model.trim="searchParams.UserName" placeholder="请输入用户名" clearable />
       </ElFormItem>
       <ElFormItem label="IP地址">
-        <ElInput v-model="searchParams.Ipaddr" placeholder="请输入IP地址" clearable />
+        <ElInput v-model.trim="searchParams.Ipaddr" placeholder="请输入IP地址" clearable />
       </ElFormItem>
       <ElFormItem label="登录地点">
-        <ElInput v-model="searchParams.LoginLocation" placeholder="请输入登录地点" clearable />
+        <ElInput v-model.trim="searchParams.LoginLocation" placeholder="请输入登录地点" clearable />
       </ElFormItem>
       <ElFormItem>
         <ElButton type="primary" @click="getData">查询</ElButton>

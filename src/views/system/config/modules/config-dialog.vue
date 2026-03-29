@@ -8,13 +8,13 @@
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="100px">
       <ElFormItem label="参数名称" prop="configName">
-        <ElInput v-model="form.configName" placeholder="请输入参数名称" />
+        <ElInput v-model.trim="form.configName" placeholder="请输入参数名称" />
       </ElFormItem>
       <ElFormItem label="参数键名" prop="configKey">
-        <ElInput v-model="form.configKey" placeholder="请输入参数键名" />
+        <ElInput v-model.trim="form.configKey" placeholder="请输入参数键名" />
       </ElFormItem>
       <ElFormItem label="参数键值" prop="configValue">
-        <ElInput v-model="form.configValue" placeholder="请输入参数键值" />
+        <ElInput v-model.trim="form.configValue" placeholder="请输入参数键值" />
       </ElFormItem>
       <ElFormItem label="系统内置" prop="configType">
         <ElRadioGroup v-model="form.configType">
@@ -23,7 +23,7 @@
         </ElRadioGroup>
       </ElFormItem>
       <ElFormItem label="备注" prop="remark">
-        <ElInput v-model="form.remark" type="textarea" placeholder="请输入备注" />
+        <ElInput v-model.trim="form.remark" type="textarea" placeholder="请输入备注" />
       </ElFormItem>
     </ElForm>
     <template #footer>
