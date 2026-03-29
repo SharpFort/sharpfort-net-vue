@@ -74,7 +74,7 @@
   }>()
 
   // Login Logs
-  const loginLogs = ref([])
+  const loginLogs = ref<Api.Log.LoginLogDto[]>([])
   const loadingLogin = ref(false)
   const loginTotal = ref(0)
   const loginParams = reactive({
@@ -83,7 +83,7 @@
   })
 
   // Operation Logs
-  const opLogs = ref([])
+  const opLogs = ref<Api.Log.OperationLogDto[]>([])
   const loadingOp = ref(false)
   const opTotal = ref(0)
   const opParams = reactive({
@@ -98,7 +98,7 @@
   const fetchLoginLogs = async () => {
     loadingLogin.value = true
     try {
-      const res = await CasbinApi.logs.login({
+      const res = await CasbinApi.logs.login.getList({
         SkipCount: (loginParams.pageNum - 1) * loginParams.pageSize,
         MaxResultCount: loginParams.pageSize
       })
@@ -114,7 +114,7 @@
   const fetchOpLogs = async () => {
     loadingOp.value = true
     try {
-      const res = await CasbinApi.logs.operation({
+      const res = await CasbinApi.logs.operation.getList({
         SkipCount: (opParams.pageNum - 1) * opParams.pageSize,
         MaxResultCount: opParams.pageSize
       })

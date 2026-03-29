@@ -74,7 +74,7 @@ declare namespace Api {
 
     /** 操作日志搜索参数 */
     interface OperationLogSearchParams extends AbpPaginationParams {
-      OperationType?: OperationType
+      OperationType?: string // 后端枚举序列化为字符串: Other/Insert/Update/Delete/Auth/Export/Import/Force/GenerateCode/Clean
       OperUser?: string
       StartTime?: string
       EndTime?: string

@@ -294,8 +294,55 @@ export const CasbinApi = {
 
   // --- Logs ---
   logs: {
-    login: (params: any) => request.get<any>({ url: '/api/app/login-log', params }),
-    operation: (params: any) => request.get<any>({ url: '/api/app/operation-log', params })
+    login: {
+      getList: (params: Api.Log.LoginLogSearchParams) =>
+        request.get<Api.Log.LoginLogList>({ url: '/api/app/login-log', params }),
+      get: (id: string) => request.get<Api.Log.LoginLogDto>({ url: `/api/app/login-log/${id}` }),
+      create: (data: Api.Log.LoginLogDto) =>
+        request.post<Api.Log.LoginLogDto>({ url: '/api/app/login-log', data }),
+      del: (ids: string | string[]) => {
+        const idStr = Array.isArray(ids) ? ids.join(',') : ids
+        return request.del<any>({ url: `/api/app/login-log?ids=${idStr}` })
+      },
+      getSelectData: (keywords?: string) =>
+        request.get<Api.Log.LoginLogList>({
+          url: '/api/app/login-log/select-data-list',
+          params: { keywords }
+        }),
+      export: (params: Api.Log.LoginLogSearchParams) =>
+        request.get<any>({
+          url: '/api/app/login-log/export-excel',
+          params,
+          responseType: 'blob'
+        }),
+      import: (data: FormData) =>
+        request.post<any>({ url: '/api/app/login-log/import-excel', data })
+    },
+    operation: {
+      getList: (params: Api.Log.OperationLogSearchParams) =>
+        request.get<Api.Log.OperationLogList>({ url: '/api/app/operation-log', params }),
+      get: (id: string) =>
+        request.get<Api.Log.OperationLogDto>({ url: `/api/app/operation-log/${id}` }),
+      create: (data: Api.Log.OperationLogDto) =>
+        request.post<Api.Log.OperationLogDto>({ url: '/api/app/operation-log', data }),
+      del: (ids: string | string[]) => {
+        const idStr = Array.isArray(ids) ? ids.join(',') : ids
+        return request.del<any>({ url: `/api/app/operation-log?ids=${idStr}` })
+      },
+      getSelectData: (keywords?: string) =>
+        request.get<Api.Log.OperationLogList>({
+          url: '/api/app/operation-log/select-data-list',
+          params: { keywords }
+        }),
+      export: (params: Api.Log.OperationLogSearchParams) =>
+        request.get<any>({
+          url: '/api/app/operation-log/export-excel',
+          params,
+          responseType: 'blob'
+        }),
+      import: (data: FormData) =>
+        request.post<any>({ url: '/api/app/operation-log/import-excel', data })
+    }
   },
 
   // --- Online ---

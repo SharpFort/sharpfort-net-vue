@@ -59,10 +59,10 @@
     <template #footer>
       <div class="dialog-footer">
         <ElButton @click="dialogVisible = false">
-          <Icon icon="ep:close-bold" class="mr-1" /> 取消
+          <ArtSvgIcon icon="ep:close-bold" class="mr-1" /> 取消
         </ElButton>
         <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">
-          <Icon icon="ep:check" class="mr-1" /> 确定
+          <ArtSvgIcon icon="ep:check" class="mr-1" /> 确定
         </ElButton>
       </div>
     </template>

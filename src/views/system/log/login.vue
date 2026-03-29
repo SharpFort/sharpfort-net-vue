@@ -100,7 +100,7 @@
   const getLoginLogList = async (): Promise<void> => {
     loading.value = true
     try {
-      const res = await CasbinApi.logs.login({
+      const res = await CasbinApi.logs.login.getList({
         ...formFilters,
         SkipCount: (pagination.current - 1) * pagination.size,
         MaxResultCount: pagination.size

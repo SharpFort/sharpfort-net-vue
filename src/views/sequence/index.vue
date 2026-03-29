@@ -1,211 +1,313 @@
+<!-- 序号规则管理页面 -->
 <template>
   <div class="sequence-page art-full-height">
     <!-- 搜索栏 -->
-    <ArtSearchBar
-      v-model="formFilters"
-      :items="formItems"
-      @reset="handleReset"
-      @search="handleSearch"
-    />
+    <SequenceSearch v-model="searchForm" @search="handleSearch" @reset="resetSearchParams" />
 
     <ElCard class="art-table-card" shadow="never">
       <!-- 表格头部 -->
-      <ArtTableHeader
-        :showZebra="false"
-        :loading="loading"
-        v-model:columns="columnChecks"
-        @refresh="handleRefresh"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
-          <ElButton type="primary" @click="handleCreate" v-ripple>新增规则</ElButton>
-          <ElButton @click="handleTestGenerate" v-ripple>测试生成</ElButton>
+          <ElSpace wrap>
+            <ElButton type="primary" v-ripple @click="showDialog('add')">新增规则</ElButton>
+            <ElButton
+              type="danger"
+              v-ripple
+              :disabled="selectedRows.length === 0"
+              @click="handleBatchDelete"
+            >
+              批量删除
+            </ElButton>
+            <ElButton v-ripple @click="handleTestGenerate">测试生成</ElButton>
+            <ElButton type="warning" v-ripple @click="handleExport">导出Excel</ElButton>
+            <ElButton type="success" v-ripple @click="handleImportClick">导入Excel</ElButton>
+          </ElSpace>
         </template>
       </ArtTableHeader>
 
+      <!-- 表格 -->
       <ArtTable
-        ref="tableRef"
-        rowKey="id"
         :loading="loading"
+        :data="data as SequenceRuleDto[]"
         :columns="columns"
-        :data="tableData"
         :pagination="pagination"
-        tableLayout="auto"
-        @page-change="handlePageChange"
+        table-layout="auto"
+        @selection-change="handleSelectionChange"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+      />
+
+      <!-- 规则编辑/新增弹窗 -->
+      <SequenceRuleDialog
+        v-model:visible="dialogVisible"
+        :edit-data="currentRule"
+        @submit="handleDialogSubmit"
+      />
+
+      <!-- 测试生成弹窗 -->
+      <TestGenerateDialog v-model:visible="testDialogVisible" />
+
+      <!-- 隐藏的文件上传输入框 -->
+      <input
+        ref="fileInputRef"
+        type="file"
+        style="display: none"
+        accept=".xlsx, .xls"
+        @change="handleFileChange"
       />
     </ElCard>
-
-    <!-- 规则编辑/新增弹窗 -->
-    <SequenceRuleDialog
-      v-model:visible="dialogVisible"
-      :edit-data="currentRule"
-      @submit="handleSubmit"
-    />
-
-    <!-- 测试生成弹窗 -->
-    <TestGenerateDialog v-model:visible="testDialogVisible" />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { reactive, ref, onMounted, computed, h } from 'vue'
+  import { h } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
+  import * as XLSX from 'xlsx'
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
-  import { useTableColumns } from '@/hooks/core/useTableColumns'
-  import { SequenceApi, SequenceRuleDto } from '@/api/sequence'
+  import { useTable } from '@/hooks/core/useTable'
+  import {
+    SequenceApi,
+    SequenceRuleDto,
+    SequenceRuleSearchParams,
+    CreateSequenceRuleInput
+  } from '@/api/sequence'
+  import SequenceSearch from './modules/sequence-search.vue'
   import SequenceRuleDialog from './modules/sequence-rule-dialog.vue'
   import TestGenerateDialog from './modules/test-generate-dialog.vue'
+  import { DialogType } from '@/types'
 
   defineOptions({ name: 'SequenceRule' })
 
-  // 状态
-  const loading = ref(false)
+  // 弹窗相关
   const dialogVisible = ref(false)
   const testDialogVisible = ref(false)
   const currentRule = ref<SequenceRuleDto | null>(null)
-  const tableData = ref<SequenceRuleDto[]>([])
-  const pagination = reactive({
-    currentPage: 1,
-    pageSize: 10,
-    total: 0,
-    current: 1,
-    size: 10
+
+  // 选中行
+  const selectedRows = ref<SequenceRuleDto[]>([])
+
+  // 文件上传
+  const fileInputRef = ref<HTMLInputElement | null>(null)
+
+  // 搜索表单
+  const searchForm = ref<SequenceRuleSearchParams>({
+    RuleName: undefined,
+    RuleCode: undefined,
+    StartTime: undefined,
+    EndTime: undefined
   })
 
-  // 搜索
-  const formFilters = reactive({
-    ruleName: '',
-    ruleCode: ''
-  })
-
-  const formItems = computed(() => [
-    { label: '规则名称', key: 'ruleName', type: 'input', props: { clearable: true } },
-    { label: '规则代码', key: 'ruleCode', type: 'input', props: { clearable: true } }
-  ])
-
-  // 初始化
-  onMounted(() => {
-    getList()
-  })
-
-  const getList = async () => {
-    loading.value = true
-    try {
-      const params = {
-        SkipCount: (pagination.currentPage - 1) * pagination.pageSize,
-        MaxResultCount: pagination.pageSize,
-        RuleName: formFilters.ruleName || undefined,
-        RuleCode: formFilters.ruleCode || undefined
-      }
-      const res = await SequenceApi.sequenceRule.getList(params)
-      tableData.value = res.items
-      pagination.total = res.totalCount
-    } catch (error) {
-      console.error(error)
-    } finally {
-      loading.value = false
+  const {
+    columns,
+    columnChecks,
+    data,
+    loading,
+    pagination,
+    getData,
+    searchParams,
+    resetSearchParams,
+    handleSizeChange,
+    handleCurrentChange,
+    refreshData,
+    refreshRemove
+  } = useTable({
+    core: {
+      apiFn: (params: any) => {
+        const { current, size, ...others } = params
+        return SequenceApi.sequenceRule.getList({
+          SkipCount: (current - 1) * size,
+          MaxResultCount: size,
+          ...others
+        })
+      },
+      apiParams: {
+        current: 1,
+        size: 10,
+        ...searchForm.value
+      },
+      columnsFactory: () => [
+        { type: 'selection' },
+        { type: 'index', width: 60, label: '序号' },
+        { prop: 'ruleName', label: '规则名称', minWidth: 140 },
+        { prop: 'ruleCode', label: '规则代码', width: 140 },
+        { prop: 'template', label: '模板', minWidth: 180, showOverflowTooltip: true },
+        { prop: 'currentValue', label: '当前值', width: 90, align: 'center' },
+        { prop: 'step', label: '步长', width: 70, align: 'center' },
+        { prop: 'seqLength', label: '序列长度', width: 90, align: 'center' },
+        {
+          prop: 'resetType',
+          label: '重置类型',
+          width: 110,
+          formatter: (row: SequenceRuleDto) => {
+            const RESET_LABELS: Record<string, string> = {
+              None: '不重置',
+              Daily: '按日',
+              Weekly: '按周',
+              Monthly: '按月',
+              Quarterly: '按季度',
+              Yearly: '按年',
+              FiscalYearly: '按财年'
+            }
+            return RESET_LABELS[row.resetType ?? 'None'] ?? row.resetType
+          }
+        },
+        {
+          prop: 'lastResetTime',
+          label: '最后重置',
+          width: 180,
+          showOverflowTooltip: true
+        },
+        { prop: 'creationTime', label: '创建时间', width: 180, sortable: true },
+        {
+          prop: 'operation',
+          label: '操作',
+          width: 150,
+          fixed: 'right',
+          align: 'center',
+          formatter: (row: SequenceRuleDto) =>
+            h('div', { class: 'flex justify-center gap-1' }, [
+              h(ArtButtonTable, {
+                type: 'edit',
+                label: '编辑',
+                onClick: () => showDialog('edit', row)
+              }),
+              h(ArtButtonTable, { type: 'delete', label: '删除', onClick: () => handleDelete(row) })
+            ])
+        }
+      ]
     }
+  })
+
+  // ========================
+  // 搜索 / 重置
+  // ========================
+  const handleSearch = (params: Record<string, any>) => {
+    Object.assign(searchParams, params)
+    getData()
   }
 
-  const handleSearch = () => {
-    pagination.currentPage = 1
-    pagination.current = 1
-    getList()
+  // ========================
+  // 弹窗操作
+  // ========================
+  const showDialog = (type: DialogType, row?: SequenceRuleDto) => {
+    currentRule.value = type === 'edit' && row ? { ...row } : null
+    nextTick(() => {
+      dialogVisible.value = true
+    })
   }
 
-  const handleReset = () => {
-    formFilters.ruleName = ''
-    formFilters.ruleCode = ''
-    handleSearch()
-  }
-
-  const handlePageChange = (page: number, size: number) => {
-    pagination.currentPage = page
-    pagination.pageSize = size
-    pagination.current = page
-    pagination.size = size
-    getList()
-  }
-
-  const handleRefresh = () => {
-    getList()
-  }
-
-  // 操作
-  const handleCreate = () => {
+  const handleDialogSubmit = () => {
+    dialogVisible.value = false
     currentRule.value = null
-    dialogVisible.value = true
+    refreshData()
   }
 
-  const handleEdit = (row: SequenceRuleDto) => {
-    currentRule.value = { ...row }
-    dialogVisible.value = true
-  }
-
-  const handleDelete = async (row: SequenceRuleDto) => {
-    try {
-      await ElMessageBox.confirm(`确定要删除规则 [${row.ruleName}] 吗？`, '警告', {
-        type: 'warning',
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
+  // ========================
+  // 单行/批量删除
+  // ========================
+  const handleDelete = (row: SequenceRuleDto) => {
+    ElMessageBox.confirm(`确定要删除规则 [${row.ruleName}] 吗？`, '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(async () => {
+        await SequenceApi.sequenceRule.del(row.id)
+        ElMessage.success('删除成功')
+        refreshRemove()
       })
-      await SequenceApi.sequenceRule.del(row.id)
-      ElMessage.success('删除成功')
-      getList()
-    } catch (e) {
-      if (e !== 'cancel') console.error(e)
-    }
+      .catch(() => {})
   }
 
+  const handleBatchDelete = () => {
+    ElMessageBox.confirm(`确定要删除选中的 ${selectedRows.value.length} 条规则吗？`, '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(async () => {
+        const ids = selectedRows.value.map((r) => r.id)
+        await SequenceApi.sequenceRule.del(ids)
+        ElMessage.success('批量删除成功')
+        refreshRemove()
+      })
+      .catch(() => {})
+  }
+
+  const handleSelectionChange = (selection: SequenceRuleDto[]) => {
+    selectedRows.value = selection
+  }
+
+  // ========================
+  // 测试生成
+  // ========================
   const handleTestGenerate = () => {
     testDialogVisible.value = true
   }
 
-  const handleSubmit = async () => {
-    dialogVisible.value = false
-    getList()
+  // ========================
+  // 导出
+  // ========================
+  const handleExport = async () => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { current: _c, size: _s, ...others } = searchParams
+      const response = await SequenceApi.sequenceRule.export(others)
+      const blob = new Blob([response as any], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      })
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `序号规则_${new Date().getTime()}.xlsx`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('导出失败', error)
+      ElMessage.error('导出失败')
+    }
   }
 
-  // 表格列
-  const { columnChecks, columns } = useTableColumns(() => [
-    { type: 'index', label: '序号', width: 60, align: 'center' },
-    { prop: 'ruleName', label: '规则名称', minWidth: 150 },
-    { prop: 'ruleCode', label: '规则代码', width: 150 },
-    { prop: 'template', label: '模板', minWidth: 200 },
-    { prop: 'currentValue', label: '当前值', width: 100 },
-    { prop: 'step', label: '步长', width: 80 },
-    { prop: 'seqLength', label: '序列长度', width: 100 },
-    {
-      prop: 'resetType',
-      label: '重置类型',
-      width: 120,
-      formatter: (row: SequenceRuleDto) => {
-        const types: Record<string, string> = {
-          None: '不重置',
-          Daily: '每天',
-          Weekly: '每周',
-          Monthly: '每月',
-          Quarterly: '每季度',
-          Yearly: '每年',
-          FiscalYearly: '财年'
+  // ========================
+  // 导入
+  // ========================
+  const handleImportClick = () => {
+    fileInputRef.value?.click()
+  }
+
+  const handleFileChange = async (e: Event) => {
+    const target = e.target as HTMLInputElement
+    const file = target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = async (ev) => {
+      try {
+        const rawData = ev.target?.result
+        const workbook = XLSX.read(rawData, { type: 'binary' })
+        const firstSheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[firstSheetName]
+        const results = XLSX.utils.sheet_to_json<CreateSequenceRuleInput>(worksheet)
+
+        if (results.length === 0) {
+          ElMessage.warning('文件内容为空')
+          return
         }
-        return types[row.resetType || 'None'] || row.resetType
-      }
-    },
-    { prop: 'creationTime', label: '创建时间', width: 180 },
-    {
-      prop: 'operation',
-      label: '操作',
-      width: 150,
-      fixed: 'right',
-      align: 'center',
-      formatter: (row: SequenceRuleDto) => {
-        return h('div', { class: 'flex justify-center gap-1' }, [
-          h(ArtButtonTable, { type: 'edit', onClick: () => handleEdit(row) }),
-          h(ArtButtonTable, { type: 'delete', onClick: () => handleDelete(row) })
-        ])
+
+        await SequenceApi.sequenceRule.import(results)
+        ElMessage.success('导入成功')
+        refreshData()
+      } catch (error) {
+        console.error('导入失败', error)
+        ElMessage.error('导入失败，请检查文件格式')
+      } finally {
+        target.value = ''
       }
     }
-  ])
+    reader.readAsBinaryString(file)
+  }
 </script>
 
 <style scoped lang="scss">

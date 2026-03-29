@@ -50,14 +50,7 @@
     }
     loading.value = true
     try {
-      // Based on API analysis, testGenerate takes ruleCode in query params?
-      // Let's check api definition:
-      // testGenerate: (data: any, params?: any) => ... url: ...
-      // Swagger: POST /api/app/sequence-rule/test-generate?ruleCode=...
-
-      const res = await SequenceApi.sequenceRule.testGenerate({}, { ruleCode: form.ruleCode })
-      // Res might be string wrapper or raw string?
-      // Swagger says returns string.
+      const res = await SequenceApi.sequenceRule.testGenerate(form.ruleCode)
       result.value = typeof res === 'string' ? res : JSON.stringify(res)
     } catch (e) {
       console.error(e)

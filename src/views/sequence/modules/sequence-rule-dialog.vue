@@ -109,7 +109,13 @@
   import { ref, reactive, watch, computed } from 'vue'
   import { ElMessage, FormInstance, FormRules } from 'element-plus'
   import { InfoFilled } from '@element-plus/icons-vue'
-  import { SequenceApi, SequenceRuleDto, PlaceholderMetaDto } from '@/api/sequence'
+  import {
+    SequenceApi,
+    SequenceRuleDto,
+    PlaceholderMetaDto,
+    CreateSequenceRuleInput,
+    SequenceResetType
+  } from '@/api/sequence'
 
   const props = defineProps<{
     visible: boolean
@@ -130,7 +136,7 @@
     set: (val) => emit('update:visible', val)
   })
 
-  const form = reactive({
+  const form = reactive<CreateSequenceRuleInput & { id: number }>({
     id: 0, // Only for internal reference if needed, usually passed separately to update
     ruleName: '',
     ruleCode: '',
@@ -139,7 +145,7 @@
     seqLength: 4,
     minValue: 1,
     maxValue: 99999999,
-    resetType: 'Daily',
+    resetType: 'Daily' as SequenceResetType,
     remark: ''
   })
 
