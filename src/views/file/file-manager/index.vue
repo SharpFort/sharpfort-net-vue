@@ -1,18 +1,25 @@
 <template>
-  <div class="file-manager-container h-full flex bg-white shadow-sm rounded overflow-hidden p-2">
+  <div
+    class="file-manager-container h-full flex bg-slate-50/50 rounded-2xl overflow-hidden p-4 gap-4"
+  >
     <!-- Left Sidebar: Directory Tree -->
-    <div class="w-64 border-r pr-2 flex flex-col shrink-0">
-      <div class="mb-3 px-1">
+    <div
+      class="w-72 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col shrink-0 overflow-hidden"
+    >
+      <div class="p-4 border-b border-gray-50 bg-gray-50/50">
         <!-- 💡 TODO: 后端支持后，这里可以对接分页式平铺搜索 -->
         <ElInput
           v-model.trim="treeSearchKeyword"
           placeholder="过滤目录..."
-          prefix-icon="search"
           clearable
           @input="filterTree"
-        />
+        >
+          <template #prefix>
+            <i class="ri-filter-3-line text-gray-400"></i>
+          </template>
+        </ElInput>
       </div>
-      <div class="flex-1 overflow-y-auto custom-scrollbar">
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-2">
         <ElTree
           ref="treeRef"
           :data="treeData"
@@ -23,46 +30,121 @@
           highlight-current
           :filter-node-method="filterNode"
           @node-click="handleNodeClick"
+          class="bg-transparent"
         >
-          <template #default="{ node }">
-            <span class="custom-tree-node flex items-center text-sm">
-              <i class="ri-folder-3-fill text-yellow-400 mr-2 text-lg"></i>
-              <span>{{ node.label }}</span>
-            </span>
+          <template #default="{ node, data }">
+            <div
+              class="group flex items-center justify-between w-full py-2 px-3 rounded-xl transition-all duration-300 border select-none cursor-pointer"
+              :class="
+                dragTargetId === data.id
+                  ? '!bg-blue-100 !border-blue-400 shadow-sm'
+                  : 'border-transparent hover:border-blue-100/50 hover:bg-gradient-to-r hover:from-blue-50/80 hover:to-transparent'
+              "
+              @dragover.prevent="handleDragOver($event, data)"
+              @dragleave.prevent="handleDragLeave($event, data)"
+              @drop.stop="handleDrop($event, data)"
+            >
+              <div class="flex items-center space-x-3 overflow-hidden pointer-events-none">
+                <ElIcon
+                  class="text-blue-400 text-xl group-hover:scale-110 drop-shadow-sm transition-transform duration-300"
+                  ><Folder
+                /></ElIcon>
+                <span
+                  class="text-sm font-medium text-gray-700 truncate group-hover:text-blue-600 transition-colors"
+                  >{{ node.label }}</span
+                >
+              </div>
+              <div
+                class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              >
+                <ElTooltip content="修改" placement="top" :show-after="300">
+                  <div
+                    class="p-1 rounded-md hover:bg-blue-100 text-gray-400 hover:text-blue-600 transition-colors"
+                    @click.stop="handleEditFolder(data)"
+                  >
+                    <i class="ri-edit-line text-sm"></i>
+                  </div>
+                </ElTooltip>
+                <ElTooltip content="删除" placement="top" :show-after="300">
+                  <div
+                    class="p-1 rounded-md hover:bg-red-100 text-gray-400 hover:text-red-500 transition-colors"
+                    @click.stop="deleteFolder(data)"
+                  >
+                    <i class="ri-delete-bin-line text-sm"></i>
+                  </div>
+                </ElTooltip>
+              </div>
+            </div>
           </template>
         </ElTree>
       </div>
     </div>
 
     <!-- Right Pane: File & Folder Grid -->
-    <div class="flex-1 flex flex-col pl-4 min-w-0">
+    <div
+      class="flex-1 flex flex-col bg-white border border-gray-100 rounded-2xl shadow-sm p-6 min-w-0"
+    >
       <!-- Toolbar -->
-      <div class="flex justify-between items-center mb-4 pb-2 border-b">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
         <div class="flex items-center">
-          <ElBreadcrumb separator="/">
-            <ElBreadcrumbItem :to="{ path: '' }" @click="goToFolder(null)"
-              >全部文件</ElBreadcrumbItem
+          <div
+            class="flex items-center gap-2 text-sm font-semibold bg-gray-50/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-gray-200/60 shadow-sm transition-all hover:shadow-md"
+          >
+            <div
+              class="cursor-pointer text-gray-500 hover:text-blue-600 flex items-center transition-colors px-2 py-1 rounded-lg hover:bg-white select-none"
+              @click="goToFolder(null)"
             >
-            <!-- 假设这里有完整的面包屑链路，目前用当前文件夹名称替代 -->
-            <ElBreadcrumbItem v-if="currentDirectoryName">{{
-              currentDirectoryName
-            }}</ElBreadcrumbItem>
-          </ElBreadcrumb>
+              <ElIcon class="mr-1 text-lg"><HomeFilled /></ElIcon>
+              <span>全部文件</span>
+            </div>
+
+            <template v-for="(item, index) in breadcrumbPath" :key="item.id">
+              <ElIcon class="text-gray-300"><ArrowRight /></ElIcon>
+              <div
+                class="flex items-center transition-colors px-3 py-1.5 rounded-xl select-none"
+                :class="
+                  index === breadcrumbPath.length - 1
+                    ? 'text-blue-600 bg-blue-50 border border-blue-100 shadow-sm'
+                    : 'text-gray-500 hover:text-blue-600 hover:bg-white cursor-pointer'
+                "
+                @click="index !== breadcrumbPath.length - 1 ? goToFolder(item) : null"
+              >
+                <ElIcon
+                  v-if="index === breadcrumbPath.length - 1"
+                  class="mr-1.5 text-lg text-blue-500"
+                  ><FolderOpened
+                /></ElIcon>
+                <ElIcon v-else class="mr-1.5 text-lg"><Folder /></ElIcon>
+                <span>{{ item.name }}</span>
+              </div>
+            </template>
+          </div>
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-3">
           <!-- 💡 TODO: 对接后端文件搜索的时候，可在此处请求 FileApi.file.getList 传入 name 等 -->
           <ElInput
             v-model.trim="fileSearchKeyword"
-            placeholder="搜索当前目录内容"
+            placeholder="搜索当前目录内容..."
             class="w-64"
-            prefix-icon="search"
             clearable
             @input="handleLocalSearch"
-          />
-          <ElButton type="default" icon="folder-add" @click="handleCreateFolder"
-            >新建文件夹</ElButton
           >
-          <ElButton type="primary" icon="upload" @click="showUpload = true">上传文件</ElButton>
+            <template #prefix>
+              <i class="ri-search-line"></i>
+            </template>
+          </ElInput>
+          <ElButton class="!rounded-xl" type="default" @click="handleCreateFolder">
+            <template #icon><i class="ri-folder-add-line"></i></template>
+            新建文件夹
+          </ElButton>
+          <ElButton
+            class="!rounded-xl !bg-blue-600 hover:!bg-blue-700 !border-blue-600"
+            type="primary"
+            @click="showUpload = true"
+          >
+            <template #icon><i class="ri-upload-cloud-2-line"></i></template>
+            上传文件
+          </ElButton>
         </div>
       </div>
 
@@ -71,36 +153,68 @@
         <!-- Empty State -->
         <div
           v-if="displayFolders.length === 0 && displayFiles.length === 0"
-          class="h-full flex flex-col justify-center items-center text-g-400"
+          class="h-full flex flex-col justify-center items-center text-gray-400 pb-10"
         >
-          <h1 class="text-8xl mb-4 text-g-200"><i class="ri-folder-open-line"></i></h1>
-          <p>当前目录为空</p>
+          <div class="w-48 h-48 bg-blue-50 rounded-full flex items-center justify-center mb-6">
+            <i class="ri-folder-open-line text-8xl text-blue-200"></i>
+          </div>
+          <p class="text-lg text-gray-500 font-medium">当前目录为空</p>
+          <p class="text-sm text-gray-400 mt-2">您可以新建文件夹或上传文件</p>
         </div>
 
         <!-- Grid View -->
         <div
           v-else
-          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 content-start"
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-5 content-start p-1"
         >
           <!-- Render Folders First -->
           <div
             v-for="folder in displayFolders"
             :key="folder.id"
-            class="file-card group relative border border-transparent hover:bg-g-50 hover:border-g-200 rounded p-2 transition-all cursor-pointer flex flex-col items-center justify-center text-center"
+            draggable="true"
+            @dragstart="handleDragStart($event, folder, 'directory')"
+            @dragover.prevent="handleDragOver($event, folder)"
+            @dragleave.prevent="handleDragLeave($event, folder)"
+            @drop.stop="handleDrop($event, folder)"
+            class="file-card group relative bg-white border hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 rounded-2xl p-4 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center text-center overflow-hidden select-none"
+            :class="
+              dragTargetId === folder.id
+                ? '!border-blue-500 !bg-blue-50/50 scale-105 z-20 shadow-lg'
+                : 'border-gray-100'
+            "
             @click="goToFolder(folder)"
           >
-            <div class="text-6xl text-yellow-400 mb-2">
-              <i class="ri-folder-3-fill"></i>
+            <div
+              class="absolute inset-0 bg-gradient-to-b from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+            ></div>
+            <div
+              class="text-6xl text-blue-400 mb-3 group-hover:scale-110 group-hover:-translate-y-1 drop-shadow-md transition-all duration-300 relative z-10 flex justify-center items-center pointer-events-none"
+            >
+              <ElIcon><FolderOpened /></ElIcon>
             </div>
-            <div class="text-sm truncate w-full px-1 font-medium text-g-700" :title="folder.name">
+            <div
+              class="text-sm truncate w-full px-1 font-semibold text-gray-700 group-hover:text-blue-600 transition-colors relative z-10 pointer-events-none"
+              :title="folder.name"
+            >
               {{ folder.name }}
             </div>
             <div
-              class="text-xs text-g-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex gap-1 bg-white/80 backdrop-blur-sm p-1 rounded-lg shadow-sm"
             >
-              <ElButton type="danger" link @click.stop="deleteFolder(folder)"
-                ><i class="ri-delete-bin-line"></i
-              ></ElButton>
+              <div
+                class="p-1 rounded-md hover:bg-blue-100 text-gray-500 hover:text-blue-600"
+                @click.stop="handleEditFolder(folder)"
+                title="修改"
+              >
+                <ElIcon class="text-sm"><EditPen /></ElIcon>
+              </div>
+              <div
+                class="p-1 rounded-md hover:bg-red-100 text-gray-500 hover:text-red-500"
+                @click.stop="deleteFolder(folder)"
+                title="删除"
+              >
+                <ElIcon class="text-sm"><Delete /></ElIcon>
+              </div>
             </div>
           </div>
 
@@ -108,22 +222,28 @@
           <div
             v-for="file in displayFiles"
             :key="file.id"
-            class="file-card group relative border border-g-200 bg-g-50 rounded hover:shadow-md transition-all cursor-pointer"
+            draggable="true"
+            @dragstart="handleDragStart($event, file, 'file')"
+            class="file-card group relative bg-white border border-gray-100 rounded-2xl hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 cursor-pointer flex flex-col overflow-hidden"
             @click="openPreview(file)"
           >
             <!-- Thumbnail -->
             <div
-              class="aspect-square flex flex-col justify-center items-center bg-white overflow-hidden rounded-t relative"
+              class="aspect-square flex flex-col justify-center items-center bg-gray-50/50 overflow-hidden relative"
             >
-              <AsyncImage :file-id="file.id || ''" :file-type="file.fileType || ''" />
+              <AsyncImage
+                class="group-hover:scale-105 transition-transform duration-500"
+                :file-id="file.id || ''"
+                :file-type="file.fileType || ''"
+              />
 
               <!-- Hover Overlay -->
               <div
-                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2"
+                class="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <ElButton
                   circle
-                  icon="view"
+                  :icon="View"
                   type="info"
                   size="small"
                   @click.stop="openPreview(file)"
@@ -131,7 +251,7 @@
                 />
                 <ElButton
                   circle
-                  icon="download"
+                  :icon="Download"
                   type="primary"
                   size="small"
                   @click.stop="downloadFile(file)"
@@ -139,7 +259,7 @@
                 />
                 <ElButton
                   circle
-                  icon="delete"
+                  :icon="Delete"
                   type="danger"
                   size="small"
                   @click.stop="deleteFile(file)"
@@ -149,11 +269,18 @@
             </div>
 
             <!-- Info -->
-            <div class="p-2 text-center">
-              <div class="text-sm truncate text-g-700 font-medium" :title="file.name">
+            <div
+              class="p-3 text-center bg-white z-10 border-t border-gray-50 group-hover:bg-blue-50/30 transition-colors"
+            >
+              <div
+                class="text-sm truncate text-gray-700 font-semibold group-hover:text-blue-600 transition-colors"
+                :title="file.name"
+              >
                 {{ file.name }}
               </div>
-              <div class="text-xs text-g-400 mt-1">{{ formatSize(file.size) }}</div>
+              <div class="text-xs text-gray-400 mt-1.5 font-medium">{{
+                formatSize(file.size)
+              }}</div>
             </div>
           </div>
         </div>
@@ -177,6 +304,16 @@
 <script setup lang="ts">
   import { ref, onMounted, nextTick } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
+  import {
+    View,
+    Download,
+    Delete,
+    FolderOpened,
+    Folder,
+    HomeFilled,
+    ArrowRight,
+    EditPen
+  } from '@element-plus/icons-vue'
   import UploadModal from './modules/UploadModal.vue'
   import PreviewModal from './modules/PreviewModal.vue'
   import AsyncImage from './modules/AsyncImage.vue'
@@ -196,7 +333,82 @@
 
   const currentDirectoryId = ref<string | undefined>(undefined)
   const currentDirectoryName = ref<string>('')
+  const breadcrumbPath = ref<{ id: string; name: string }[]>([])
   const currentFile = ref<FileDescriptorGetListOutputDto | null>(null)
+
+  // Drag and Drop Logic
+  const draggedItem = ref<{ id: string; type: 'directory' | 'file' } | null>(null)
+  const dragTargetId = ref<string | null>(null)
+
+  const handleDragStart = (e: DragEvent, item: any, type: 'directory' | 'file') => {
+    draggedItem.value = { id: item.id, type }
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData('text/plain', item.id)
+    }
+  }
+
+  const handleDragOver = (e: DragEvent, folder: any) => {
+    if (!draggedItem.value) return
+    if (draggedItem.value.type === 'directory' && draggedItem.value.id === folder.id) return
+
+    e.preventDefault()
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
+    dragTargetId.value = folder.id
+  }
+
+  const handleDragLeave = (e: DragEvent, folder: any) => {
+    const currentList = e.currentTarget as Node
+    const related = e.relatedTarget as Node
+    if (currentList && related && currentList.contains(related)) {
+      return
+    }
+    if (dragTargetId.value === folder.id) {
+      dragTargetId.value = null
+    }
+  }
+
+  const handleDrop = async (e: DragEvent, targetFolder: any) => {
+    e.preventDefault()
+    dragTargetId.value = null
+    const dragged = draggedItem.value
+    if (!dragged) return
+
+    // Validate target is not self
+    if (dragged.type === 'directory' && dragged.id === targetFolder.id) return
+
+    try {
+      if (dragged.type === 'directory') {
+        const { value: confirm } = await ElMessageBox.confirm(
+          `确定要将所选文件夹移入 "${targetFolder.name}" 目录内吗？`,
+          '移动文件夹',
+          { type: 'warning' }
+        ).catch(() => ({ value: false }))
+        if (confirm === false) return
+        await FileApi.directory.move(dragged.id, targetFolder.id)
+      } else {
+        const { value: confirm } = await ElMessageBox.confirm(
+          `确定要将文件移入 "${targetFolder.name}" 目录内吗？`,
+          '移动文件',
+          { type: 'warning' }
+        ).catch(() => ({ value: false }))
+        if (confirm === false) return
+        await FileApi.file.move(dragged.id, targetFolder.id)
+      }
+
+      ElMessage.success('操作成功')
+      fetchRightPaneContent()
+    } catch (err: any) {
+      if (err !== 'cancel') {
+        console.error(err)
+        ElMessage.error(
+          err.response?.data?.error?.message || err.message || '移动操作失败，请确认层级逻辑后再试'
+        )
+      }
+    } finally {
+      draggedItem.value = null
+    }
+  }
 
   // Tree Logic
   const treeRef = ref<any>(null)
@@ -283,19 +495,74 @@
     if (folder) {
       currentDirectoryId.value = folder.id
       currentDirectoryName.value = folder.name || ''
-      // Ensure the tree node is selected up visually
+
+      const existingIndex = breadcrumbPath.value.findIndex((p) => p.id === folder.id)
+      if (existingIndex !== -1) {
+        breadcrumbPath.value = breadcrumbPath.value.slice(0, existingIndex + 1)
+      } else {
+        const treeNode = treeRef.value?.getNode(folder.id)
+        if (treeNode) {
+          const path: { id: string; name: string }[] = []
+          let node = treeNode
+          while (node && node.data && node.data.id && node.level > 0) {
+            path.unshift({ id: node.data.id, name: node.data.name })
+            node = node.parent
+          }
+          breadcrumbPath.value = path
+        } else {
+          breadcrumbPath.value.push({ id: folder.id!, name: folder.name! })
+        }
+      }
+
       nextTick(() => {
-        treeRef.value?.setCurrentKey(folder.id)
+        if (treeRef.value?.getNode(folder.id)) {
+          treeRef.value?.setCurrentKey(folder.id)
+        }
       })
     } else {
       currentDirectoryId.value = undefined
       currentDirectoryName.value = ''
+      breadcrumbPath.value = []
       treeRef.value?.setCurrentKey(null)
     }
     fetchRightPaneContent()
   }
 
   // Actions
+  const handleEditFolder = async (folder: DirectoryDescriptorGetOutputDto) => {
+    try {
+      const { value: folderName } = await ElMessageBox.prompt(
+        '请输入新的文件夹名称',
+        '修改文件夹',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputValue: folder.name,
+          inputPattern: /\S+/,
+          inputErrorMessage: '名称不能为空'
+        }
+      )
+
+      await FileApi.directory.update(folder.id!, {
+        name: folderName
+      })
+      ElMessage.success('修改成功')
+
+      if (currentDirectoryId.value === folder.id) {
+        currentDirectoryName.value = folderName
+      }
+
+      // Update local tree node or refetch right content
+      folder.name = folderName // optimistic update
+      fetchRightPaneContent()
+    } catch (err) {
+      if (err !== 'cancel') {
+        console.error(err)
+        ElMessage.error('修改失败')
+      }
+    }
+  }
+
   const handleCreateFolder = async () => {
     try {
       const { value: folderName } = await ElMessageBox.prompt('请输入文件夹名称', '新建文件夹', {
@@ -400,10 +667,30 @@
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: #cbd5e1;
-    border-radius: 4px;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
+  }
+
+  :deep(.el-tree-node__content) {
+    position: relative;
+    height: auto;
+    padding: 2px 0;
+    background-color: transparent !important;
+  }
+
+  :deep(.el-tree-node.is-current > .el-tree-node__content > .group) {
+    background-image: linear-gradient(to right, rgb(239 246 255), transparent);
+    border-color: rgb(219 234 254);
+  }
+
+  :deep(.el-tree-node.is-current > .el-tree-node__content > .group span) {
+    color: rgb(37 99 235);
   }
 </style>

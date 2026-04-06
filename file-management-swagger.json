@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.4",
   "info": {
     "title": "file-management",
     "version": "v1"
@@ -14,8 +14,7 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "requestBody": {
@@ -39,7 +38,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -139,7 +138,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -159,7 +158,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -187,7 +186,6 @@
           {
             "name": "parentId",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -197,13 +195,12 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -312,7 +309,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -332,7 +329,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -363,7 +360,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -373,13 +369,12 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -479,7 +474,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -499,7 +494,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -528,7 +523,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -538,8 +532,7 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "requestBody": {
@@ -563,7 +556,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -663,7 +656,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -683,7 +676,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -712,7 +705,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -722,13 +714,15 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
           },
           "403": {
             "description": "Forbidden",
@@ -811,7 +805,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -831,7 +825,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -862,7 +856,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -872,7 +865,6 @@
             "name": "newParentId",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -882,13 +874,15 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
           },
           "403": {
             "description": "Forbidden",
@@ -971,7 +965,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -991,7 +985,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1021,7 +1015,6 @@
           {
             "name": "directoryId",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -1031,7 +1024,6 @@
             "name": "directoryId",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string"
             }
@@ -1040,8 +1032,7 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "requestBody": {
@@ -1069,7 +1060,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1178,7 +1169,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1198,7 +1189,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1229,7 +1220,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -1238,7 +1228,6 @@
           {
             "name": "isThumbnail",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "boolean",
               "default": false
@@ -1248,8 +1237,7 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
@@ -1334,7 +1322,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1354,7 +1342,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1385,7 +1373,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -1395,13 +1382,12 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1501,7 +1487,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1521,7 +1507,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1550,7 +1536,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -1560,13 +1545,15 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
           },
           "403": {
             "description": "Forbidden",
@@ -1649,7 +1636,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1669,7 +1656,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1699,7 +1686,6 @@
           {
             "name": "Name",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "string"
             }
@@ -1707,7 +1693,6 @@
           {
             "name": "DirectoryId",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -1716,7 +1701,7 @@
           {
             "name": "FileType",
             "in": "query",
-            "style": "form",
+            "description": "【枚举：File=0】\r\n【枚举：Image=1】\r\n【枚举：Video=2】\r\n【枚举：Audio=3】\r\n【枚举：Document=4】\r\n【枚举：Archive=5】\r\n",
             "schema": {
               "$ref": "#/components/schemas/SharpFort.FileManagement.Domain.Shared.Enums.FileType"
             }
@@ -1724,7 +1709,6 @@
           {
             "name": "Sorting",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "string"
             }
@@ -1732,7 +1716,6 @@
           {
             "name": "SkipCount",
             "in": "query",
-            "style": "form",
             "schema": {
               "maximum": 2147483647,
               "minimum": 0,
@@ -1743,7 +1726,6 @@
           {
             "name": "MaxResultCount",
             "in": "query",
-            "style": "form",
             "schema": {
               "maximum": 2147483647,
               "minimum": 1,
@@ -1755,13 +1737,12 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1861,7 +1842,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1881,7 +1862,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1911,7 +1892,6 @@
           {
             "name": "ids",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "array",
               "items": {
@@ -1924,13 +1904,15 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
           },
           "403": {
             "description": "Forbidden",
@@ -2013,7 +1995,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2033,7 +2015,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2064,7 +2046,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -2074,7 +2055,6 @@
             "name": "directoryId",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -2084,13 +2064,15 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
           },
           "403": {
             "description": "Forbidden",
@@ -2173,7 +2155,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2193,7 +2175,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2224,7 +2206,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -2233,7 +2214,6 @@
           {
             "name": "newName",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "string"
             }
@@ -2242,13 +2222,15 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
           },
           "403": {
             "description": "Forbidden",
@@ -2331,7 +2313,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2351,7 +2333,357 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/app/file-descriptor/verify-hash": {
+      "post": {
+        "tags": ["FileDescriptor"],
+        "summary": "校验文件哈希（判断是否可以秒传）",
+        "parameters": [
+          {
+            "name": "__tenant",
+            "in": "header",
+            "description": "租户ID或租户名称（留空表示默认租户）",
+            "allowEmptyValue": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.VerifyHashInput"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.VerifyHashInput"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.VerifyHashInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.FileVerifyResultDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.FileVerifyResultDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.FileVerifyResultDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Not Implemented",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/app/file-descriptor/quick-upload": {
+      "post": {
+        "tags": ["FileDescriptor"],
+        "summary": "文件秒传",
+        "parameters": [
+          {
+            "name": "__tenant",
+            "in": "header",
+            "description": "租户ID或租户名称（留空表示默认租户）",
+            "allowEmptyValue": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.QuickUploadInput"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.QuickUploadInput"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.QuickUploadInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.FileDescriptorGetOutputDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.FileDescriptorGetOutputDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.FileDescriptorGetOutputDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Not Implemented",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Volo.Abp.Http.RemoteServiceErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2381,7 +2713,6 @@
           {
             "name": "Name",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "string"
             }
@@ -2389,7 +2720,7 @@
           {
             "name": "ProviderType",
             "in": "query",
-            "style": "form",
+            "description": "【枚举：Local=0】\r\n【枚举：S3Compatible=1】\r\n【枚举：Aliyun=2】\r\n【枚举：TencentCloud=3】\r\n",
             "schema": {
               "$ref": "#/components/schemas/SharpFort.FileManagement.Domain.Shared.Enums.StorageProviderType"
             }
@@ -2397,7 +2728,6 @@
           {
             "name": "IsEnabled",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "boolean"
             }
@@ -2405,7 +2735,6 @@
           {
             "name": "Sorting",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "string"
             }
@@ -2413,7 +2742,6 @@
           {
             "name": "SkipCount",
             "in": "query",
-            "style": "form",
             "schema": {
               "maximum": 2147483647,
               "minimum": 0,
@@ -2424,7 +2752,6 @@
           {
             "name": "MaxResultCount",
             "in": "query",
-            "style": "form",
             "schema": {
               "maximum": 2147483647,
               "minimum": 1,
@@ -2436,13 +2763,12 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2542,7 +2868,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2562,7 +2888,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2591,8 +2917,7 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "requestBody": {
@@ -2617,7 +2942,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2717,7 +3042,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2737,7 +3062,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2760,11 +3085,12 @@
       },
       "delete": {
         "tags": ["FileStorageProvider"],
+        "summary": "批量删除实体",
         "parameters": [
           {
             "name": "ids",
             "in": "query",
-            "style": "form",
+            "description": "实体ID集合",
             "schema": {
               "type": "array",
               "items": {
@@ -2777,13 +3103,15 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
           },
           "403": {
             "description": "Forbidden",
@@ -2866,7 +3194,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2886,7 +3214,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2917,7 +3245,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -2927,13 +3254,15 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
           },
           "403": {
             "description": "Forbidden",
@@ -3016,7 +3345,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3036,7 +3365,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3068,7 +3397,6 @@
             "in": "path",
             "description": "实体ID",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -3078,8 +3406,7 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "requestBody": {
@@ -3104,7 +3431,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3204,7 +3531,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3224,7 +3551,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3252,7 +3579,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -3262,13 +3588,12 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3368,7 +3693,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3388,7 +3713,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3419,7 +3744,6 @@
             "name": "keywords",
             "in": "query",
             "description": "查询关键字",
-            "style": "form",
             "schema": {
               "type": "string"
             }
@@ -3428,13 +3752,12 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3534,7 +3857,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3554,7 +3877,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3584,7 +3907,6 @@
           {
             "name": "Name",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "string"
             }
@@ -3592,7 +3914,7 @@
           {
             "name": "ProviderType",
             "in": "query",
-            "style": "form",
+            "description": "【枚举：Local=0】\r\n【枚举：S3Compatible=1】\r\n【枚举：Aliyun=2】\r\n【枚举：TencentCloud=3】\r\n",
             "schema": {
               "$ref": "#/components/schemas/SharpFort.FileManagement.Domain.Shared.Enums.StorageProviderType"
             }
@@ -3600,7 +3922,6 @@
           {
             "name": "IsEnabled",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "boolean"
             }
@@ -3608,7 +3929,6 @@
           {
             "name": "Sorting",
             "in": "query",
-            "style": "form",
             "schema": {
               "type": "string"
             }
@@ -3616,7 +3936,6 @@
           {
             "name": "SkipCount",
             "in": "query",
-            "style": "form",
             "schema": {
               "maximum": 2147483647,
               "minimum": 0,
@@ -3627,7 +3946,6 @@
           {
             "name": "MaxResultCount",
             "in": "query",
-            "style": "form",
             "schema": {
               "maximum": 2147483647,
               "minimum": 1,
@@ -3639,8 +3957,7 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "responses": {
@@ -3725,7 +4042,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3745,7 +4062,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3776,8 +4093,7 @@
             "name": "__tenant",
             "in": "header",
             "description": "租户ID或租户名称（留空表示默认租户）",
-            "allowEmptyValue": true,
-            "style": "simple"
+            "allowEmptyValue": true
           }
         ],
         "requestBody": {
@@ -3810,7 +4126,10 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
           },
           "403": {
             "description": "Forbidden",
@@ -3893,7 +4212,7 @@
             }
           },
           "501": {
-            "description": "Server Error",
+            "description": "Not Implemented",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3913,7 +4232,7 @@
             }
           },
           "500": {
-            "description": "Server Error",
+            "description": "Internal Server Error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -4110,6 +4429,53 @@
           "creatorId": {
             "type": "string",
             "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.FileVerifyResultDto": {
+        "type": "object",
+        "properties": {
+          "canQuickUpload": {
+            "type": "boolean"
+          },
+          "fileId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.QuickUploadInput": {
+        "type": "object",
+        "properties": {
+          "hash": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "directoryId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SharpFort.FileManagement.Application.Contracts.Dtos.FileDescriptor.VerifyHashInput": {
+        "type": "object",
+        "properties": {
+          "hash": {
+            "type": "string",
             "nullable": true
           }
         },

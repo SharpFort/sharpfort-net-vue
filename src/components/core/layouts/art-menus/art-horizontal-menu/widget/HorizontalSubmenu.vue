@@ -1,5 +1,5 @@
 <template>
-  <ElSubMenu v-if="hasChildren" :index="item.path || item.meta.title" class="!p-0">
+  <ElSubMenu v-if="hasChildren" :index="item.meta?.title || item.path" class="!p-0">
     <template #title>
       <ArtSvgIcon :icon="item.meta.icon" :color="theme?.iconColor" class="mr-1 text-lg" />
       <span class="text-md">{{ formatMenuTitle(item.meta.title) }}</span>

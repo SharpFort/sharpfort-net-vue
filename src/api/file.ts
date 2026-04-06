@@ -141,6 +141,22 @@ export interface FileDescriptorGetListInput {
   maxResultCount?: number
 }
 
+export interface VerifyHashInput {
+  hash?: string
+}
+
+export interface FileVerifyResultDto {
+  canQuickUpload?: boolean
+  fileId?: string
+  url?: string
+}
+
+export interface QuickUploadInput {
+  hash?: string
+  fileName?: string
+  directoryId?: string
+}
+
 export interface FileStorageProviderGetListInput {
   name?: string
   providerType?: StorageProviderType
@@ -200,7 +216,17 @@ export const FileApi = {
     move: (id: string, directoryId: string) =>
       request.post<any>({ url: `/api/app/file-descriptor/${id}/move/${directoryId}` }),
     rename: (id: string, newName?: string) =>
-      request.post<any>({ url: `/api/app/file-descriptor/${id}/rename`, params: { newName } })
+      request.post<any>({ url: `/api/app/file-descriptor/${id}/rename`, params: { newName } }),
+    verifyHash: (data: VerifyHashInput) =>
+      request.post<FileVerifyResultDto>({
+        url: `/api/app/file-descriptor/verify-hash`,
+        data
+      }),
+    quickUpload: (data: QuickUploadInput) =>
+      request.post<FileDescriptorGetOutputDto>({
+        url: `/api/app/file-descriptor/quick-upload`,
+        data
+      })
   },
   storageProvider: {
     getList: (params?: FileStorageProviderGetListInput) =>
