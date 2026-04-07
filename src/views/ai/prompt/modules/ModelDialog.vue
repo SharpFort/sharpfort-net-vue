@@ -16,8 +16,7 @@
       class="mt-4"
     >
       <el-form-item label="提示词编码" prop="code">
-        <el-input 
-          v-model="formData.code" 
+        <el-input v-model.trim="formData.code" 
           placeholder="请输入唯一编码标识 (例如: sys-greeting)" 
           maxlength="100" 
           show-word-limit 
@@ -46,8 +45,7 @@
       </el-form-item>
 
       <el-form-item label="提示词内容" prop="content">
-        <el-input
-          v-model="formData.content"
+        <el-input v-model.trim="formData.content"
           type="textarea"
           :autosize="{ minRows: 4, maxRows: 8 }"
           placeholder="请输入核心 Prompt 系统提示词内容..."
@@ -55,8 +53,7 @@
       </el-form-item>
 
       <el-form-item label="描述备注" prop="description">
-        <el-input
-          v-model="formData.description"
+        <el-input v-model.trim="formData.description"
           type="textarea"
           :rows="2"
           placeholder="关于该提示词适用的场景描述 (可选)"
@@ -181,3 +178,6 @@ const handleSubmit = async () => {
 
 defineExpose({ open })
 </script>
+
+
+

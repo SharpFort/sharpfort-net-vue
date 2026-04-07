@@ -32,12 +32,11 @@
               </el-form-item>
               
               <el-form-item label="目标语言" required>
-                <el-input v-model="translateForm.targetLang" placeholder="例如: 英文, 日语, 繁体中文" />
+                <el-input v-model.trim="translateForm.targetLang" placeholder="例如: 英文, 日语, 繁体中文" />
               </el-form-item>
               
               <el-form-item label="待翻译文本" required>
-                <el-input
-                  v-model="translateForm.text"
+                <el-input v-model.trim="translateForm.text"
                   type="textarea"
                   :rows="4"
                   placeholder="请输入需要翻译的文本内容..."
@@ -71,8 +70,7 @@
               </el-form-item>
               
               <el-form-item label="待总结内容" required>
-                <el-input
-                  v-model="summarizeForm.content"
+                <el-input v-model.trim="summarizeForm.content"
                   type="textarea"
                   :rows="6"
                   placeholder="请输入长篇文章或资料内容，AI将为您提炼核心摘要..."
@@ -106,8 +104,7 @@
               </el-form-item>
               
               <el-form-item label="搜索关键词" required>
-                <el-input
-                  v-model="searchForm.query"
+                <el-input v-model.trim="searchForm.query"
                   placeholder="请输入搜索或提问内容..."
                   @keyup.enter="handleSearch"
                 >
@@ -246,3 +243,6 @@ onMounted(() => {
   height: 1px;
 }
 </style>
+
+
+

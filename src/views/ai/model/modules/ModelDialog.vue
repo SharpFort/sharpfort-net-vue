@@ -15,27 +15,27 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="模型名称" prop="name">
-            <el-input v-model="formData.name" placeholder="请输入模型名称" maxlength="200" />
+            <el-input v-model.trim="formData.name" placeholder="请输入模型名称" maxlength="200" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="模型ID" prop="modelId">
-            <el-input v-model="formData.modelId" placeholder="请输入模型ID" maxlength="200" />
+            <el-input v-model.trim="formData.modelId" placeholder="请输入模型ID" maxlength="200" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="处理程序" prop="handlerName">
-            <el-input v-model="formData.handlerName" placeholder="类名后缀" maxlength="100" />
+            <el-input v-model.trim="formData.handlerName" placeholder="类名后缀" maxlength="100" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="供应商ID" prop="aiProviderId">
-            <el-input v-model="formData.aiProviderId" placeholder="提供商的UUID格式" />
+            <el-input v-model.trim="formData.aiProviderId" placeholder="提供商的UUID格式" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="分组名称" prop="providerName">
-            <el-input v-model="formData.providerName" placeholder="如：OpenAI" maxlength="100" />
+            <el-input v-model.trim="formData.providerName" placeholder="如：OpenAI" maxlength="100" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -76,17 +76,17 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="图标URL" prop="iconUrl">
-            <el-input v-model="formData.iconUrl" placeholder="图标的网络地址" />
+            <el-input v-model.trim="formData.iconUrl" placeholder="图标的网络地址" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="描述" prop="description">
-            <el-input v-model="formData.description" type="textarea" placeholder="模型的简单描述" />
+            <el-input v-model.trim="formData.description" type="textarea" placeholder="模型的简单描述" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="额外JSON信息" prop="extraInfo">
-            <el-input v-model="formData.extraInfo" type="textarea" :rows="3" placeholder='{"key":"value"}' />
+            <el-input v-model.trim="formData.extraInfo" type="textarea" :rows="3" placeholder='{"key":"value"}' />
           </el-form-item>
         </el-col>
       </el-row>
@@ -188,3 +188,4 @@ const handleSubmit = async () => {
 
 defineExpose({ open })
 </script>
+

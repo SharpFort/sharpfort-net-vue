@@ -2,8 +2,7 @@
   <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-4">
     <el-form :inline="true" :model="form" class="flex flex-wrap items-center gap-2 -mb-4">
       <el-form-item label="名称检索" class="!mb-4">
-        <el-input
-          v-model="form.SearchKey"
+        <el-input v-model.trim="form.SearchKey"
           placeholder="请输入供应商名称"
           clearable
           class="w-64"
@@ -53,3 +52,4 @@ const handleReset = () => {
   color: var(--el-text-color-regular);
 }
 </style>
+

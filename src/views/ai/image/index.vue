@@ -24,8 +24,7 @@
             <el-tooltip content="使用生动的形容词可以获得更好的效果"><el-icon class="text-slate-400"><QuestionFilled /></el-icon></el-tooltip>
           </label>
           <div class="relative bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 focus-within:border-indigo-500 dark:focus-within:border-indigo-500 transition-colors">
-            <el-input
-              v-model="form.prompt"
+            <el-input v-model.trim="form.prompt"
               type="textarea"
               :autosize="{ minRows: 4, maxRows: 6 }"
               placeholder="描述你想看到的画面，例如：一只赛博朋克风格的猫咪在霓虹灯下，4k分辨率，极致细节..."
@@ -37,8 +36,7 @@
         <!-- Negative Prompt Input -->
         <div class="space-y-2">
           <label class="text-sm font-bold text-slate-700 dark:text-slate-300">反向词 (Negative Prompt)</label>
-          <el-input
-            v-model="form.negativePrompt"
+          <el-input v-model.trim="form.negativePrompt"
             type="textarea"
             :autosize="{ minRows: 2, maxRows: 4 }"
             placeholder="不希望出现的元素，例如：模糊、变形、水印..."
@@ -465,3 +463,4 @@ onUnmounted(() => {
   100% { transform: translateX(100%); }
 }
 </style>
+

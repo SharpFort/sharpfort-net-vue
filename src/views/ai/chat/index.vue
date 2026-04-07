@@ -154,8 +154,7 @@
       <!-- Input Bar -->
       <div class="p-6 pt-2 z-20">
         <div class="relative bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 dark:border-slate-700/50 transition-all duration-300 focus-within:shadow-[0_8px_30px_rgb(99,102,241,0.1)] focus-within:border-indigo-300 dark:focus-within:border-indigo-600">
-          <el-input
-            v-model="inputRaw"
+          <el-input v-model.trim="inputRaw"
             type="textarea"
             :autosize="{ minRows: 1, maxRows: 6 }"
             placeholder="输入您的问题... (Shift + Enter 换行)"
@@ -399,3 +398,4 @@ onMounted(() => {
   color: rgb(203 213 225); /* text-slate-300 */
 }
 </style>
+

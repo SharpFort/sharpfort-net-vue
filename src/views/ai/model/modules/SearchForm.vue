@@ -1,10 +1,10 @@
 <template>
   <el-form :model="form" inline class="bg-white p-4 rounded shadow-sm mb-4">
     <el-form-item label="关键字">
-      <el-input v-model="form.SearchKey" placeholder="搜索名称或ID" clearable />
+      <el-input v-model.trim="form.SearchKey" placeholder="搜索名称或ID" clearable />
     </el-form-item>
     <el-form-item label="供应商ID">
-      <el-input v-model="form.AiProviderId" placeholder="供应商的UUID" clearable />
+      <el-input v-model.trim="form.AiProviderId" placeholder="供应商的UUID" clearable />
     </el-form-item>
     <el-form-item label="创建日期">
       <el-date-picker
@@ -56,3 +56,4 @@ const handleReset = () => {
   emit('reset')
 }
 </script>
+

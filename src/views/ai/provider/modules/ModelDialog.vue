@@ -16,8 +16,7 @@
       class="mt-4 pr-6"
     >
       <el-form-item label="供应商名称" prop="name">
-        <el-input 
-          v-model="formData.name" 
+        <el-input v-model.trim="formData.name" 
           placeholder="请输入供应商名称 (如: OpenAI)" 
           maxlength="100"
           show-word-limit
@@ -25,16 +24,14 @@
       </el-form-item>
 
       <el-form-item label="API终结点" prop="endpoint">
-        <el-input 
-          v-model="formData.endpoint" 
+        <el-input v-model.trim="formData.endpoint" 
           placeholder="请输入API终结点URL" 
           maxlength="500"
         />
       </el-form-item>
       
       <el-form-item label="API Key" prop="apiKey">
-        <el-input 
-          v-model="formData.apiKey" 
+        <el-input v-model.trim="formData.apiKey" 
           placeholder="请输入API Key" 
           show-password
           maxlength="500"
@@ -42,8 +39,7 @@
       </el-form-item>
 
       <el-form-item label="额外URL" prop="extraUrl">
-        <el-input 
-          v-model="formData.extraUrl" 
+        <el-input v-model.trim="formData.extraUrl" 
           placeholder="请输入额外依赖的URL（选填）" 
           maxlength="500"
         />
@@ -199,3 +195,4 @@ defineExpose({
   border-top: 1px solid var(--el-border-color-lighter);
 }
 </style>
+

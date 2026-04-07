@@ -213,4 +213,105 @@ export const aiTool = {
   }
 }
 
+/**
+ * 使用量统计服务 API
+ */
+export const usageStatistics = {
+  /** 获取当前用户近7天的Token消耗统计 */
+  getLast7DaysTokenUsage: (params?: { TokenId?: string }) => {
+    return request.get<Api.UsageStatistics.DailyTokenUsageDto[]>({
+      url: '/api/app/usage-statistics/last7Days-token-usage',
+      params
+    })
+  },
+
+  /** 获取当前用户各个模型的Token消耗量及占比 */
+  getModelTokenUsage: (params?: { TokenId?: string }) => {
+    return request.get<Api.UsageStatistics.ModelTokenUsageDto[]>({
+      url: '/api/app/usage-statistics/model-token-usage',
+      params
+    })
+  },
+
+  /** 获取当前用户近24小时每小时Token消耗统计（柱状图） */
+  getLast24HoursTokenUsage: (params?: { TokenId?: string }) => {
+    return request.get<Api.UsageStatistics.HourlyTokenUsageDto[]>({
+      url: '/api/app/usage-statistics/last24Hours-token-usage',
+      params
+    })
+  },
+
+  /** 获取当前用户今日各模型使用量统计（卡片列表） */
+  getTodayModelUsage: (params?: { TokenId?: string }) => {
+    return request.get<Api.UsageStatistics.ModelTodayUsageDto[]>({
+      url: '/api/app/usage-statistics/today-model-usage',
+      params
+    })
+  }
+}
+
+/**
+ * Session 服务 API
+ */
+export const sessionApi = {
+  /** 获取会话列表 */
+  getList: (params?: Api.Session.SessionSearchParams) => {
+    return request.get<{ items: Api.Session.SessionDto[]; totalCount: number }>({
+      url: '/api/app/session',
+      params
+    })
+  },
+
+  /** 分页获取会话列表 (兼容名称) */
+  getPage: (params?: Api.Session.SessionSearchParams) => {
+    return request.get<{ items: Api.Session.SessionDto[]; totalCount: number }>({
+      url: '/api/app/session',
+      params
+    })
+  },
+
+  /** 根据ID获取会话详情 */
+  get: (id: string) => {
+    return request.get<Api.Session.SessionDto>({
+      url: `/api/app/session/${id}`
+    })
+  },
+
+  /** 创建会话 */
+  post: (data: Api.Session.SessionCreateAndUpdateInput) => {
+    return request.post<Api.Session.SessionDto>({
+      url: '/api/app/session',
+      data
+    })
+  },
+
+  /** 更新会话 */
+  put: (id: string, data: Api.Session.SessionCreateAndUpdateInput) => {
+    return request.put<Api.Session.SessionDto>({
+      url: `/api/app/session/${id}`,
+      data
+    })
+  },
+
+  /** 删除会话 */
+  delete: (id: string) => {
+    return request.del<void>({
+      url: `/api/app/session/${id}`
+    })
+  }
+}
+
+/**
+ * 系统使用量统计服务 API
+ */
+export const systemStatisticsApi = {
+  /** 获取指定日期各模型Token统计 */
+  getTokenStatistics: (data: Api.SystemStatistics.TokenStatisticsInput) => {
+    return request.post<Api.SystemStatistics.TokenStatisticsOutput>({
+      url: '/api/app/system-statistics/token',
+      data
+    })
+  }
+}
+
 
