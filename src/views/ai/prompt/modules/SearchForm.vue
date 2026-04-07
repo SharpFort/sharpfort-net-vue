@@ -1,9 +1,14 @@
 <template>
-  <el-form :model="query" inline class="search-form bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-wrap gap-2">
+  <el-form
+    :model="query"
+    inline
+    class="search-form bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-wrap gap-2"
+  >
     <el-form-item label="模糊搜索" class="!mb-0">
-      <el-input v-model.trim="query.searchKey" 
-        placeholder="搜索编码或描述..." 
-        clearable 
+      <el-input
+        v-model.trim="query.searchKey"
+        placeholder="搜索编码或描述..."
+        clearable
         class="w-64"
         @keyup.enter="handleSearch"
       >
@@ -25,22 +30,21 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import { Search, Refresh } from '@element-plus/icons-vue'
+  import { reactive } from 'vue'
+  import { Search, Refresh } from '@element-plus/icons-vue'
 
-const emit = defineEmits(['search', 'reset'])
+  const emit = defineEmits(['search', 'reset'])
 
-const query = reactive({
-  searchKey: ''
-})
+  const query = reactive({
+    searchKey: ''
+  })
 
-const handleSearch = () => {
-  emit('search', { ...query })
-}
+  const handleSearch = () => {
+    emit('search', { ...query })
+  }
 
-const handleReset = () => {
-  query.searchKey = ''
-  emit('reset')
-}
+  const handleReset = () => {
+    query.searchKey = ''
+    emit('reset')
+  }
 </script>
-

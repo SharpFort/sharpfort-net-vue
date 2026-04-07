@@ -1,6 +1,6 @@
 import request from '@/utils/http'
 
-/** 
+/**
  * AI 模型管理 API
  */
 export const aiModel = {
@@ -86,7 +86,7 @@ export const aiImage = {
   getModels: () => {
     return request.post<Api.AiModel.AiModelDto[]>({ url: '/api/app/ai-image/model' })
   },
-  
+
   /** 发起图片生成任务 */
   generate: (data: Api.AiImage.ImageGenerationInput) => {
     return request.post<string>({ url: '/api/app/ai-image/generate', data })
@@ -112,12 +112,12 @@ export const aiImage = {
       params: { ids } // or data depends on Axios config, usually query params if ids is array
     })
   },
-  
+
   /** 发布到广场 */
   publish: (data: Api.AiImage.PublishImageInput) => {
     return request.post<void>({ url: '/api/app/ai-image/publish', data })
   },
-  
+
   /** 获取广场画廊 */
   getPlaza: (params?: any) => {
     return request.get<{ items: Api.AiImage.ImageTaskOutput[]; totalCount: number }>({
@@ -314,4 +314,66 @@ export const systemStatisticsApi = {
   }
 }
 
+/**
+ * OpenApi 服务 API
+ */
+export const openApi = {
+  chatCompletions(data: Api.OpenApi.ThorChatCompletionsRequest) {
+    return request.post<void>({ url: '/api/app/openApi/v1/chat/completions', data })
+  },
 
+  imagesGenerations(data: Api.OpenApi.ImageCreateRequest) {
+    return request.post<void>({ url: '/api/app/openApi/v1/images/generations', data })
+  },
+
+  embeddings(data: Api.OpenApi.ThorEmbeddingInput) {
+    return request.post<void>({ url: '/api/app/openApi/v1/embeddings', data })
+  },
+
+  getModels() {
+    return request.get<Api.OpenApi.ModelsListDto>({ url: '/api/app/openApi/v1/models' })
+  },
+
+  messages(data: Api.OpenApi.AnthropicInput) {
+    return request.post<void>({ url: '/api/app/openApi/v1/messages', data })
+  }
+}
+
+/**
+ * Token 服务 API
+ */
+export const aiToken = {
+  /** 获取Token列表 */
+  getList: (params: Api.Token.TokenSearchParams) => {
+    return request.get<{ items: Api.Token.TokenGetListOutputDto[]; totalCount: number }>({
+      url: '/api/app/token/list',
+      params
+    })
+  },
+
+  /** 创建 Token */
+  create: (data: Api.Token.TokenCreateInput) => {
+    return request.post<void>({ url: '/api/app/token', data })
+  },
+
+  /** 更新 Token */
+  update: (data: Api.Token.TokenUpdateInput) => {
+    // 根据提取信息 PUT 是由于 /api/app/token 路径
+    return request.put<void>({ url: '/api/app/token', data })
+  },
+
+  /** 删除 Token */
+  delete: (id: string) => {
+    return request.del<void>({ url: `/api/app/token/${id}` })
+  },
+
+  /** 启用 Token */
+  enable: (id: string) => {
+    return request.post<void>({ url: `/api/app/token/${id}/enable` })
+  },
+
+  /** 禁用 Token */
+  disable: (id: string) => {
+    return request.post<void>({ url: `/api/app/token/${id}/disable` })
+  }
+}

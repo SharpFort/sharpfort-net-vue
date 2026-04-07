@@ -6,7 +6,9 @@
     </div>
 
     <!-- Table -->
-    <div class="flex-1 bg-white border border-gray-100 shadow-sm rounded-md overflow-hidden flex flex-col">
+    <div
+      class="flex-1 bg-white border border-gray-100 shadow-sm rounded-md overflow-hidden flex flex-col"
+    >
       <div class="p-3 border-b border-gray-100 flex justify-between items-center bg-gray-50">
         <span class="text-sm font-semibold text-gray-700">OpenApi Models List</span>
         <el-button type="success" plain @click="fetchData" :loading="loading">
@@ -36,7 +38,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="type" label="Type" />
-        
+
         <el-table-column label="Actions" fixed="right" width="160">
           <template #default="{ row }">
             <el-button link type="primary" size="small" @click="handleTest(row)">
@@ -53,61 +55,60 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { Icon } from '@iconify/vue'
-import { openApi } from '@/api/openapi'
-import SearchForm from './modules/SearchForm.vue'
-import ModelDialog from './modules/ModelDialog.vue'
+  import { ref, onMounted, computed } from 'vue'
+  import { Icon } from '@iconify/vue'
+  import { openApi } from '@/api/openapi'
+  import SearchForm from './modules/SearchForm.vue'
+  import ModelDialog from './modules/ModelDialog.vue'
 
-defineOptions({
-  name: 'OpenApi'
-})
+  defineOptions({
+    name: 'OpenApi'
+  })
 
-const loading = ref(false)
-const rawData = ref<Api.OpenApi.ModelsDataDto[]>([])
-const searchKeyword = ref('')
-const dialogRef = ref<InstanceType<typeof ModelDialog>>()
+  const loading = ref(false)
+  const rawData = ref<Api.OpenApi.ModelsDataDto[]>([])
+  const searchKeyword = ref('')
+  const dialogRef = ref<InstanceType<typeof ModelDialog>>()
 
-const filteredData = computed(() => {
-  if (!searchKeyword.value) return rawData.value
-  const lower = searchKeyword.value.toLowerCase()
-  return rawData.value.filter(m => m.id?.toLowerCase().includes(lower))
-})
+  const filteredData = computed(() => {
+    if (!searchKeyword.value) return rawData.value
+    const lower = searchKeyword.value.toLowerCase()
+    return rawData.value.filter((m) => m.id?.toLowerCase().includes(lower))
+  })
 
-const fetchData = async () => {
-  try {
-    loading.value = true
-    const res = await openApi.getModels()
-    rawData.value = res.data || []
-  } catch {
-    console.error(error)
-  } finally {
-    loading.value = false
+  const fetchData = async () => {
+    try {
+      loading.value = true
+      const res = await openApi.getModels()
+      rawData.value = res.data || []
+    } catch (error) {
+      console.error(error)
+    } finally {
+      loading.value = false
+    }
   }
-}
 
-const handleSearch = (params: { keyword: string }) => {
-  searchKeyword.value = params.keyword
-}
-
-const handleReset = () => {
-  searchKeyword.value = ''
-  fetchData()
-}
-
-const handleTest = (row: Api.OpenApi.ModelsDataDto) => {
-  if (row.id) {
-    dialogRef.value?.open(row.id)
+  const handleSearch = (params: { keyword: string }) => {
+    searchKeyword.value = params.keyword
   }
-}
 
-const formatTimestamp = (ts?: number) => {
-  if (!ts) return '-'
-  return new Date(ts * 1000).toLocaleString()
-}
+  const handleReset = () => {
+    searchKeyword.value = ''
+    fetchData()
+  }
 
-onMounted(() => {
-  fetchData()
-})
+  const handleTest = (row: Api.OpenApi.ModelsDataDto) => {
+    if (row.id) {
+      dialogRef.value?.open(row.id)
+    }
+  }
+
+  const formatTimestamp = (ts?: number) => {
+    if (!ts) return '-'
+    return new Date(ts * 1000).toLocaleString()
+  }
+
+  onMounted(() => {
+    fetchData()
+  })
 </script>
-
