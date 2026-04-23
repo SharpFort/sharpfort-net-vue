@@ -4,10 +4,15 @@ name: Build and Publish Frontend Docker Image
 on:
   push:
     tags:
-      - 'v0.9.0'
+      - 'v*.*.*'
 
 env:
   REGISTRY: ghcr.io
+
+# 确保同一分支的多次推送不会并发执行（防止资源浪费和冲突）
+concurrency:
+  group: docker-publish-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-push:
@@ -19,13 +24,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -38,20 +43,24 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=tag
             type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max

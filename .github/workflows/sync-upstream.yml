@@ -6,29 +6,45 @@ permissions:
 
 on:
   schedule:
-    # 每天北京时间早上 8:00 运行一次 (UTC 0:00)
-    - cron: '0 0 * * *'
+    # 每周一北京时间早上 8:00 运行一次（UTC 周一 0:00）
+    - cron: '0 0 * * 1'
   workflow_dispatch: # 允许你在 GitHub 网页上手动点击运行
+
+env:
+  HUSKY: 0
+  CI: true
 
 jobs:
   sync_and_pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0 # 获取所有历史记录，否则无法合并
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10.33.2
+          run_install: false
 
       - name: Configure Git
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Setup Node & PNPM
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest # 使用最新版本的 PNPM
+      # - name: Setup Node & PNPM
+      #   uses: pnpm/action-setup@v5
+      #   with:
+      #     version: latest # 使用最新版本的 PNPM
 
       - name: Get Current Date
         id: date
@@ -37,7 +53,8 @@ jobs:
       - name: Add Upstream
         run: |
           git remote add upstream https://github.com/Daymychen/art-design-pro.git || true
-          git fetch upstream
+          git fetch upstream --tags
+          git fetch origin
 
       # ============================================================
       # 方案选择：同步最新代码 vs 同步最新 Release
@@ -60,12 +77,27 @@ jobs:
 
       - name: Stage 1 - Sync Upstream Main (Latest Release)
         run: |
+          set -e
           echo "📥 Fetching latest release tag..."
           LATEST_TAG=$(git ls-remote --tags upstream | grep -v '\^{}' | sort -t '/' -k 3 -V | tail -n1 | awk '{print $2}' | sed 's|refs/tags/||')
+
+          if [ -z "$LATEST_TAG" ]; then
+            echo "❌ No upstream release tag found"
+            exit 1
+          fi
+
           echo "Latest release tag: $LATEST_TAG"
 
-          git checkout upstream-main
-          CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "none")
+          git fetch origin upstream-main:refs/remotes/origin/upstream-main || true
+
+          if git show-ref --verify --quiet refs/remotes/origin/upstream-main; then
+            git checkout -B upstream-main origin/upstream-main
+          else
+            git checkout -B upstream-main
+          fi
+
+          TARGET_SHA=$(git rev-list -n 1 "$LATEST_TAG")
+          CURRENT_SHA=$(git rev-parse HEAD || echo "")
 
           if [ "$CURRENT_TAG" != "$LATEST_TAG" ]; then
             echo "🔄 New release detected: $LATEST_TAG (current: $CURRENT_TAG)"
@@ -80,8 +112,16 @@ jobs:
         id: sync_lite
         continue-on-error: true # 即使有冲突也不要立刻退出，尝试脚本修复
         run: |
+          set -e
           echo "🔄 Merging upstream-main into adapter-lite..."
-          git checkout adapter-lite
+          git fetch origin adapter-lite:refs/remotes/origin/adapter-lite || true
+
+          if git show-ref --verify --quiet refs/remotes/origin/adapter-lite; then
+            git checkout -B adapter-lite origin/adapter-lite
+          else
+            echo "❌ Branch 'adapter-lite' does not exist on origin"
+            exit 1
+          fi
 
           # 尝试合并
           if ! git merge upstream-main --no-edit; then
@@ -135,7 +175,7 @@ jobs:
           echo "✅ adapter-lite synced and cleaned"
 
       - name: Stage 3 - Create Pull Request to Main
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: adapter-lite

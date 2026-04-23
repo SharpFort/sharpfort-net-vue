@@ -5,15 +5,15 @@
 FROM node:24-alpine AS build
 WORKDIR /app
 
-# 全局安装 pnpm
-RUN npm install -g pnpm
+# 启用 corepack，并固定 pnpm 版本
+RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 
 # 最佳实践：先拷贝 package.json 和 pnpm-lock.yaml (如果有)
 # 这样只要依赖没变，Docker 就会缓存这一层，极大加快构建速度
 COPY package.json pnpm-lock.yaml* ./
 
 # 安装依赖
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 # 拷贝所有源代码
 COPY . .
@@ -37,4 +37,4 @@ COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 
 # 启动 Nginx，并保持前台运行
-CMD["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
