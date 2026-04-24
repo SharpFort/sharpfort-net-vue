@@ -13,7 +13,8 @@ RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 COPY package.json pnpm-lock.yaml* ./
 
 # 安装依赖
-RUN pnpm install --frozen-lockfile
+# 如果报错，建议先去掉 --frozen-lockfile 看看是否能跑通，以排查是否是 lock 文件不匹配
+RUN pnpm install
 
 # 拷贝所有源代码
 COPY . .
