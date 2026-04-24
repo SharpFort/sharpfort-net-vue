@@ -278,7 +278,7 @@ async function handleDynamicRoutes(
 async function fetchUserInfo(): Promise<void> {
   const userStore = useUserStore()
   const data = await fetchGetUserInfo()
-  userStore.setUserInfo(data)
+  userStore.setUserInfo(data as any)
 }
 
 /**

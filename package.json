@@ -1,6 +1,6 @@
 {
   "name": "art-design-pro",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "type": "module",
   "engines": {
     "node": ">=20.19.0",
@@ -61,6 +61,7 @@
     "@wangeditor/editor-for-vue": "next",
     "axios": "^1.12.2",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.20",
     "echarts": "^6.0.0",
     "element-plus": "^2.11.2",
     "file-saver": "^2.0.5",

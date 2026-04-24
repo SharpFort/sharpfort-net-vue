@@ -30,7 +30,7 @@
       <!-- 表格 -->
       <ArtTable
         :loading="loading"
-        :data="data"
+        :data="data as any[]"
         :columns="columns"
         :pagination="pagination"
         @selection-change="handleSelectionChange"

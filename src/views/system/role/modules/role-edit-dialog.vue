@@ -129,8 +129,8 @@
           remark: detail.remark,
           orderNum: detail.orderNum,
           state: detail.state,
-          menuIds: detail.menuIds || [],
-          departmentIds: detail.departmentIds || []
+          menuIds: (detail as any).menuIds || [],
+          departmentIds: (detail as any).departmentIds || []
         })
       } catch (error) {
         console.error('获取详情失败:', error)

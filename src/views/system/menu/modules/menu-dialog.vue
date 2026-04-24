@@ -150,7 +150,7 @@
               <ElCheckbox v-model="form.isShow" label="显示" />
               <ElCheckbox v-model="form.isCache" label="缓存" />
               <ElCheckbox v-model="form.isLink" label="外链" />
-              <ElCheckbox v-model="form.isAffix" label="固定" />
+              <ElCheckbox v-model="(form as any).isAffix" label="固定" />
             </ElSpace>
           </ElFormItem>
         </ElCol>

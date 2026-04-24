@@ -12,7 +12,7 @@
         <el-tab-pane label="安全设置" name="security">
           <div class="tab-pane-content">
             <h3 class="tab-title">安全设置</h3>
-            <UserPwd />
+            <UserPwd :user-id="userInfo?.id" />
           </div>
         </el-tab-pane>
         <el-tab-pane label="登录日志" name="loginLog">
@@ -48,7 +48,7 @@
 
   const getUserInfo = async () => {
     // Handling possible mismatch in UserStore typings vs actual backend response
-    const storedInfo = userStore.getUserInfo || {}
+    const storedInfo: any = userStore.getUserInfo || {}
     const userId = storedInfo.userId || storedInfo.id || storedInfo.user?.id
 
     if (userId) {

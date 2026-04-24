@@ -57,7 +57,7 @@
 <script setup lang="ts">
   import { ref, onMounted, computed } from 'vue'
   import { Icon } from '@iconify/vue'
-  import { openApi } from '@/api/openapi'
+  import { openApi } from '@/api/ai'
   import SearchForm from './modules/SearchForm.vue'
   import ModelDialog from './modules/ModelDialog.vue'
 
