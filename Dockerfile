@@ -29,7 +29,7 @@ RUN pnpm run build
 FROM nginx:alpine AS final
 
 # 将我们自定义的 Nginx 配置文件覆盖到容器内
-COPY nginx.conf /etc/nginx/conf.d/sharpfort-admin.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # 从构建阶段将打包好的 dist 目录拷贝到 Nginx 的默认托管目录
 COPY --from=build /app/dist /usr/share/nginx/html
