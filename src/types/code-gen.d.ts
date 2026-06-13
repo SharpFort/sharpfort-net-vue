@@ -3,7 +3,7 @@
  */
 declare namespace Api {
   namespace CodeGen {
-    /** Field Type Enum */
+    /** Field Type Enum (String=1, Int=2, Long=3, Bool=4, Decimal=5, DateTime=6, Guid=7, Float=8, Double=9) */
     enum FieldType {
       String = 'String',
       Int = 'Int',
@@ -11,7 +11,9 @@ declare namespace Api {
       Bool = 'Bool',
       Decimal = 'Decimal',
       DateTime = 'DateTime',
-      Guid = 'Guid'
+      Guid = 'Guid',
+      Float = 'Float',
+      Double = 'Double'
     }
 
     /** Field DTO */
@@ -27,6 +29,10 @@ declare namespace Api {
       isKey?: boolean
       isAutoAdd?: boolean
       isPublic?: boolean
+      isQueryField?: boolean
+      isListDisplay?: boolean
+      isFormItem?: boolean
+      htmlType?: string
     }
 
     /** ABP Pagination Params */
@@ -69,11 +75,19 @@ declare namespace Api {
       totalCount: number
     }
 
-    /** Table DTO */
+    /** Table DTO (also used as Create/Update input) */
     interface TableDto {
       id: string
       name?: string
+      physicalTableName?: string
       description?: string
+      moduleName?: string
+      rootNamespace?: string
+      isOverwrite?: boolean
+      projectName?: string
+      lastSyncTime?: string
+      lastBuildTime?: string
+      fields?: FieldDto[]
     }
 
     /** Table Search Params */

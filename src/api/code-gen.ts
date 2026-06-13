@@ -52,13 +52,9 @@ export const CodeGenApi = {
   },
   codegen: {
     webToCode: (tableIds: string[]) =>
-      request.post<any>({ url: '/api/app/code-gen/web-build-code', data: tableIds }),
-    webToDb: (tableIds: string[]) =>
-      request.post<any>({ url: '/api/app/code-gen/web-build-db', data: tableIds }),
-    codeToWeb: (tableIds: string[]) =>
-      request.post<any>({ url: '/api/app/code-gen/code-build-web', data: tableIds }),
-    codeToDb: (tableIds: string[]) =>
-      request.post<any>({ url: '/api/app/code-gen/code-build-db', data: tableIds }),
-    openDir: (path: string) => request.post<any>({ url: `/api/app/code-gen/dir/${path}` })
+      request.post<void>({ url: '/api/app/code-gen/web-build-code', data: tableIds }),
+    codeToWeb: () => request.post<void>({ url: '/api/app/code-gen/code-build-web' }),
+    refresh: () => request.post<void>({ url: '/api/app/code-gen/refresh' }),
+    openDir: (path: string) => request.post<void>({ url: `/api/app/code-gen/dir/${path}` })
   }
 }

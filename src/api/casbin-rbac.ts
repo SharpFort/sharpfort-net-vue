@@ -123,7 +123,8 @@ export const CasbinApi = {
       }),
     export: (params: Api.SystemManage.MenuSearchParams) =>
       request.get<any>({ url: '/api/app/menu/export-excel', params, responseType: 'blob' }),
-    import: (data: FormData) => request.post<any>({ url: '/api/app/menu/import-excel', data })
+    import: (data: Api.SystemManage.MenuCreateInputVo[]) =>
+      request.post<any>({ url: '/api/app/menu/import-excel', data })
   },
 
   // --- Dept ---
@@ -391,12 +392,8 @@ export const CasbinApi = {
   codegen: {
     webToCode: (tableIds: string[]) =>
       request.post<any>({ url: '/api/app/code-gen/web-build-code', data: tableIds }),
-    webToDb: (tableIds: string[]) =>
-      request.post<any>({ url: '/api/app/code-gen/web-build-db', data: tableIds }),
-    codeToWeb: (tableIds: string[]) =>
-      request.post<any>({ url: '/api/app/code-gen/code-build-web', data: tableIds }),
-    codeToDb: (tableIds: string[]) =>
-      request.post<any>({ url: '/api/app/code-gen/code-build-db', data: tableIds }),
+    codeToWeb: () => request.post<any>({ url: '/api/app/code-gen/code-build-web' }),
+    refresh: () => request.post<any>({ url: '/api/app/code-gen/refresh' }),
     openDir: (path: string) => request.post<any>({ url: `/api/app/code-gen/dir/${path}` })
   },
 
