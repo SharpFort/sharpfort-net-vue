@@ -1,13 +1,12 @@
 <template>
-  <ArtSearchBar
+  <art-search-bar
     ref="searchBarRef"
     v-model="formData"
     :items="formItems"
     :rules="rules"
     @reset="handleReset"
     @search="handleSearch"
-  >
-  </ArtSearchBar>
+  />
 </template>
 
 <script setup lang="ts">
@@ -24,28 +23,38 @@
   const props = defineProps<Props>()
   const emit = defineEmits<Emits>()
 
-  // 表单数据双向绑定
   const searchBarRef = ref()
   const formData = computed({
     get: () => props.modelValue,
     set: (val) => emit('update:modelValue', val)
   })
 
-  // 校验规则
   const rules = {}
 
-  // 表单配置
   const formItems = computed(() => [
     {
-      label: '表名',
+      label: '实体名称',
       key: 'Name',
       type: 'input',
-      placeholder: '请输入表名',
+      placeholder: '请输入实体名称（模糊筛选）',
+      clearable: true
+    },
+    {
+      label: '所属模块',
+      key: 'ModuleName',
+      type: 'input',
+      placeholder: '请输入模块名称（精确筛选）',
+      clearable: true
+    },
+    {
+      label: '所属项目',
+      key: 'ProjectName',
+      type: 'input',
+      placeholder: '请输入项目名称（精确筛选）',
       clearable: true
     }
   ])
 
-  // 事件
   function handleReset() {
     emit('reset')
   }

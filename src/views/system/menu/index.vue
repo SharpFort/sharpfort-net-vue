@@ -21,6 +21,15 @@
           <ElSpace wrap>
             <ElButton @click="showDialog('add')" v-ripple>新增菜单</ElButton>
             <ElButton @click="handleExport" type="warning" v-ripple>导出菜单</ElButton>
+            <ElUpload
+              action="#"
+              :show-file-list="false"
+              :http-request="handleImport"
+              accept=".xlsx,.xls"
+            >
+              <ElButton v-ripple>导入菜单</ElButton>
+            </ElUpload>
+            <ElButton @click="handleDownloadTemplate" v-ripple>下载模板</ElButton>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -98,6 +107,10 @@
   import MenuDialog from './modules/menu-dialog.vue'
   import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue'
   import { ElSwitch, ElMessage, ElMessageBox } from 'element-plus'
+  import * as XLSX from 'xlsx'
+  import FileSaver from 'file-saver'
+  import { useMenuStore } from '@/store/modules/menu'
+  import { MenuProcessor } from '@/router/core'
 
   defineOptions({ name: 'MenuManage' })
 
@@ -370,6 +383,17 @@
     dialogVisible.value = true
   }
 
+  const refreshSystemMenuStore = async (): Promise<void> => {
+    try {
+      const menuStore = useMenuStore()
+      const menuProcessor = new MenuProcessor()
+      const newMenuList = await menuProcessor.getMenuList()
+      menuStore.setMenuList(newMenuList)
+    } catch (error) {
+      console.error('动态刷新侧边栏菜单失败:', error)
+    }
+  }
+
   const handleDialogSubmit = async (
     formData: Api.SystemManage.MenuCreateInputVo | Api.SystemManage.MenuUpdateInputVo
   ): Promise<void> => {
@@ -386,7 +410,9 @@
       }
       dialogVisible.value = false
       getMenuList()
+      refreshSystemMenuStore()
     } catch (error) {
+      ElMessage.error('操作失败，请稍后重试')
       console.error('操作失败:', error)
     }
   }
@@ -396,15 +422,161 @@
       await ElMessageBox.confirm(`确定要删除配置 "${row.menuName}" 吗？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
+        distinguishCancelAndClose: true
       })
       await CasbinApi.menu.del(row.id)
       ElMessage.success('删除成功')
       getMenuList()
+      refreshSystemMenuStore()
     } catch (error) {
-      if (error !== 'cancel') {
-        console.error('删除失败:', error)
+      if (error === 'cancel' || error === 'close') {
+        return
       }
+      ElMessage.error('删除失败，请稍后重试')
+      console.error('删除失败:', error)
+    }
+  }
+
+  /**
+   * 下载导入模板（仅含表头，无数据）
+   * 排除系统自动生成字段：Id/CreationTime/CreatorId/MenuSource
+   */
+  const handleDownloadTemplate = (): void => {
+    // 导入模板列定义：按 MenuCreateInputVo 用户可填字段（PascalCase 匹配后端 DTO）
+    const templateColumns: Record<string, string> = {
+      MenuName: '菜单名称（必填）',
+      MenuType: '菜单类型：Catalogue=目录 / Menu=菜单 / Button=按钮',
+      ParentId: '父级菜单ID（GUID，顶级菜单为空）',
+      PermissionCode: '权限标识',
+      MenuIcon: '菜单图标',
+      Router: '路由地址',
+      RouterName: '路由名称',
+      Component: '组件路径',
+      IsLink: '是否外链：TRUE/FALSE',
+      IsCache: '是否缓存：TRUE/FALSE',
+      IsShow: '是否显示：TRUE/FALSE',
+      OrderNum: '排序（数字）',
+      Query: '路由参数',
+      ApiUrl: 'API地址',
+      ApiMethod: 'API方法：GET/POST/PUT/DELETE',
+      Remark: '备注'
+    }
+
+    const headers = Object.keys(templateColumns)
+    const descriptions = Object.values(templateColumns)
+
+    // 创建工作簿
+    const workbook = XLSX.utils.book_new()
+
+    // Sheet1: 模板（表头行）
+    const templateSheet = XLSX.utils.aoa_to_sheet([headers])
+    templateSheet['!cols'] = headers.map((h) => ({ wch: Math.max(h.length + 4, 14) }))
+    XLSX.utils.book_append_sheet(workbook, templateSheet, '导入模板')
+
+    // Sheet2: 字段说明
+    const descSheet = XLSX.utils.aoa_to_sheet([
+      ['列名', '说明'],
+      ...headers.map((h, i) => [h, descriptions[i]])
+    ])
+    descSheet['!cols'] = [{ wch: 18 }, { wch: 50 }]
+    XLSX.utils.book_append_sheet(workbook, descSheet, '字段说明')
+
+    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    })
+    FileSaver.saveAs(blob, '菜单导入模板.xlsx')
+  }
+
+  const handleImport = async (options: any): Promise<void> => {
+    try {
+      const file = options.file
+      if (!file) return
+
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        try {
+          const data = e.target?.result
+          const workbook = XLSX.read(data, { type: 'binary' })
+          const firstSheetName = workbook.SheetNames[0]
+          const worksheet = workbook.Sheets[firstSheetName]
+          const results = XLSX.utils.sheet_to_json<any>(worksheet)
+
+          if (results.length === 0) {
+            ElMessage.warning('文件内容为空')
+            return
+          }
+
+          // 1. 字段映射与数据格式化，确保符合 MenuCreateInputVo 的 camelCase 结构，并支持英文与中文说明作为 key
+          const menuList: Api.SystemManage.MenuCreateInputVo[] = results.map((row: any) => {
+            const rawApiUrl = row.ApiUrl || row['API地址'] || undefined
+            const apiUrlVal = rawApiUrl ? String(rawApiUrl).trim() : undefined
+
+            return {
+              menuName: row.MenuName || row['菜单名称（必填）'] || undefined,
+              menuType:
+                row.MenuType ||
+                row['菜单类型：Catalogue=目录 / Menu=菜单 / Button=按钮'] ||
+                undefined,
+              parentId:
+                row.ParentId ||
+                row['父级菜单ID（GUID，顶级菜单为空）'] ||
+                '00000000-0000-0000-0000-000000000000',
+              permissionCode: row.PermissionCode || row['权限标识'] || undefined,
+              menuIcon: row.MenuIcon || row['菜单图标'] || undefined,
+              router: row.Router || row['路由地址'] || undefined,
+              routerName: row.RouterName || row['路由名称'] || undefined,
+              component: row.Component || row['组件路径'] || undefined,
+              isLink:
+                row.IsLink === true ||
+                String(row.IsLink).toUpperCase() === 'TRUE' ||
+                row['是否外链：TRUE/FALSE'] === true ||
+                String(row['是否外链：TRUE/FALSE']).toUpperCase() === 'TRUE',
+              isCache:
+                row.IsCache === true ||
+                String(row.IsCache).toUpperCase() === 'TRUE' ||
+                row['是否缓存：TRUE/FALSE'] === true ||
+                String(row['是否缓存：TRUE/FALSE']).toUpperCase() === 'TRUE',
+              isShow:
+                row.IsShow === true ||
+                String(row.IsShow).toUpperCase() === 'TRUE' ||
+                row['是否显示：TRUE/FALSE'] === true ||
+                String(row['是否显示：TRUE/FALSE']).toUpperCase() === 'TRUE',
+              orderNum: Number(row.OrderNum || row['排序（数字）']) || 0,
+              query: row.Query || row['路由参数'] || undefined,
+              apiUrl: apiUrlVal,
+              apiMethod: row.ApiMethod || row['API方法：GET/POST/PUT/DELETE'] || undefined,
+              remark: row.Remark || row['备注'] || undefined,
+              state: true // 默认状态为正常
+            }
+          })
+
+          // 2. 前端拦截式校验数据格式（例如 ApiUrl 中的 {param} 占位符）
+          for (let i = 0; i < menuList.length; i++) {
+            const menu = menuList[i]
+            if (menu.apiUrl && /\{([^}]+)\}/.test(menu.apiUrl)) {
+              ElMessage.error({
+                message: `第 ${i + 1} 行菜单 "${menu.menuName || '未命名'}" 的 API地址 不支持 {param} 格式，请在 Excel 中修改为 :param 格式后重新上传！`,
+                duration: 6000
+              })
+              return
+            }
+          }
+
+          await CasbinApi.menu.import(menuList)
+          ElMessage.success('导入成功')
+          getMenuList()
+          refreshSystemMenuStore()
+        } catch (error) {
+          console.error('解析或导入失败:', error)
+          ElMessage.error('导入失败，请检查文件格式及数据')
+        }
+      }
+      reader.readAsBinaryString(file)
+    } catch (error) {
+      console.error('导入失败:', error)
+      ElMessage.error('导入失败')
     }
   }
 

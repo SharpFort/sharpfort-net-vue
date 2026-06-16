@@ -237,7 +237,6 @@
 
   // 默认表单数据
   const defaultForm: Api.SystemManage.MenuCreateInputVo = {
-    id: undefined,
     state: true,
     parentId: '',
     menuType: 'Menu',
@@ -253,15 +252,28 @@
     isShow: true,
     isCache: true,
     isLink: false,
-    isAffix: false,
-    menuSource: 'Ruoyi'
+    isAffix: false
   } as Api.SystemManage.MenuCreateInputVo
 
   const form = reactive<Api.SystemManage.MenuCreateInputVo>({ ...defaultForm })
 
   const rules = {
     menuName: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
-    menuType: [{ required: true, message: '请选择菜单类型', trigger: 'change' }]
+    menuType: [{ required: true, message: '请选择菜单类型', trigger: 'change' }],
+    apiUrl: [
+      {
+        validator: (_rule: any, value: any, callback: any) => {
+          if (value && /\{([^}]+)\}/.test(value)) {
+            callback(
+              new Error('ApiUrl 不支持 {param} 格式，请使用 :param 格式（如：/api/app/user/:id）')
+            )
+          } else {
+            callback()
+          }
+        },
+        trigger: ['blur', 'change']
+      }
+    ]
   }
 
   // 构造菜单树数据
@@ -322,6 +334,15 @@
       const submitData = {
         ...form,
         parentId: form.parentId || '00000000-0000-0000-0000-000000000000'
+      } as any
+
+      // 如果是编辑模式，必须带上菜单的主键 id 和可选的 creatorId，防止被重置为默认空 GUID 导致更新失败
+      if (props.type === 'edit' && props.menuData) {
+        const data = props.menuData as any
+        submitData.id = data.id || data.Id
+        if (data.creatorId !== undefined) {
+          submitData.creatorId = data.creatorId
+        }
       }
 
       emit('submit', submitData)

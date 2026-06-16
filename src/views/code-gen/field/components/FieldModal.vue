@@ -1,159 +1,254 @@
 <template>
-  <ElDialog
+  <el-dialog
     v-model="visible"
-    :title="title"
-    width="600px"
+    title="编辑字段 UI 配置"
+    width="650px"
+    destroy-on-close
     :close-on-click-modal="false"
-    @close="handleClose"
+    @closed="handleClosed"
   >
-    <ElForm ref="formRef" :model="form" :rules="rules" label-width="100px" label-position="right">
-      <ElFormItem label="字段名称" prop="name">
-        <ElInput v-model.trim="form.name" placeholder="请输入字段名称" />
-      </ElFormItem>
-      <ElFormItem label="描述" prop="description">
-        <ElInput v-model.trim="form.description" type="textarea" placeholder="请输入描述" />
-      </ElFormItem>
-      <ElFormItem label="字段类型" prop="fieldType">
-        <ElSelect v-model="form.fieldType" placeholder="请选择字段类型">
-          <ElOption v-for="item in fieldTypes" :key="item" :label="item" :value="item" />
-        </ElSelect>
-      </ElFormItem>
-      <ElRow :gutter="20">
-        <ElCol :span="12">
-          <ElFormItem label="排序" prop="orderNum">
-            <ElInputNumber v-model.trim="form.orderNum" :min="0" />
-          </ElFormItem>
-        </ElCol>
-        <ElCol :span="12">
-          <ElFormItem label="长度" prop="length">
-            <ElInputNumber v-model.trim="form.length" :min="0" />
-          </ElFormItem>
-        </ElCol>
-      </ElRow>
+    <el-form ref="formRef" :model="formData" :rules="rules" label-width="110px" v-loading="loading">
+      <el-divider content-position="left">结构属性（由反射同步维护，只读）</el-divider>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="字段名称">
+            <el-input :model-value="formData.name" disabled />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="字段类型">
+            <el-input :model-value="formData.fieldType" disabled />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="长度">
+            <el-input-number :model-value="formData.length" disabled class="w-full" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="所属实体">
+            <el-input :model-value="formData.tableName || '-'" disabled />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="所属模块">
+            <el-input :model-value="formData.moduleName || '-'" disabled />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="主键">
+            <el-switch :model-value="formData.isKey" disabled />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="必填">
+            <el-switch :model-value="formData.isRequired" disabled />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="自增">
+            <el-switch :model-value="formData.isAutoAdd" disabled />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="公共">
+            <el-switch :model-value="formData.isPublic" disabled />
+          </el-form-item>
+        </el-col>
+      </el-row>
 
-      <ElFormItem label="关联表ID" prop="tableId">
-        <ElInput v-model.trim="form.tableId" placeholder="请输入关联表ID" />
-      </ElFormItem>
-
-      <ElFormItem label="选项">
-        <ElCheckbox v-model="form.isRequired">必填</ElCheckbox>
-        <ElCheckbox v-model="form.isKey">主键</ElCheckbox>
-        <ElCheckbox v-model="form.isAutoAdd">自增</ElCheckbox>
-        <ElCheckbox v-model="form.isPublic">公共字段</ElCheckbox>
-      </ElFormItem>
-    </ElForm>
+      <el-divider content-position="left">UI 配置（可编辑）</el-divider>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="排序权重" prop="orderNum">
+            <el-input-number v-model="formData.orderNum" :min="0" class="w-full" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="控件类型" prop="htmlType">
+            <el-select
+              v-model="formData.htmlType"
+              placeholder="请选择前端控件类型"
+              clearable
+              class="w-full"
+            >
+              <el-option label="Input 输入框" value="Input" />
+              <el-option label="Select 下拉框" value="Select" />
+              <el-option label="DatePicker 日期选择" value="DatePicker" />
+              <el-option label="Textarea 文本域" value="Textarea" />
+              <el-option label="Switch 开关" value="Switch" />
+              <el-option label="Number 数字输入" value="Number" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <el-form-item label="查询字段">
+            <el-switch v-model="formData.isQueryField" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="列表显示">
+            <el-switch v-model="formData.isListDisplay" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="表单项">
+            <el-switch v-model="formData.isFormItem" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-form-item label="字段描述" prop="description">
+        <el-input
+          v-model.trim="formData.description"
+          type="textarea"
+          :rows="3"
+          placeholder="请输入字段备注/说明"
+          maxlength="500"
+          show-word-limit
+        />
+      </el-form-item>
+    </el-form>
     <template #footer>
-      <ElButton @click="handleClose">取消</ElButton>
-      <ElButton type="primary" :loading="loading" @click="handleSubmit">确定</ElButton>
+      <div class="dialog-footer">
+        <el-button @click="visible = false">取消</el-button>
+        <el-button type="primary" :loading="submitting" @click="handleSubmit">保存</el-button>
+      </div>
     </template>
-  </ElDialog>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, watch, computed } from 'vue'
-  import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+  import { ref, reactive } from 'vue'
   import { CodeGenApi } from '@/api/code-gen'
+  import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 
-  const props = defineProps<{
-    modelValue: boolean
-    type: 'add' | 'edit'
-    data?: Api.CodeGen.FieldDto
-  }>()
+  const emit = defineEmits<{ success: [] }>()
 
-  const emit = defineEmits(['update:modelValue', 'success'])
-
-  const visible = computed({
-    get: () => props.modelValue,
-    set: (val) => emit('update:modelValue', val)
-  })
-
-  const title = computed(() => (props.type === 'add' ? '新增字段' : '编辑字段'))
-  const formRef = ref<FormInstance>()
+  const visible = ref(false)
   const loading = ref(false)
-  const fieldTypes = ref<string[]>([])
+  const submitting = ref(false)
+  const currentId = ref<string | null>(null)
+  const formRef = ref<FormInstance>()
 
-  const form = reactive<Api.CodeGen.FieldDto>({
+  const getInitialData = () => ({
     id: '',
     name: '',
     description: '',
     orderNum: 0,
     length: 0,
-    fieldType: undefined,
+    fieldType: '',
     tableId: '',
+    tableName: '',
+    moduleName: '',
     isRequired: false,
     isKey: false,
     isAutoAdd: false,
-    isPublic: false
+    isPublic: false,
+    isQueryField: false,
+    isListDisplay: false,
+    isFormItem: false,
+    htmlType: ''
   })
 
+  const formData = reactive<Record<string, any>>(getInitialData())
+
   const rules: FormRules = {
-    name: [{ required: true, message: '请输入字段名称', trigger: 'blur' }],
-    fieldType: [{ required: true, message: '请选择字段类型', trigger: 'change' }]
-    // tableId: [{ required: true, message: '请输入关联表ID', trigger: 'blur' }] // Assuming tableId might be required
+    htmlType: [{ required: true, message: '请选择控件类型', trigger: 'change' }]
   }
 
-  const getFieldTypes = async () => {
+  const open = async (id?: string) => {
+    if (!id) {
+      ElMessage.warning('缺少字段 ID')
+      return
+    }
+    visible.value = true
+    currentId.value = id
+    loading.value = true
     try {
-      const res = await CodeGenApi.field.getFieldType()
-      fieldTypes.value = res
-    } catch (error) {
-      console.error(error)
+      const res = await CodeGenApi.field.get(id)
+      Object.assign(formData, {
+        id: res.id || '',
+        name: res.name || '',
+        description: res.description || '',
+        orderNum: res.orderNum ?? 0,
+        length: res.length ?? 0,
+        fieldType: res.fieldType || '',
+        tableId: res.tableId || '',
+        tableName: res.tableName || '',
+        moduleName: res.moduleName || '',
+        isRequired: res.isRequired ?? false,
+        isKey: res.isKey ?? false,
+        isAutoAdd: res.isAutoAdd ?? false,
+        isPublic: res.isPublic ?? false,
+        isQueryField: res.isQueryField ?? false,
+        isListDisplay: res.isListDisplay ?? false,
+        isFormItem: res.isFormItem ?? false,
+        htmlType: res.htmlType || ''
+      })
+    } catch (e: any) {
+      ElMessage.error(e.message || '获取字段详情失败')
+      visible.value = false
+    } finally {
+      loading.value = false
     }
   }
 
-  watch(
-    () => props.modelValue,
-    (val) => {
-      if (val) {
-        getFieldTypes()
-        if (props.type === 'edit' && props.data) {
-          Object.assign(form, props.data)
-        } else {
-          formRef.value?.resetFields()
-          Object.assign(form, {
-            id: '',
-            name: '',
-            description: '',
-            orderNum: 0,
-            length: 0,
-            fieldType: undefined,
-            tableId: '', // Ideally this should be passed if we are adding a field to a specific table context
-            isRequired: false,
-            isKey: false,
-            isAutoAdd: false,
-            isPublic: false
-          })
-        }
-      }
-    }
-  )
-
-  const handleClose = () => {
-    visible.value = false
+  const handleClosed = () => {
     formRef.value?.resetFields()
+    Object.assign(formData, getInitialData())
+    currentId.value = null
   }
 
   const handleSubmit = async () => {
     if (!formRef.value) return
     await formRef.value.validate(async (valid) => {
       if (valid) {
-        loading.value = true
+        submitting.value = true
         try {
-          if (props.type === 'add') {
-            await CodeGenApi.field.create(form)
-            ElMessage.success('新增成功')
-          } else {
-            await CodeGenApi.field.update(form.id, form)
-            ElMessage.success('编辑成功')
+          if (currentId.value) {
+            // 构造更新 payload：只提交 UI 配置字段 + 必要 ID
+            const payload: Api.CodeGen.FieldDto = {
+              id: currentId.value,
+              name: formData.name,
+              description: formData.description,
+              orderNum: formData.orderNum,
+              length: formData.length,
+              fieldType: formData.fieldType,
+              tableId: formData.tableId,
+              tableName: formData.tableName,
+              moduleName: formData.moduleName,
+              isRequired: formData.isRequired,
+              isKey: formData.isKey,
+              isAutoAdd: formData.isAutoAdd,
+              isPublic: formData.isPublic,
+              isQueryField: formData.isQueryField,
+              isListDisplay: formData.isListDisplay,
+              isFormItem: formData.isFormItem,
+              htmlType: formData.htmlType
+            }
+            await CodeGenApi.field.update(currentId.value, payload)
+            ElMessage.success('保存成功')
           }
+          visible.value = false
           emit('success')
-          handleClose()
-        } catch (error) {
-          console.error(error)
+        } catch (e: any) {
+          ElMessage.error(e.message || '保存失败')
         } finally {
-          loading.value = false
+          submitting.value = false
         }
       }
     })
   }
+
+  defineExpose({ open })
 </script>
+
+<style scoped>
+  .w-full {
+    width: 100%;
+  }
+</style>

@@ -2,7 +2,7 @@ declare namespace Api {
   namespace AiModel {
     /** AI模型创建输入 */
     interface AiModelCreateInput {
-      /** 理程序名称 */
+      /** 处理程序名称 */
       handlerName: string
       /** 模型ID */
       modelId: string
@@ -16,9 +16,9 @@ declare namespace Api {
       aiProviderId: string
       /** 额外信息 */
       extraInfo?: string | null
-      /** 模型类型 */
+      /** 模型类型: 1=Chat(文本), 2=Image(绘图), 3=Embedding(嵌入) */
       modelType: number
-      /** 模型API类型 */
+      /** 模型API类型: 1=Completions, 2=Messages, 3=Responses, 4=GenerateContent */
       modelApiType: number
       /** 成本倍率 */
       multiplier?: number
@@ -78,7 +78,7 @@ declare namespace Api {
       deletionTime?: string | null
     }
 
-    /** 列表查询参 */
+    /** 列表查询参数 */
     interface AiModelSearchParams {
       SearchKey?: string
       AiProviderId?: string
@@ -126,10 +126,10 @@ declare namespace Api {
     }
 
     interface ImageTaskOutput {
-      id: string // taskId
+      id: string
       prompt?: string
-      status?: number // TaskStatusEnum (0: Pending, 1: Processing, 2: Success, 3: Failed)
-      resultUrl?: string // Comma separated URLs usually
+      status?: number
+      resultUrl?: string
       errorMessage?: string
       creationTime?: string
       extraInfo?: string
@@ -393,43 +393,6 @@ declare namespace Api {
     }
   }
 
-  namespace Channel {
-    interface AiAppCreateInput {
-      name?: string
-      endpoint?: string
-      extraUrl?: string
-      apiKey?: string
-      orderNum?: number
-    }
-
-    interface AiAppDto {
-      id?: string
-      name?: string
-      endpoint?: string
-      extraUrl?: string
-      apiKey?: string
-      orderNum?: number
-      creationTime?: string
-    }
-
-    interface AiAppUpdateInput {
-      id?: string
-      name?: string
-      endpoint?: string
-      extraUrl?: string
-      apiKey?: string
-      orderNum?: number
-    }
-
-    interface AiAppSearchParams {
-      searchKey?: string
-      startTime?: string
-      endTime?: string
-      maxResultCount?: number
-      skipCount?: number
-    }
-  }
-
   namespace Token {
     interface TokenSearchParams {
       searchKey?: string
@@ -545,6 +508,179 @@ declare namespace Api {
       count?: number
       cost?: number
       costPerHundredMillion?: number
+    }
+  }
+
+  // ===== 新增命名空间 =====
+
+  /** AI知识库管理 */
+  namespace AiKms {
+    interface AiKmsDto {
+      id?: string
+      /** 知识库名称 */
+      name?: string | null
+      /** 每段落最大Token数 */
+      maxTokensPerParagraph?: number
+      /** 每行最大Token数 */
+      maxTokensPerLine?: number
+      /** 段落间重叠Token数 */
+      overlappingTokens?: number
+      /** 矢量化模型ID */
+      aiModelId?: string | null
+      /** 文档数量 (readOnly) */
+      documentCount?: number
+      /** 状态: 0=待处理 1=处理中 2=已完成 3=失败 (readOnly) */
+      status?: number
+      /** 文档详情列表 */
+      aiKmsDetailList?: AiKmsDetailDto[] | null
+    }
+
+    interface AiKmsDetailDto {
+      id?: string
+      /** 所属知识库ID */
+      kmsId?: string | null
+      /** 关联文件ID */
+      fileId?: string | null
+      /** 文档类型 */
+      fileType?: string | null
+      /** 文档内容 */
+      content?: string | null
+      /** 内容名称 */
+      contentName?: string | null
+      /** 远程URL地址 */
+      url?: string | null
+      /** 数据处理量 */
+      dataCount?: number | null
+      /** 导入状态 */
+      status?: number
+      /** 错误信息 */
+      errorMessage?: string | null
+    }
+
+    interface AiKmsSearchParams {
+      SkipCount?: number
+      MaxResultCount?: number
+      Sorting?: string
+    }
+  }
+
+  /** AI技能/工具管理 */
+  namespace AiSkillTool {
+    type SkillToolType = 'Tool' | 'Skill'
+
+    interface AiSkillToolDto {
+      id?: string
+      /** 技能/工具名称 */
+      name: string
+      /** 类方法名 (Tool类型使用) */
+      classMethod?: string | null
+      /** 技能/工具描述 */
+      description?: string | null
+      /** 是否系统内置 */
+      isSystem?: boolean
+      /** 是否启用 */
+      isEnabled?: boolean
+      /** 技能/工具类型 */
+      skillToolType?: number
+    }
+
+    interface AiSkillToolSearchParams {
+      SkipCount?: number
+      MaxResultCount?: number
+      Sorting?: string
+    }
+  }
+
+  /** AI应用管理 (AiApp - 新版) */
+  namespace AiApp {
+    interface AiAppDto {
+      id?: string
+      /** 应用名称 */
+      name: string
+      /** 应用描述 */
+      describe?: string | null
+      /** 图标 */
+      icon?: string | null
+      /** 应用类型 */
+      type?: string | null
+      /** 会话模型ID */
+      chatModelId?: string | null
+      /** 重排模型ID */
+      rerankModelId?: string | null
+      /** 温度 (0.1-2.0) */
+      temperature?: number
+      /** 知识库ID */
+      kmsId?: string | null
+      /** API调用秘钥 */
+      secretKey?: string | null
+      /** 向量检索相似度阈值 */
+      relevance?: number
+      /** 提问最大Token数 */
+      maxAskPromptSize?: number
+      /** 向量匹配数量 */
+      maxMatchesCount?: number
+      /** Rerank数量 */
+      rerankCount?: number
+      /** 回答最大Token数 */
+      answerTokens?: number
+      /** 绑定提示词ID */
+      aiPromptId?: string | null
+      /** 绑定提示词名称 */
+      aiPromptName?: string | null
+      /** 输出消息类型: 1=非流式 2=流式 3=图片 4=音频 5=视频 6=文件 7=链接 8=卡片 */
+      msgType?: number
+      /** 是否开启AI工具 */
+      isAiTools?: boolean
+      /** 是否开启Skill技能 */
+      isSkill?: boolean
+      /** 是否开启AI请求日志 */
+      isHttpLog?: boolean
+      /** AI请求最大重试次数 */
+      maxRetries?: number
+      /** AI请求超时时间(分钟) */
+      networkTimeout?: number
+      /** 绑定的工具列表 */
+      tools?: AiAppBindSkillToolDto[] | null
+      /** 绑定的技能列表 */
+      skills?: AiAppBindSkillToolDto[] | null
+    }
+
+    interface AiAppBindSkillToolDto {
+      /** 技能/工具管理ID */
+      aiSkillToolId?: string
+      /** 技能/工具名称 */
+      aiSkillToolName?: string | null
+      /** 是否选中 */
+      isSelect?: boolean
+    }
+
+    interface AiAppGetListInput {
+      /** 搜索关键词 */
+      keyword?: string | null
+      maxResultCount?: number
+      skipCount?: number
+      sorting?: string | null
+    }
+  }
+
+  /** AI自动任务管理 */
+  namespace AiTask {
+    interface AiTaskItem {
+      /** 任务名称 */
+      name: string
+      /** 任务内容/Prompt */
+      content: string
+      /** Cron表达式 */
+      cronExpression: string
+    }
+
+    interface AiTaskCreateUpdateInput {
+      /** 任务名称 */
+      name: string
+      /** 任务内容/Prompt */
+      content: string
+      /** Cron表达式 */
+      cronExpression: string
     }
   }
 }

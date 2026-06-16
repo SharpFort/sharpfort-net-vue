@@ -1,37 +1,50 @@
 <template>
-  <ElDialog v-model="dialogVisible" title="代码生成" width="500px" align-center>
+  <el-dialog v-model="dialogVisible" title="代码生成" width="500px" align-center>
     <div class="p-4">
       <div class="mb-4 text-sm text-gray-500">
-        已选择 {{ tableIds.length }} 个表进行代码生成。
+        已选择 {{ tableIds.length }} 个实体进行代码生成。
       </div>
 
-      <ElSpace direction="vertical" fill class="w-full">
-        <ElButton type="primary" class="w-full" @click="handleBuild('webToCode')">
-          生成代码 (Web -> Code)
-          <template #icon><ArtSvgIcon icon="ri:code-box-line" /></template>
-        </ElButton>
-        <ElButton type="success" class="w-full" @click="handleBuild('webToDb')">
-          同步到数据库 (Web -> Db)
-          <template #icon><ArtSvgIcon icon="ri:database-2-line" /></template>
-        </ElButton>
-        <ElDivider />
-        <ElButton type="warning" class="w-full" @click="handleBuild('codeToWeb')">
-          从代码同步 (Code -> Web)
-          <template #icon><ArtSvgIcon icon="ri:layout-top-line" /></template>
-        </ElButton>
-        <ElButton type="danger" class="w-full" @click="handleBuild('codeToDb')">
-          从代码同步到数据库 (Code -> Db)
-          <template #icon><ArtSvgIcon icon="ri:database-line" /></template>
-        </ElButton>
-      </ElSpace>
+      <el-space direction="vertical" fill class="w-full">
+        <!-- Web → Code: 用 Scriban 模板生成代码 -->
+        <el-button
+          type="primary"
+          class="w-full"
+          :disabled="!tableIds.length"
+          @click="handleBuild('webToCode')"
+        >
+          生成代码 (Web → Code)
+          <template #icon><art-svg-icon icon="ri:code-box-line" /></template>
+        </el-button>
+
+        <!-- Code → Web: 反射扫描 C# 实体，同步到注册表 -->
+        <el-button type="success" class="w-full" @click="handleBuild('codeToWeb')">
+          同步实体到注册表 (Code → Web)
+          <template #icon><art-svg-icon icon="ri:layout-top-line" /></template>
+        </el-button>
+
+        <el-divider />
+
+        <!-- 手动刷新注册表 -->
+        <el-button type="warning" class="w-full" @click="handleBuild('refresh')">
+          手动刷新注册表
+          <template #icon><art-svg-icon icon="ri:refresh-line" /></template>
+        </el-button>
+
+        <!-- 打开本地目录 -->
+        <el-button class="w-full" @click="handleOpenDir">
+          打开本地目录
+          <template #icon><art-svg-icon icon="ri:folder-open-line" /></template>
+        </el-button>
+      </el-space>
     </div>
-  </ElDialog>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
   import { computed } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { CasbinApi } from '@/api/casbin-rbac'
+  import { CodeGenApi } from '@/api/code-gen'
 
   interface Props {
     visible: boolean
@@ -50,17 +63,16 @@
     set: (value) => emit('update:visible', value)
   })
 
-  const handleBuild = async (type: 'webToCode' | 'webToDb' | 'codeToWeb' | 'codeToDb') => {
-    if (props.tableIds.length === 0) {
-      ElMessage.warning('请选择要生成的表')
+  const handleBuild = async (type: 'webToCode' | 'codeToWeb' | 'refresh') => {
+    if (type === 'webToCode' && props.tableIds.length === 0) {
+      ElMessage.warning('请选择要生成代码的实体')
       return
     }
 
     const typeLabels = {
-      webToCode: '生成代码',
-      webToDb: '同步到数据库',
-      codeToWeb: '从代码同步',
-      codeToDb: '从代码同步到数据库'
+      webToCode: '生成代码 (Web → Code)',
+      codeToWeb: '同步实体到注册表 (Code → Web)',
+      refresh: '手动刷新注册表'
     }
 
     try {
@@ -70,20 +82,16 @@
 
       switch (type) {
         case 'webToCode':
-          await CasbinApi.codegen.webToCode(props.tableIds)
+          await CodeGenApi.codegen.webToCode(props.tableIds)
           ElMessage.success('代码生成成功')
           break
-        case 'webToDb':
-          await CasbinApi.codegen.webToDb(props.tableIds)
-          ElMessage.success('数据库同步成功')
-          break
         case 'codeToWeb':
-          await CasbinApi.codegen.codeToWeb(props.tableIds)
-          ElMessage.success('代码同步成功')
+          await CodeGenApi.codegen.codeToWeb()
+          ElMessage.success('实体同步成功')
           break
-        case 'codeToDb':
-          await CasbinApi.codegen.codeToDb(props.tableIds)
-          ElMessage.success('代码同步到数据库成功')
+        case 'refresh':
+          await CodeGenApi.codegen.refresh()
+          ElMessage.success('注册表刷新成功')
           break
       }
 
@@ -94,5 +102,19 @@
         ElMessage.error('操作失败')
       }
     }
+  }
+
+  const handleOpenDir = () => {
+    ElMessageBox.prompt('请输入要打开的目录路径', '打开目录', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      inputPlaceholder: '请输入目录路径'
+    })
+      .then(async ({ value }) => {
+        if (!value) return
+        await CodeGenApi.codegen.openDir(value)
+        ElMessage.success('目录已打开')
+      })
+      .catch(() => {})
   }
 </script>

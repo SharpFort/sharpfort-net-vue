@@ -13,6 +13,9 @@
             <ElButton v-ripple type="danger" :disabled="!selectedRows.length" @click="batchDelete"
               >批量删除</ElButton
             >
+            <ElDivider direction="vertical" />
+            <ElButton v-ripple type="primary" plain @click="handleSyncImport">从文件导入</ElButton>
+            <ElButton v-ripple type="primary" plain @click="handleSyncExport">导出到文件</ElButton>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -46,6 +49,7 @@
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
   import { CasbinApi } from '@/api/casbin-rbac'
+  import { CodeGenApi } from '@/api/code-gen'
   import TemplateSearch from './modules/template-search.vue'
   import TemplateDialog from './modules/template-dialog.vue'
   import { DialogType } from '@/types'
@@ -106,6 +110,18 @@
           label: '生成路径',
           minWidth: 200,
           showOverflowTooltip: true
+        },
+        {
+          prop: 'content',
+          label: '模板内容',
+          width: 150,
+          formatter: (row: any) =>
+            row.content
+              ? h('span', { style: { color: '#67C23A', fontSize: '13px' } }, [
+                  h('span', { style: { marginRight: '4px' } }, '✓'),
+                  h('span', { style: { color: '#909399' } }, `已编写 (${row.content.length}字符)`)
+                ])
+              : h('span', { style: { color: '#C0C4CC' } }, '—')
         },
         {
           prop: 'remarks',
@@ -171,6 +187,41 @@
       await CasbinApi.template.del(ids)
       ElMessage.success('删除成功')
       refreshRemove()
+    })
+  }
+
+  const handleSyncImport = (): void => {
+    ElMessageBox.confirm(
+      '确定要导入模板吗？<br/>将扫描本地 Templates/*.scriban 文件，增量同步到数据库（Upsert by Name）。' +
+        '<br/>• 本地有 + DB 无 → 新增<br/>• 本地有 + DB 有 → 更新内容（保留备注）<br/>• 本地无 + DB 有 → 跳过不删',
+      '导入模板（本地 → DB）',
+      {
+        confirmButtonText: '确定导入',
+        cancelButtonText: '取消',
+        type: 'info',
+        dangerouslyUseHTMLString: true
+      }
+    ).then(async () => {
+      await CodeGenApi.template.importTemplates()
+      ElMessage.success('模板导入成功')
+      refreshData()
+    })
+  }
+
+  const handleSyncExport = (): void => {
+    ElMessageBox.confirm(
+      '确定要导出模板吗？<br/>将遍历数据库所有模板，写入本地 Templates/{Name}.scriban 文件。' +
+        '<br/>• 本地无 → 补全缺失文件<br/>• 本地有 → 覆写保持一致',
+      '导出模板（DB → 本地）',
+      {
+        confirmButtonText: '确定导出',
+        cancelButtonText: '取消',
+        type: 'warning',
+        dangerouslyUseHTMLString: true
+      }
+    ).then(async () => {
+      await CodeGenApi.template.exportTemplates()
+      ElMessage.success('模板导出成功')
     })
   }
 

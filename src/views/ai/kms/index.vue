@@ -1,16 +1,12 @@
 <template>
   <div class="p-6 h-full flex flex-col space-y-4 bg-gray-50">
-    <!-- 顶部搜索模块 -->
     <SearchForm @search="onSearch" @reset="onReset" />
 
-    <!-- 列表数据模块 -->
     <div class="bg-white p-4 rounded shadow-sm flex-1 flex flex-col">
-      <!-- 按钮操作区 -->
       <div class="mb-4 flex space-x-2">
-        <el-button type="primary" @click="handleAdd"> 新增应用 </el-button>
+        <el-button type="primary" @click="handleAdd">新增知识库</el-button>
       </div>
 
-      <!-- 表格区 -->
       <el-table
         v-loading="loading"
         :data="tableData"
@@ -20,23 +16,28 @@
         height="100%"
       >
         <el-table-column type="index" label="序号" width="60" align="center" />
-        <el-table-column prop="name" label="应用名称" min-width="150" />
-        <el-table-column prop="endpoint" label="API端点" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="extraUrl" label="扩展URL" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="apiKey" label="API Key" min-width="150" show-overflow-tooltip>
-          <template #default> ****** </template>
-        </el-table-column>
-        <el-table-column prop="orderNum" label="排序" width="80" align="center" />
-        <el-table-column prop="creationTime" label="创建时间" width="160">
+        <el-table-column prop="name" label="知识库名称" min-width="160" show-overflow-tooltip />
+        <el-table-column prop="documentCount" label="文档数量" width="100" align="center" />
+        <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            {{ formatDateTime(row.creationTime) }}
+            <el-tag v-if="row.status === 2" type="success">已完成</el-tag>
+            <el-tag v-else-if="row.status === 1" type="warning">处理中</el-tag>
+            <el-tag v-else-if="row.status === 3" type="danger">失败</el-tag>
+            <el-tag v-else type="info">待处理</el-tag>
           </template>
         </el-table-column>
-
-        <el-table-column label="操作" width="160" fixed="right" align="center">
+        <el-table-column
+          prop="maxTokensPerParagraph"
+          label="每段Token"
+          width="110"
+          align="center"
+        />
+        <el-table-column prop="overlappingTokens" label="重叠Token" width="100" align="center" />
+        <el-table-column label="操作" width="220" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleEdit(row)"> 编辑 </el-button>
-            <el-popconfirm title="确定要删除该应用吗？" @confirm="handleDelete(row)">
+            <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
+            <el-button type="success" link @click="handleProcessVector(row)">向量化</el-button>
+            <el-popconfirm title="确定要删除该知识库吗？" @confirm="handleDelete(row)">
               <template #reference>
                 <el-button type="danger" link>删除</el-button>
               </template>
@@ -45,7 +46,6 @@
         </el-table-column>
       </el-table>
 
-      <!-- 分页区 -->
       <div class="flex justify-end mt-4">
         <el-pagination
           v-model:current-page="queryParams.SkipCount"
@@ -60,57 +60,38 @@
       </div>
     </div>
 
-    <!-- 弹窗组件 -->
     <ModelDialog ref="dialogRef" @success="getList" />
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, reactive, onMounted } from 'vue'
-  import { aiApp } from '@/api/channel'
+  import { aiKms } from '@/api/ai'
   import { ElMessage } from 'element-plus'
-  import dayjs from 'dayjs'
-
-  // 模块组件导入
   import SearchForm from './modules/SearchForm.vue'
   import ModelDialog from './modules/ModelDialog.vue'
 
-  // ==== 数据定义 ====
+  defineOptions({ name: 'AiKms' })
+
   const loading = ref(false)
-  const tableData = ref<Api.Channel.AiAppDto[]>([])
+  const tableData = ref<Api.AiKms.AiKmsDto[]>([])
   const total = ref(0)
   const dialogRef = ref<InstanceType<typeof ModelDialog> | null>(null)
 
-  // 分页与搜索参数
   const queryParams = reactive({
     SearchKey: '',
-    StartTime: '',
-    EndTime: '',
-    SkipCount: 1, // 当前页码
+    SkipCount: 1,
     MaxResultCount: 10
   })
 
-  // ==== 方法定义 ====
-
-  const formatDateTime = (time: string | undefined) => {
-    if (!time) return '-'
-    return dayjs(time).format('YYYY-MM-DD HH:mm:ss')
-  }
-
-  /**
-   * 获取列表数据
-   */
   const getList = async () => {
     loading.value = true
     try {
-      const params: Api.Channel.AiAppSearchParams = {
-        SearchKey: queryParams.SearchKey || undefined,
-        StartTime: queryParams.StartTime || undefined,
-        EndTime: queryParams.EndTime || undefined,
+      const params: Api.AiKms.AiKmsSearchParams = {
         MaxResultCount: queryParams.MaxResultCount,
         SkipCount: (queryParams.SkipCount - 1) * queryParams.MaxResultCount
       }
-      const res = await aiApp.getList(params)
+      const res = await aiKms.getList(params)
       tableData.value = res.items || []
       total.value = res.totalCount || 0
     } catch (e: any) {
@@ -120,56 +101,44 @@
     }
   }
 
-  /**
-   * 页码改变时的回调
-   */
   const handlePageChange = (page: number) => {
     queryParams.SkipCount = page
     getList()
   }
 
-  /**
-   * 接收搜索参数并重置到第一页后查询
-   */
-  const onSearch = (params: any) => {
-    queryParams.SearchKey = params.searchKey || ''
-    queryParams.StartTime = params.startTime || ''
-    queryParams.EndTime = params.endTime || ''
+  const onSearch = (params: Record<string, any>) => {
+    queryParams.SearchKey = params.SearchKey || ''
     queryParams.SkipCount = 1
     getList()
   }
 
-  /**
-   * 重置搜索条件
-   */
   const onReset = () => {
     queryParams.SearchKey = ''
-    queryParams.StartTime = ''
-    queryParams.EndTime = ''
     queryParams.SkipCount = 1
     getList()
   }
 
-  /**
-   * 打开新增弹窗
-   */
   const handleAdd = () => {
     dialogRef.value?.open()
   }
 
-  /**
-   * 打开编辑弹窗
-   */
-  const handleEdit = (row: Api.Channel.AiAppDto) => {
+  const handleEdit = (row: Api.AiKms.AiKmsDto) => {
     dialogRef.value?.open(row.id)
   }
 
-  /**
-   * 执行删除操作
-   */
-  const handleDelete = async (row: Api.Channel.AiAppDto) => {
+  const handleProcessVector = async (row: Api.AiKms.AiKmsDto) => {
     try {
-      await aiApp.delete(row.id as string)
+      await aiKms.processVectorData(row.id as string)
+      ElMessage.success('向量化处理已启动')
+      getList()
+    } catch (e: any) {
+      ElMessage.error(e.message || '向量化处理失败')
+    }
+  }
+
+  const handleDelete = async (row: Api.AiKms.AiKmsDto) => {
+    try {
+      await aiKms.delete(row.id as string)
       ElMessage.success('删除成功')
       getList()
     } catch (e: any) {
@@ -177,7 +146,6 @@
     }
   }
 
-  // ==== 生命周期 ====
   onMounted(() => {
     getList()
   })

@@ -116,21 +116,6 @@ export const systemRoutes: AppRouteRecord = {
           }
         },
         {
-          path: 'generate',
-          name: 'CodeGenGenerate',
-          component: '/code-gen/generate',
-          meta: {
-            title: '代码生成',
-            keepAlive: true,
-            authList: [
-              { title: 'Web生成代码', authMark: 'webToCode' },
-              { title: 'Web同步数据库', authMark: 'webToDb' },
-              { title: '代码同步Web', authMark: 'codeToWeb' },
-              { title: '代码同步数据库', authMark: 'codeToDb' }
-            ]
-          }
-        },
-        {
           path: 'template',
           name: 'CodeGenTemplate',
           component: '/code-gen/template',

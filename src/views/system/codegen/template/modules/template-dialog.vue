@@ -14,9 +14,9 @@
         <ElInput v-model.trim="formData.buildPath" placeholder="请输入生成路径" />
       </ElFormItem>
 
-      <ElFormItem label="模板内容" prop="templateStr" :error="fieldErrors.templateStr">
+      <ElFormItem label="模板内容" prop="content" :error="fieldErrors.content">
         <ElInput
-          v-model.trim="formData.templateStr"
+          v-model.trim="formData.content"
           type="textarea"
           :rows="15"
           placeholder="请输入模板内容"
@@ -80,7 +80,7 @@
   const formData = reactive({
     id: undefined as string | undefined,
     name: '',
-    templateStr: '',
+    content: '',
     buildPath: '',
     remarks: ''
   })
@@ -88,7 +88,7 @@
   // 表单验证规则
   const rules: FormRules = {
     name: [{ required: true, message: '请输入模板名称', trigger: 'blur' }],
-    templateStr: [{ required: true, message: '请输入模板内容', trigger: 'blur' }]
+    content: [{ required: true, message: '请输入模板内容', trigger: 'blur' }]
   }
 
   /**
@@ -103,7 +103,7 @@
         Object.assign(formData, {
           id: detail.id,
           name: detail.name,
-          templateStr: detail.templateStr || '',
+          content: detail.content || '',
           buildPath: detail.buildPath || '',
           remarks: detail.remarks || ''
         })
@@ -114,7 +114,7 @@
       Object.assign(formData, {
         id: undefined,
         name: '',
-        templateStr: '',
+        content: '',
         buildPath: '',
         remarks: ''
       })

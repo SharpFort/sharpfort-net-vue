@@ -401,10 +401,8 @@ export const CasbinApi = {
   table: {
     getList: (params: any) => request.get<any>({ url: '/api/app/table', params }),
     get: (id: string | number) => request.get<any>({ url: `/api/app/table/${id}` }),
-    create: (data: any) => request.post<any>({ url: '/api/app/table', data }),
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/table/${id}`, data }),
-    del: (ids: string[]) => request.del<any>({ url: '/api/app/table', params: { ids } }),
     getSelectData: (keywords?: string) =>
       request.get<any>({ url: '/api/app/table/select-data-list', params: { keywords } })
   },
@@ -413,12 +411,8 @@ export const CasbinApi = {
   field: {
     getList: (params: any) => request.get<any>({ url: '/api/app/field', params }),
     get: (id: string | number) => request.get<any>({ url: `/api/app/field/${id}` }),
-    create: (data: any) => request.post<any>({ url: '/api/app/field', data }),
     update: (id: string | number, data: any) =>
       request.put<any>({ url: `/api/app/field/${id}`, data }),
-    del: (ids: string[]) => request.del<any>({ url: '/api/app/field', params: { ids } }),
-    getSelectData: (keywords?: string) =>
-      request.get<any>({ url: '/api/app/field/select-data-list', params: { keywords } }),
     getFieldType: () => request.get<string[]>({ url: '/api/app/field/type' })
   },
 

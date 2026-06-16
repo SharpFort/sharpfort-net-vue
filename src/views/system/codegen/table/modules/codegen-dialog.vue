@@ -64,7 +64,7 @@
           ElMessage.success('代码生成成功')
           break
         case 'codeToWeb':
-          await CasbinApi.codegen.codeToWeb(props.tableIds)
+          await CasbinApi.codegen.codeToWeb()
           ElMessage.success('实体同步成功')
           break
       }

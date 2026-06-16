@@ -398,8 +398,28 @@ declare namespace Api {
 
     /** 菜单创建参数 */
     interface MenuCreateInputVo {
-      id?: string
-      creationTime?: string
+      state?: boolean
+      menuName?: string
+      menuType?: string
+      permissionCode?: string
+      parentId?: string
+      menuIcon?: string
+      router?: string
+      isLink?: boolean
+      isCache?: boolean
+      isShow?: boolean
+      remark?: string
+      component?: string
+      query?: string
+      orderNum?: number
+      routerName?: string
+      apiUrl?: string
+      apiMethod?: string
+    }
+
+    /** 菜单更新参数 */
+    interface MenuUpdateInputVo {
+      id: string
       creatorId?: string
       state?: boolean
       menuName?: string
@@ -415,14 +435,10 @@ declare namespace Api {
       component?: string
       query?: string
       orderNum?: number
-      menuSource?: string
       routerName?: string
       apiUrl?: string
       apiMethod?: string
     }
-
-    /** 菜单更新参数 */
-    type MenuUpdateInputVo = Omit<MenuCreateInputVo, 'creationTime'>
 
     interface DictionarySearchParams {
       SkipCount?: number

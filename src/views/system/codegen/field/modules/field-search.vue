@@ -11,8 +11,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, onMounted } from 'vue'
-  import { CasbinApi } from '@/api/casbin-rbac'
+  import { computed, ref } from 'vue'
 
   interface Props {
     modelValue: Record<string, any>
@@ -25,50 +24,31 @@
   const props = defineProps<Props>()
   const emit = defineEmits<Emits>()
 
-  const tableOptions = ref<any[]>([])
-
-  // 表单数据双向绑定
   const searchBarRef = ref()
   const formData = computed({
     get: () => props.modelValue,
     set: (val) => emit('update:modelValue', val)
   })
 
-  // 校验规则
   const rules = {}
 
-  // 表单配置
   const formItems = computed(() => [
-    {
-      label: '所属表',
-      key: 'TableId',
-      type: 'select',
-      placeholder: '请选择所属表',
-      clearable: true,
-      options: tableOptions.value
-    },
     {
       label: '字段名称',
       key: 'Name',
       type: 'input',
       placeholder: '请输入字段名称',
       clearable: true
+    },
+    {
+      label: '表 ID',
+      key: 'TableId',
+      type: 'input',
+      placeholder: '请输入表 ID',
+      clearable: true
     }
   ])
 
-  onMounted(async () => {
-    try {
-      const tables = await CasbinApi.table.getSelectData()
-      tableOptions.value = tables.map((t: any) => ({
-        label: t.name,
-        value: t.id
-      }))
-    } catch (error) {
-      console.error('获取表列表失败:', error)
-    }
-  })
-
-  // 事件
   function handleReset() {
     emit('reset')
   }

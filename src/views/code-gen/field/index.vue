@@ -1,64 +1,53 @@
 <template>
   <div class="field-page art-full-height">
     <!-- 搜索栏 -->
-    <ElForm :inline="true" :model="searchForm" class="search-form">
-      <ElFormItem label="字段名称">
-        <ElInput
+    <el-form :inline="true" :model="searchForm" class="search-form">
+      <el-form-item label="字段名称">
+        <el-input
           v-model.trim="searchForm.Name"
           placeholder="请输入字段名称"
           clearable
           @keyup.enter="handleSearch"
         />
-      </ElFormItem>
-      <ElFormItem label="表ID">
-        <ElInput
+      </el-form-item>
+      <el-form-item label="表 ID">
+        <el-input
           v-model.trim="searchForm.TableId"
-          placeholder="请输入表ID"
+          placeholder="请输入表 ID"
           clearable
           @keyup.enter="handleSearch"
         />
-      </ElFormItem>
-      <ElFormItem>
-        <ElButton type="primary" @click="handleSearch">搜索</ElButton>
-        <ElButton @click="resetSearchParams">重置</ElButton>
-      </ElFormItem>
-    </ElForm>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+        <el-button @click="resetSearchParams">重置</el-button>
+      </el-form-item>
+    </el-form>
 
-    <ElCard class="art-table-card" shadow="never">
+    <el-card class="art-table-card" shadow="never">
       <!-- 表格头部 -->
-      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+      <art-table-header v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
-          <ElSpace wrap>
-            <ElButton type="primary" @click="showDialog('add')">新增字段</ElButton>
-            <ElButton type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete"
-              >批量删除</ElButton
-            >
-            <ElButton @click="handleExport">导出</ElButton>
-          </ElSpace>
+          <span class="text-sm text-gray-500 ml-2">
+            字段由反射同步维护，点击编辑仅可修改 UI 配置
+          </span>
         </template>
-      </ArtTableHeader>
+      </art-table-header>
 
       <!-- 表格 -->
-      <ArtTable
-        tableLayout="fixed"
+      <art-table
+        table-layout="fixed"
         :loading="loading"
         :data="data"
         :columns="columns"
         :pagination="pagination"
-        @selection-change="handleSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
-      >
-      </ArtTable>
-
-      <!-- 字段弹窗 -->
-      <FieldModal
-        v-model="dialogVisible"
-        :type="dialogType"
-        :data="currentFieldData"
-        @success="refreshData"
       />
-    </ElCard>
+
+      <!-- 字段编辑弹窗 -->
+      <field-modal ref="dialogRef" @success="refreshData" />
+    </el-card>
   </div>
 </template>
 
@@ -68,28 +57,20 @@
   import { useTable } from '@/hooks/core/useTable'
   import { CodeGenApi } from '@/api/code-gen'
   import FieldModal from './components/FieldModal.vue'
-  import { ElMessageBox, ElMessage } from 'element-plus'
 
   defineOptions({ name: 'Field' })
 
   type FieldDto = Api.CodeGen.FieldDto
 
-  // 弹窗相关
-  const dialogType = ref<'add' | 'edit'>('add')
-  const dialogVisible = ref(false)
-  const currentFieldData = ref<FieldDto | undefined>(undefined)
-
-  // 选中行
-  const selectedRows = ref<FieldDto[]>([])
+  const dialogRef = ref<InstanceType<typeof FieldModal> | null>(null)
 
   // 搜索表单
   const searchForm = reactive({
-    Name: undefined,
-    TableId: undefined,
-    Sorting: undefined
+    Name: undefined as string | undefined,
+    TableId: undefined as string | undefined,
+    Sorting: undefined as string | undefined
   })
 
-  // useTable Hook
   const {
     columns,
     columnChecks,
@@ -118,7 +99,6 @@
         ...searchForm
       },
       columnsFactory: () => [
-        { type: 'selection', width: 50 },
         { type: 'index', width: 60, label: '序号' },
         {
           prop: 'name',
@@ -138,53 +118,80 @@
           width: 100
         },
         {
-          prop: 'tableId',
-          label: '表ID',
-          width: 300,
+          prop: 'tableName',
+          label: '所属实体',
+          minWidth: 130,
           showOverflowTooltip: true
+        },
+        {
+          prop: 'moduleName',
+          label: '所属模块',
+          width: 100
         },
         {
           prop: 'orderNum',
           label: '排序',
-          width: 80
-        },
-        {
-          prop: 'length',
-          label: '长度',
-          width: 80
+          width: 70
         },
         {
           prop: 'isRequired',
           label: '必填',
-          width: 80,
+          width: 70,
           formatter: (row: FieldDto) => (row.isRequired ? '是' : '否')
         },
         {
           prop: 'isKey',
           label: '主键',
-          width: 80,
+          width: 70,
           formatter: (row: FieldDto) => (row.isKey ? '是' : '否')
         },
         {
-          prop: 'creationTime',
-          label: '创建时间',
-          width: 180,
-          sortable: true
+          prop: 'isAutoAdd',
+          label: '自增',
+          width: 70,
+          formatter: (row: FieldDto) => (row.isAutoAdd ? '是' : '否')
+        },
+        {
+          prop: 'isPublic',
+          label: '公共',
+          width: 70,
+          formatter: (row: FieldDto) => (row.isPublic ? '是' : '否')
+        },
+        {
+          prop: 'isQueryField',
+          label: '查询',
+          width: 70,
+          formatter: (row: FieldDto) => (row.isQueryField ? '是' : '否')
+        },
+        {
+          prop: 'isListDisplay',
+          label: '列表',
+          width: 70,
+          formatter: (row: FieldDto) => (row.isListDisplay ? '是' : '否')
+        },
+        {
+          prop: 'isFormItem',
+          label: '表单',
+          width: 70,
+          formatter: (row: FieldDto) => (row.isFormItem ? '是' : '否')
+        },
+        {
+          prop: 'htmlType',
+          label: '控件类型',
+          width: 110,
+          showOverflowTooltip: true
         },
         {
           prop: 'operation',
           label: '操作',
-          width: 120,
+          width: 100,
           fixed: 'right',
           formatter: (row: FieldDto) =>
             h('div', [
               h(ArtButtonTable, {
                 type: 'edit',
-                onClick: () => showDialog('edit', row)
-              }),
-              h(ArtButtonTable, {
-                type: 'delete',
-                onClick: () => deleteField(row)
+                label: '编辑',
+                onClick: () => showEditDialog(row)
               })
             ])
         }
@@ -197,63 +204,8 @@
     getData()
   }
 
-  const showDialog = (type: 'add' | 'edit', row?: FieldDto) => {
-    dialogType.value = type
-    currentFieldData.value = row ? { ...row } : undefined
-    dialogVisible.value = true
-  }
-
-  const deleteField = (row: FieldDto) => {
-    ElMessageBox.confirm(`确定要删除字段 "${row.name}" 吗？`, '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }).then(async () => {
-      try {
-        await CodeGenApi.field.del([row.id])
-        ElMessage.success('删除成功')
-        refreshData()
-      } catch (error) {
-        console.error(error)
-      }
-    })
-  }
-
-  const handleBatchDelete = () => {
-    if (selectedRows.value.length === 0) return
-    ElMessageBox.confirm(`确定要删除选中的 ${selectedRows.value.length} 个字段吗？`, '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }).then(async () => {
-      try {
-        const ids = selectedRows.value.map((row) => row.id)
-        await CodeGenApi.field.del(ids)
-        ElMessage.success('批量删除成功')
-        refreshData()
-      } catch (error) {
-        console.error(error)
-      }
-    })
-  }
-
-  const handleSelectionChange = (selection: FieldDto[]) => {
-    selectedRows.value = selection
-  }
-
-  const handleExport = async () => {
-    try {
-      const res = await CodeGenApi.field.export(searchForm)
-      // Handle file download (assuming response is a blob)
-      const blob = new Blob([res as any])
-      const link = document.createElement('a')
-      link.href = window.URL.createObjectURL(blob)
-      link.download = `字段导出_${new Date().getTime()}.xlsx`
-      link.click()
-    } catch (error) {
-      console.error(error)
-      ElMessage.error('导出失败')
-    }
+  const showEditDialog = (row: FieldDto) => {
+    dialogRef.value?.open(row.id)
   }
 </script>
 

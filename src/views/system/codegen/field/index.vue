@@ -8,12 +8,9 @@
       <!-- 表格头部 -->
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
-          <ElSpace wrap>
-            <ElButton v-ripple @click="showDialog('add')">新增字段</ElButton>
-            <ElButton v-ripple type="danger" :disabled="!selectedRows.length" @click="batchDelete"
-              >批量删除</ElButton
-            >
-          </ElSpace>
+          <span class="text-sm text-gray-500 ml-2">
+            字段由反射同步维护，点击编辑仅可修改 UI 配置
+          </span>
         </template>
       </ArtTableHeader>
 
@@ -23,7 +20,6 @@
         :data="data as any[]"
         :columns="columns"
         :pagination="pagination"
-        @selection-change="handleSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
@@ -35,14 +31,15 @@
         <template #isKey="{ row }">
           <ElTag :type="row.isKey ? 'warning' : 'info'">{{ row.isKey ? '是' : '否' }}</ElTag>
         </template>
+        <template #isPublic="{ row }">
+          <ElTag :type="row.isPublic ? 'success' : 'info'">{{ row.isPublic ? '是' : '否' }}</ElTag>
+        </template>
       </ArtTable>
 
       <!-- 字段弹窗 -->
       <FieldDialog
         v-model:visible="dialogVisible"
-        :type="dialogType"
         :field-data="currentFieldData"
-        :default-table-id="searchForm.TableId"
         @submit="handleDialogSubmit"
       />
     </ElCard>
@@ -50,14 +47,12 @@
 </template>
 
 <script setup lang="ts">
-  import { h, ref, nextTick, watch } from 'vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { h, ref, watch } from 'vue'
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
   import { CasbinApi } from '@/api/casbin-rbac'
   import FieldSearch from './modules/field-search.vue'
   import FieldDialog from './modules/field-dialog.vue'
-  import { DialogType } from '@/types'
   import { useRoute } from 'vue-router'
 
   defineOptions({ name: 'CodeGenField' })
@@ -65,12 +60,8 @@
   const route = useRoute()
 
   // 弹窗相关
-  const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
   const currentFieldData = ref<any>({})
-
-  // 选中行
-  const selectedRows = ref<any[]>([])
 
   // 搜索表单
   const searchForm = ref({
@@ -89,8 +80,7 @@
     resetSearchParams,
     handleSizeChange,
     handleCurrentChange,
-    refreshData,
-    refreshRemove
+    refreshData
   } = useTable({
     core: {
       apiFn: (params: any) => {
@@ -107,7 +97,6 @@
         ...searchForm.value
       },
       columnsFactory: () => [
-        { type: 'selection' },
         { type: 'index', width: 60, label: '序号' },
         {
           prop: 'name',
@@ -137,6 +126,12 @@
           slot: 'isKey'
         },
         {
+          prop: 'isPublic',
+          label: '公共',
+          width: 80,
+          slot: 'isPublic'
+        },
+        {
           prop: 'orderNum',
           label: '排序',
           width: 80,
@@ -151,19 +146,14 @@
         {
           prop: 'operation',
           label: '操作',
-          width: 150,
+          width: 100,
           fixed: 'right',
           formatter: (row: any) =>
             h('div', [
               h(ArtButtonTable, {
                 type: 'edit',
                 label: '编辑',
-                onClick: () => showDialog('edit', row)
-              }),
-              h(ArtButtonTable, {
-                type: 'delete',
-                label: '删除',
-                onClick: () => deleteField(row)
+                onClick: () => showDialog(row)
               })
             ])
         }
@@ -187,46 +177,14 @@
     getData()
   }
 
-  const showDialog = (type: DialogType, row?: any): void => {
-    dialogType.value = type
+  const showDialog = (row?: any): void => {
     currentFieldData.value = row || {}
-    nextTick(() => {
-      dialogVisible.value = true
-    })
-  }
-
-  const deleteField = (row: any): void => {
-    ElMessageBox.confirm(`确定要删除字段 [${row.name}] 吗？`, '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }).then(async () => {
-      await CasbinApi.field.del([row.id])
-      ElMessage.success('删除成功')
-      refreshRemove()
-    })
-  }
-
-  const batchDelete = (): void => {
-    const ids = selectedRows.value.map((row) => row.id)
-    ElMessageBox.confirm(`确定要删除选中的 ${ids.length} 个项目吗？`, '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }).then(async () => {
-      await CasbinApi.field.del(ids)
-      ElMessage.success('删除成功')
-      refreshRemove()
-    })
+    dialogVisible.value = true
   }
 
   const handleDialogSubmit = () => {
     dialogVisible.value = false
     currentFieldData.value = {}
     refreshData()
-  }
-
-  const handleSelectionChange = (selection: any[]): void => {
-    selectedRows.value = selection
   }
 </script>
